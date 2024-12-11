@@ -1,0 +1,69 @@
+// design principles.txt
+<minimalist_principles>
+- Focus on essential features, making them clear and purposeful
+- Avoid clutter by limiting colors, words, and design elements
+- Begin with key functionality or main selling points
+- Design should be scannable and quickly comprehensible
+</minimalist_principles>
+
+<spacing_and_layout>
+- Implement generous spacing, adjusting incrementally for cohesion
+- Use a consistent spacing system with divisible values
+- Group elements using Law of Similarity and Proximity
+- Organize layout to facilitate quick visual understanding
+</spacing_and_layout>
+
+<typography_guidelines>
+- Line height should be inversely proportional to font size
+- Use 1.6x multiplier for small text line height (16pt font = 26pt line height)
+- For large text (>32pt), use 1.3x or 1.1x multiplier
+- Maintain minimum font size of 12px for legibility
+- Implement type scale with base size (14pt/16pt) using Golden Ratio (1.618)
+- Avoid center-aligned paragraphs for better readability
+</typography_guidelines>
+
+<visual_hierarchy>
+- Create hierarchy through varied font sizes, weights, and styles
+- Prioritize elements based on importance for easy navigation
+- Use size, weight, and color to highlight key elements
+- Consider de-emphasizing surrounding elements to highlight important ones
+- Ensure proper contrast between background and text
+</visual_hierarchy>
+
+<design_system>
+- Develop a comprehensive system for spacing, fonts, and colors
+- Use REM units for adaptable font sizes and margins
+- Maintain consistency while allowing contextual adjustments
+- Create primary and secondary styles for buttons and links
+- Consider spacing elements: kerning, tracking, and leading
+</design_system>
+
+<responsive_considerations>
+- Ensure typography adapts across different screen sizes
+- Implement fluid type scaling for consistent experience
+- Use appropriate font stacks for cross-platform compatibility
+- Optimize typography for loading times and performance
+</responsive_considerations>
+
+<visual_elements>
+- Use shadows to add depth and replace solid borders
+- Apply accent colors to highlight important features
+- Implement subtle gradients for visual interest
+- Choose a minimal set of colors that maintain legibility
+</visual_elements>
+
+<branding_elements>
+- Select typography that aligns with brand values and tone
+- Maintain consistency across all website elements
+- Ensure typography evokes appropriate emotions
+- Balance decorative and functional aspects of chosen fonts
+- Create a cohesive visual identity through consistent styling
+</branding_elements>
+
+<creative_process>
+- Approach creativity as a structured process
+- Study and analyze high-quality designs for inspiration
+- Utilize design resources like Figma or Mobbin
+- Apply critical analysis to understand effective layouts
+- Learn fundamental design principles before experimenting
+</creative_process>
