@@ -57,9 +57,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         borderRadius: "0.75rem",
         border: "1px solid rgba(255, 255, 255, 0.1)",
         transition: "border-color 0.3s ease",
-        "&:hover": {
-          borderColor: "rgba(255, 255, 255, 0.3)",
-        },
       }}
     >
       <div style={{ position: "relative", zIndex: 10 }}>
@@ -297,9 +294,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                         ? "linear-gradient(to right, #60A5FA, #A78BFA)"
                         : "transparent",
                       color: isActive ? "white" : "#94A3B8",
-                      "&:hover": {
-                        backgroundColor: "rgba(55, 65, 81, 0.5)",
-                      },
                     }}
                   >
                     <div
@@ -340,9 +334,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                               : "transparent",
                           color:
                             activeSubSection === "stl" ? "#60A5FA" : "#94A3B8",
-                          "&:hover": {
-                            backgroundColor: "rgba(55, 65, 81, 0.5)",
-                          },
                         }}
                       >
                         <FileText size={18} />
@@ -369,9 +360,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                             activeSubSection === "dicom"
                               ? "#60A5FA"
                               : "#94A3B8",
-                          "&:hover": {
-                            backgroundColor: "rgba(55, 65, 81, 0.5)",
-                          },
                         }}
                       >
                         <Upload size={18} />
@@ -404,9 +392,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     ? "linear-gradient(to right, #60A5FA, #A78BFA)"
                     : "transparent",
                   color: isActive ? "white" : "#94A3B8",
-                  "&:hover": {
-                    backgroundColor: "rgba(55, 65, 81, 0.5)",
-                  },
                 }}
               >
                 <Icon size={20} />
@@ -426,9 +411,6 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
               borderRadius: "0.375rem",
               color: "#EF4444",
               transition: "all 0.2s ease",
-              "&:hover": {
-                backgroundColor: "rgba(239, 68, 68, 0.1)",
-              },
             }}
           >
             <LogOut size={20} />
