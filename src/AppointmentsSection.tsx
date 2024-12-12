@@ -93,16 +93,16 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
     );
   };
 
-  const getStatusColor = (status: Appointment["status"]) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case "confirmed":
-        return "bg-green-500";
-      case "pending":
-        return "bg-yellow-500";
-      case "cancelled":
-        return "bg-red-500";
+      case 'confirmed':
+        return { backgroundColor: '#4CAF50' }; // Return an object, not just a color
+      case 'pending':
+        return { backgroundColor: '#FFA500' };
+      case 'cancelled':
+        return { backgroundColor: '#F44336' };
       default:
-        return "bg-gray-500";
+        return { backgroundColor: '#808080' };
     }
   };
 
@@ -207,8 +207,8 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
               >
                 <span
                   style={{
-                    padding: "0.25rem 0.75rem",
-                    borderRadius: "9999px",
+                    // padding: "0.25rem 0.75rem",
+                    // borderRadius: "9999px",
                     fontSize: "0.875rem",
                     color: "white",
                     ...getStatusColor(appointment.status),
