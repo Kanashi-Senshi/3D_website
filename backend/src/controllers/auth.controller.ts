@@ -27,13 +27,13 @@ export const signup = async (req: Request, res: Response) => {
     // Generate token
     const token = generateToken(user._id.toString(), user.role);
 
-    res.status(201).json({
+    return res.status(201).json({
       user,
       token
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Error creating user' });
+    return res.status(500).json({ error: 'Error creating user' });
   }
 };
 
@@ -56,13 +56,13 @@ export const login = async (req: Request, res: Response) => {
     // Generate token
     const token = generateToken(user._id.toString(), user.role);
 
-    res.json({
+    return res.json({
       user,
       token
     });
   } catch (error) {
     console.error('Login error:', error);
-    res.status(500).json({ error: 'Error logging in' });
+    return res.status(500).json({ error: 'Error logging in' });
   }
 };
 
@@ -76,10 +76,10 @@ export const getProfile = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error('Get profile error:', error);
-    res.status(500).json({ error: 'Error fetching profile' });
+    return res.status(500).json({ error: 'Error fetching profile' });
   }
 };
 
@@ -105,9 +105,9 @@ export const updateProfile = async (req: Request, res: Response) => {
     });
 
     await user.save();
-    res.json(user);
+    return res.json(user);
   } catch (error) {
     console.error('Update profile error:', error);
-    res.status(500).json({ error: 'Error updating profile' });
+    return res.status(500).json({ error: 'Error updating profile' });
   }
 };

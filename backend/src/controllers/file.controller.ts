@@ -2,7 +2,7 @@
 import { Request, Response } from 'express';
 import { MedicalFile } from '@models/MedicalFile';
 import { User } from '@models/User';
-import { FileDocument } from '@/types/express';
+import { FileDocument } from '../types/express';
 import { supabase, generateFilePath, getFileExtension, isValidFileType, getSignedUrl } from '@config/supabase';
 
 const ALLOWED_STL_TYPES = ['stl'];
@@ -73,10 +73,10 @@ export const uploadFile = async (req: Request, res: Response) => {
       // triggerDicomProcessing(medicalFile._id);
     }
 
-    res.status(201).json(medicalFile);
+    return res.status(201).json(medicalFile);
   } catch (error) {
     console.error('File upload error:', error);
-    res.status(500).json({ error: 'Error uploading file' });
+    return res.status(500).json({ error: 'Error uploading file' });
   }
 };
 
@@ -136,10 +136,10 @@ export const getFiles = async (req: Request, res: Response) => {
       return fileObj;
     }));
 
-    res.json(filesWithUrls);
+    return res.json(filesWithUrls);
   } catch (error) {
     console.error('Get files error:', error);
-    res.status(500).json({ error: 'Error fetching files' });
+    return res.status(500).json({ error: 'Error fetching files' });
   }
 };
 
@@ -169,10 +169,10 @@ export const getFileById = async (req: Request, res: Response) => {
       fileObj.segmentedFileUrl = await getSignedUrl(file.segmentedFilePath);
     }
 
-    res.json(fileObj);
+    return res.json(fileObj);
   } catch (error) {
     console.error('Get file error:', error);
-    res.status(500).json({ error: 'Error fetching file' });
+    return res.status(500).json({ error: 'Error fetching file' });
   }
 };
 
@@ -201,10 +201,10 @@ export const updateFile = async (req: Request, res: Response) => {
       await file.save();
     }
 
-    res.json(file);
+    return res.json(file);
   } catch (error) {
     console.error('Update file error:', error);
-    res.status(500).json({ error: 'Error updating file' });
+    return res.status(500).json({ error: 'Error updating file' });
   }
 };
 
@@ -239,9 +239,9 @@ export const shareFile = async (req: Request, res: Response) => {
     }
 
     await file.shareWith(userIds);
-    res.json(file);
+    return res.json(file);
   } catch (error) {
     console.error('Share file error:', error);
-    res.status(500).json({ error: 'Error sharing file' });
+    return res.status(500).json({ error: 'Error sharing file' });
   }
 };

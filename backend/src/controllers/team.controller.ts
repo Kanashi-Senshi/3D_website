@@ -33,10 +33,10 @@ export const createTeam = async (req: Request, res: Response) => {
       $push: { teams: team._id }
     });
 
-    res.status(201).json(team);
+    return res.status(201).json(team);
   } catch (error) {
     console.error('Create team error:', error);
-    res.status(500).json({ error: 'Error creating team' });
+    return res.status(500).json({ error: 'Error creating team' });
   }
 };
 
@@ -59,10 +59,10 @@ export const getTeams = async (req: Request, res: Response) => {
     .populate('members', 'name email')
     .sort({ createdAt: -1 });
 
-    res.json(teams);
+    return res.json(teams);
   } catch (error) {
     console.error('Get teams error:', error);
-    res.status(500).json({ error: 'Error fetching teams' });
+    return res.status(500).json({ error: 'Error fetching teams' });
   }
 };
 
@@ -91,10 +91,10 @@ export const getTeamById = async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Not authorized to view this team' });
     }
 
-    res.json(team);
+    return res.json(team);
   } catch (error) {
     console.error('Get team error:', error);
-    res.status(500).json({ error: 'Error fetching team' });
+    return res.status(500).json({ error: 'Error fetching team' });
   }
 };
 
@@ -129,10 +129,10 @@ export const joinTeam = async (req: Request, res: Response) => {
       $push: { teams: team._id }
     });
 
-    res.json(team);
+    return res.json(team);
   } catch (error) {
     console.error('Join team error:', error);
-    res.status(500).json({ error: 'Error joining team' });
+    return res.status(500).json({ error: 'Error joining team' });
   }
 };
 
@@ -164,10 +164,10 @@ export const leaveTeam = async (req: Request, res: Response) => {
       $pull: { teams: team._id }
     });
 
-    res.json({ message: 'Successfully left the team' });
+    return res.json({ message: 'Successfully left the team' });
   } catch (error) {
     console.error('Leave team error:', error);
-    res.status(500).json({ error: 'Error leaving team' });
+    return res.status(500).json({ error: 'Error leaving team' });
   }
 };
 
@@ -206,9 +206,9 @@ export const shareFile = async (req: Request, res: Response) => {
     memberIds.push(team.owner.toString());
     await file.shareWith(memberIds);
 
-    res.json(team);
+    return res.json(team);
   } catch (error) {
     console.error('Share file error:', error);
-    res.status(500).json({ error: 'Error sharing file' });
+    return res.status(500).json({ error: 'Error sharing file' });
   }
 };

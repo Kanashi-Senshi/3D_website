@@ -36,10 +36,10 @@ export const createCommunity = async (req: Request, res: Response) => {
     }
 
     await community.save();
-    res.status(201).json(community);
+    return res.status(201).json(community);
   } catch (error) {
     console.error('Create community error:', error);
-    res.status(500).json({ error: 'Error creating community' });
+    return res.status(500).json({ error: 'Error creating community' });
   }
 };
 
@@ -57,10 +57,10 @@ export const getCommunities = async (req: Request, res: Response) => {
       .populate('moderators', 'name')
       .sort({ createdAt: -1 });
 
-    res.json(communities);
+    return res.json(communities);
   } catch (error) {
     console.error('Get communities error:', error);
-    res.status(500).json({ error: 'Error fetching communities' });
+    return res.status(500).json({ error: 'Error fetching communities' });
   }
 };
 
@@ -83,10 +83,10 @@ export const joinCommunity = async (req: Request, res: Response) => {
     }
 
     await community.addMember(userId);
-    res.json(community);
+    return res.json(community);
   } catch (error) {
     console.error('Join community error:', error);
-    res.status(500).json({ error: 'Error joining community' });
+    return res.status(500).json({ error: 'Error joining community' });
   }
 };
 
@@ -136,10 +136,10 @@ export const createPost = async (req: Request, res: Response) => {
     });
 
     await post.save();
-    res.status(201).json(post);
+    return res.status(201).json(post);
   } catch (error) {
     console.error('Create post error:', error);
-    res.status(500).json({ error: 'Error creating post' });
+    return res.status(500).json({ error: 'Error creating post' });
   }
 };
 
@@ -171,10 +171,10 @@ export const getPosts = async (req: Request, res: Response) => {
       .populate('comments.user', 'name')
       .sort({ isPinned: -1, createdAt: -1 });
 
-    res.json(posts);
+    return res.json(posts);
   } catch (error) {
     console.error('Get posts error:', error);
-    res.status(500).json({ error: 'Error fetching posts' });
+    return res.status(500).json({ error: 'Error fetching posts' });
   }
 };
 
@@ -194,10 +194,10 @@ export const addComment = async (req: Request, res: Response) => {
     }
 
     await post.addComment(userId, content);
-    res.json(post);
+    return res.json(post);
   } catch (error) {
     console.error('Add comment error:', error);
-    res.status(500).json({ error: 'Error adding comment' });
+    return res.status(500).json({ error: 'Error adding comment' });
   }
 };
 
@@ -215,10 +215,10 @@ export const toggleLike = async (req: Request, res: Response) => {
     }
 
     await post.toggleLike(userId);
-    res.json(post);
+    return res.json(post);
   } catch (error) {
     console.error('Toggle like error:', error);
-    res.status(500).json({ error: 'Error toggling like' });
+    return res.status(500).json({ error: 'Error toggling like' });
   }
 };
 
@@ -237,9 +237,9 @@ export const toggleCommentLike = async (req: Request, res: Response) => {
     }
 
     await post.toggleCommentLike(commentId, userId);
-    res.json(post);
+    return res.json(post);
   } catch (error) {
     console.error('Toggle comment like error:', error);
-    res.status(500).json({ error: 'Error toggling comment like' });
+    return res.status(500).json({ error: 'Error toggling comment like' });
   }
 };
