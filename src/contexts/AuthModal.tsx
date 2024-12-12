@@ -1,3 +1,4 @@
+// contexts/AuthModal.tsx
 // src/contexts/AuthModal.tsx
 // src/contexts/AuthModel.tsx
 

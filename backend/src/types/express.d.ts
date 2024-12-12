@@ -1,3 +1,6 @@
+// types/express.d.ts
+// backend/src/types/express.d.ts
+// backend/src/types/express.d.ts
 // backend/src/types/express.d.ts
 import { IMedicalFile } from '@models/MedicalFile';
 import { Request } from 'express';

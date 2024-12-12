@@ -1,3 +1,4 @@
+// contexts/AuthContext.tsx
 // src/contexts/AuthContext.tsx
 // Import necessary dependencies
 import React, { useState, useEffect, createContext, useContext } from "react";

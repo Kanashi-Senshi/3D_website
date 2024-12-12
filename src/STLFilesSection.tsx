@@ -1,7 +1,7 @@
-// src/STLFilesSection.tsx
-// src/STLFilesSection.tsx
+// STLFilesSection.tsx
 import React, { useState } from "react";
 import { Upload, FolderOpen, Share2, Trash2, Eye } from "lucide-react";
+import { STLFilesSectionStyles } from "./types/styles";
 
 interface STLFile {
   id: string;
@@ -12,7 +12,7 @@ interface STLFile {
   notes?: string;
 }
 
-const styles = {
+const styles: STLFilesSectionStyles = {
   button: {
     padding: "0.75rem 1.5rem",
     borderRadius: "0.5rem",
@@ -38,6 +38,75 @@ const styles = {
     color: "white",
     cursor: "pointer",
   },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "2rem",
+  },
+  headerTitle: {
+    fontSize: "1.5rem",
+    fontWeight: "bold",
+  },
+  uploadButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    background: "linear-gradient(135deg, #6366f1, #a855f7)",
+  },
+  fileInput: {
+    display: "none",
+  },
+  fileGrid: {
+    display: "grid",
+    gap: "1rem",
+  },
+  fileInfo: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+  },
+  fileTitle: {
+    marginBottom: "0.25rem",
+  },
+  fileMetadata: {
+    fontSize: "0.875rem",
+    color: "#9ca3af",
+  },
+  fileNotes: {
+    fontSize: "0.875rem",
+    color: "#9ca3af",
+    marginTop: "0.25rem",
+  },
+  shareInfo: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    color: "#9ca3af",
+    fontSize: "0.875rem",
+  },
+  deleteButton: {
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    border: "none",
+    background: "#374151",
+    color: "#ef4444",
+    cursor: "pointer",
+  },
+  emptyState: {
+    textAlign: "center",
+    padding: "3rem",
+    color: "#9ca3af",
+    backgroundColor: "#2d3748",
+    borderRadius: "0.5rem",
+  },
+  emptyStateIcon: {
+    margin: "0 auto 1rem",
+  },
+  emptyStateButton: {
+    marginTop: "1rem",
+    background: "linear-gradient(135deg, #6366f1, #a855f7)",
+  },
 };
 
 const STLFilesSection: React.FC = () => {
@@ -62,25 +131,11 @@ const STLFilesSection: React.FC = () => {
 
   return (
     <div>
-      {/* Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "2rem",
-        }}
-      >
-        <h2 style={{ fontSize: "1.5rem", fontWeight: "bold" }}>STL Files</h2>
+      <div style={styles.header}>
+        <h2 style={styles.headerTitle}>STL Files</h2>
         <button
           onClick={() => document.getElementById("file-upload")?.click()}
-          style={{
-            ...styles.button,
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            background: "linear-gradient(135deg, #6366f1, #a855f7)",
-          }}
+          style={{ ...styles.button, ...styles.uploadButton }}
         >
           <Upload size={16} />
           Upload New File
@@ -89,7 +144,7 @@ const STLFilesSection: React.FC = () => {
           type="file"
           id="file-upload"
           accept=".stl"
-          style={{ display: "none" }}
+          style={styles.fileInput}
           onChange={(e) => {
             const file = e.target.files?.[0];
             if (file) {
@@ -108,47 +163,25 @@ const STLFilesSection: React.FC = () => {
         />
       </div>
 
-      {/* File Grid */}
-      <div style={{ display: "grid", gap: "1rem" }}>
+      <div style={styles.fileGrid}>
         {files.map((file) => (
           <div key={file.id} style={styles.fileCard}>
-            <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={styles.fileInfo}>
               <FolderOpen size={24} color="#6366f1" />
               <div>
-                <h3 style={{ marginBottom: "0.25rem" }}>{file.name}</h3>
-                <p
-                  style={{
-                    fontSize: "0.875rem",
-                    color: "#9ca3af",
-                  }}
-                >
+                <h3 style={styles.fileTitle}>{file.name}</h3>
+                <p style={styles.fileMetadata}>
                   Uploaded: {file.uploadDate} • Size: {file.size}
                 </p>
                 {file.notes && (
-                  <p
-                    style={{
-                      fontSize: "0.875rem",
-                      color: "#9ca3af",
-                      marginTop: "0.25rem",
-                    }}
-                  >
-                    Note: {file.notes}
-                  </p>
+                  <p style={styles.fileNotes}>Note: {file.notes}</p>
                 )}
               </div>
             </div>
 
             <div style={{ display: "flex", gap: "1rem" }}>
               {file.sharedWith.length > 0 && (
-                <div
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.5rem",
-                    color: "#9ca3af",
-                    fontSize: "0.875rem",
-                  }}
-                >
+                <div style={styles.shareInfo}>
                   <Share2 size={16} />
                   Shared with {file.sharedWith.length} retailer
                   {file.sharedWith.length > 1 ? "s" : ""}
@@ -157,17 +190,13 @@ const STLFilesSection: React.FC = () => {
               <button
                 style={styles.actionButton}
                 onClick={() => {
-                  // View file logic
                   console.log("Viewing file:", file.name);
                 }}
               >
                 <Eye size={16} />
               </button>
               <button
-                style={{
-                  ...styles.actionButton,
-                  color: "#ef4444",
-                }}
+                style={styles.deleteButton}
                 onClick={() => {
                   setFiles((prev) => prev.filter((f) => f.id !== file.id));
                 }}
@@ -180,24 +209,12 @@ const STLFilesSection: React.FC = () => {
       </div>
 
       {files.length === 0 && (
-        <div
-          style={{
-            textAlign: "center",
-            padding: "3rem",
-            color: "#9ca3af",
-            backgroundColor: "#2d3748",
-            borderRadius: "0.5rem",
-          }}
-        >
-          <Upload size={48} style={{ margin: "0 auto 1rem" }} />
+        <div style={styles.emptyState}>
+          <Upload size={48} style={styles.emptyStateIcon} />
           <p>No STL files uploaded yet</p>
           <button
             onClick={() => document.getElementById("file-upload")?.click()}
-            style={{
-              ...styles.button,
-              marginTop: "1rem",
-              background: "linear-gradient(135deg, #6366f1, #a855f7)",
-            }}
+            style={{ ...styles.button, ...styles.emptyStateButton }}
           >
             Upload your first file
           </button>

@@ -1,3 +1,6 @@
+// controllers/file.controller.ts
+// backend/src/controllers/file.controller.ts
+// backend/src/controllers/file.controller.ts
 // backend/src/controllers/file.controller.ts
 import { Request, Response } from 'express';
 import { MedicalFile } from '@models/MedicalFile';

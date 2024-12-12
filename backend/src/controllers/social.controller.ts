@@ -1,3 +1,6 @@
+// controllers/social.controller.ts
+// backend/src/controllers/social.controller.ts
+// backend/src/controllers/social.controller.ts
 // backend/src/controllers/social.controller.ts
 import { Request, Response } from 'express';
 import { Community } from '@models/Community';

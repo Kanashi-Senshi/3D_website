@@ -1,3 +1,4 @@
+// Dashboard.tsx
 // src/Dashboard.tsx
 import React, { useState } from "react";
 import {
@@ -19,6 +20,7 @@ import SocialSection from "./SocialSection";
 import STLFilesSection from "./STLFilesSection";
 import TeamsSection from "./TeamsSection";
 import { useAuth } from "./contexts/AuthContext";
+import { DashboardStyles } from "./types/styles";
 
 interface DashboardProps {
   onLogout: () => void;
@@ -29,6 +31,192 @@ interface StatsCardProps {
   value: string;
   trend: string;
 }
+
+const styles: DashboardStyles = {
+  container: {
+    minHeight: "100vh",
+    background: "linear-gradient(to bottom right, #1F2937, #111827)",
+    color: "white",
+  },
+  gradientBackground: {
+    backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
+    backgroundClip: "text",
+    color: "transparent",
+  },
+  mobileHeader: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    padding: "1rem",
+    backgroundColor: "rgba(31, 41, 55, 0.8)",
+    backdropFilter: "blur(10px)",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+    "@media (min-width: 1024px)": {
+      display: "none",
+    },
+  },
+  menuButton: {
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    backgroundColor: "rgba(55, 65, 81, 0.5)",
+    color: "white",
+    transition: "background-color 0.2s ease",
+  },
+  appTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "bold",
+    backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
+    backgroundClip: "text",
+    color: "transparent",
+  },
+  sidebar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    bottom: 0,
+    zIndex: 50,
+    width: "16rem",
+    backgroundColor: "rgba(31, 41, 55, 0.8)",
+    backdropFilter: "blur(10px)",
+    borderRight: "1px solid rgba(255, 255, 255, 0.1)",
+    transition: "transform 0.3s ease",
+  },
+  userInfo: {
+    padding: "1.5rem",
+    borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+  },
+  userInfoContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+  },
+  avatarContainer: {
+    width: "3rem",
+    height: "3rem",
+    borderRadius: "9999px",
+    background: "linear-gradient(to right, #60A5FA, #A78BFA)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  userName: {
+    fontWeight: "600",
+    color: "white",
+  },
+  userRole: {
+    color: "#94A3B8",
+    fontSize: "0.875rem",
+  },
+  navigation: {
+    padding: "1rem",
+  },
+  menuItem: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    padding: "0.75rem 1rem",
+    borderRadius: "0.375rem",
+    transition: "all 0.2s ease",
+    color: "#94A3B8",
+  },
+  menuItemActive: {
+    background: "linear-gradient(to right, #60A5FA, #A78BFA)",
+    color: "white",
+  },
+  menuItemContent: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    fontWeight: "500",
+  },
+  subMenuContainer: {
+    marginLeft: "1rem",
+  },
+  subMenuItem: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    transition: "all 0.2s ease",
+    color: "#94A3B8",
+  },
+  subMenuItemActive: {
+    backgroundColor: "rgba(99, 102, 241, 0.2)",
+    color: "#60A5FA",
+  },
+  signOutButton: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    padding: "0.75rem 1rem",
+    borderRadius: "0.375rem",
+    color: "#EF4444",
+    transition: "all 0.2s ease",
+  },
+  mainContent: {
+    minHeight: "100vh",
+    transition: "margin-left 0.3s ease",
+    padding: "2rem",
+  },
+  welcomeTitle: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
+    backgroundClip: "text",
+    color: "transparent",
+  },
+  statsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
+    gap: "1.5rem",
+    "@media (min-width: 768px)": {
+      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    },
+    "@media (min-width: 1024px)": {
+      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+    },
+  },
+  statsCard: {
+    position: "relative",
+    overflow: "hidden",
+    backgroundColor: "rgba(45, 55, 72, 0.5)",
+    backdropFilter: "blur(10px)",
+    padding: "1.5rem",
+    borderRadius: "0.75rem",
+    border: "1px solid rgba(255, 255, 255, 0.1)",
+    transition: "border-color 0.3s ease",
+  },
+  statsCardContent: {
+    position: "relative",
+    zIndex: 10,
+  },
+  statsTitle: {
+    color: "#94A3B8",
+    fontSize: "0.875rem",
+    marginBottom: "0.5rem",
+  },
+  statsValue: {
+    fontSize: "2rem",
+    fontWeight: "bold",
+    marginBottom: "0.25rem",
+    backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
+    backgroundClip: "text",
+    color: "transparent",
+  },
+  statsTrend: {
+    color: "#94A3B8",
+    fontSize: "0.875rem",
+  },
+  statsGradientOverlay: {
+    position: "absolute",
+    inset: 0,
+    backgroundImage: "linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))",
+  },
+};
 
 const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -47,50 +235,13 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   ];
 
   const StatsCard: React.FC<StatsCardProps> = ({ title, value, trend }) => (
-    <div
-      style={{
-        position: "relative",
-        overflow: "hidden",
-        backgroundColor: "rgba(45, 55, 72, 0.5)",
-        backdropFilter: "blur(10px)",
-        padding: "1.5rem",
-        borderRadius: "0.75rem",
-        border: "1px solid rgba(255, 255, 255, 0.1)",
-        transition: "border-color 0.3s ease",
-      }}
-    >
-      <div style={{ position: "relative", zIndex: 10 }}>
-        <h3
-          style={{
-            color: "#94A3B8",
-            fontSize: "0.875rem",
-            marginBottom: "0.5rem",
-          }}
-        >
-          {title}
-        </h3>
-        <p
-          style={{
-            fontSize: "2rem",
-            fontWeight: "bold",
-            marginBottom: "0.25rem",
-            backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
-          {value}
-        </p>
-        <p style={{ color: "#94A3B8", fontSize: "0.875rem" }}>{trend}</p>
+    <div style={styles.statsCard}>
+      <div style={styles.statsCardContent}>
+        <h3 style={styles.statsTitle}>{title}</h3>
+        <p style={styles.statsValue}>{value}</p>
+        <p style={styles.statsTrend}>{trend}</p>
       </div>
-      <div
-        style={{
-          position: "absolute",
-          inset: 0,
-          backgroundImage:
-            "linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))",
-        }}
-      />
+      <div style={styles.statsGradientOverlay} />
     </div>
   );
 
@@ -122,30 +273,10 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       default:
         return (
           <div style={{ space: "6" }}>
-            <h2
-              style={{
-                fontSize: "2rem",
-                fontWeight: "bold",
-                backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
-                backgroundClip: "text",
-                color: "transparent",
-              }}
-            >
+            <h2 style={styles.welcomeTitle}>
               Welcome Back, {isDoctor ? `Dr. ${user?.name}` : user?.name}!
             </h2>
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
-                gap: "1.5rem",
-                "@media (min-width: 768px)": {
-                  gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-                },
-                "@media (min-width: 1024px)": {
-                  gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-                },
-              }}
-            >
+            <div style={styles.statsGrid}>
               <StatsCard title="Active Files" value="12" trend="+2 this week" />
               <StatsCard
                 title="Appointments"
@@ -164,66 +295,22 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   };
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "linear-gradient(to bottom right, #1F2937, #111827)",
-        color: "white",
-      }}
-    >
+    <div style={styles.container}>
       {/* Mobile Header */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "1rem",
-          backgroundColor: "rgba(31, 41, 55, 0.8)",
-          backdropFilter: "blur(10px)",
-          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-          "@media (min-width: 1024px)": {
-            display: "none",
-          },
-        }}
-      >
+      <div style={styles.mobileHeader}>
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          style={{
-            padding: "0.5rem",
-            borderRadius: "0.375rem",
-            backgroundColor: "rgba(55, 65, 81, 0.5)",
-            color: "white",
-            transition: "background-color 0.2s ease",
-          }}
+          style={styles.menuButton}
         >
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <h1
-          style={{
-            fontSize: "1.25rem",
-            fontWeight: "bold",
-            backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
-            backgroundClip: "text",
-            color: "transparent",
-          }}
-        >
-          TechRetail Hub
-        </h1>
+        <h1 style={styles.appTitle}>TechRetail Hub</h1>
       </div>
 
       {/* Sidebar */}
       <aside
         style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          bottom: 0,
-          zIndex: 50,
-          width: "16rem",
-          backgroundColor: "rgba(31, 41, 55, 0.8)",
-          backdropFilter: "blur(10px)",
-          borderRight: "1px solid rgba(255, 255, 255, 0.1)",
-          transition: "transform 0.3s ease",
+          ...styles.sidebar,
           transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
           "@media (min-width: 1024px)": {
             transform: "translateX(0)",
@@ -231,37 +318,16 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         }}
       >
         {/* User Info */}
-        <div
-          style={{
-            padding: "1.5rem",
-            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "1rem",
-            }}
-          >
-            <div
-              style={{
-                width: "3rem",
-                height: "3rem",
-                borderRadius: "9999px",
-                background: "linear-gradient(to right, #60A5FA, #A78BFA)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
+        <div style={styles.userInfo}>
+          <div style={styles.userInfoContainer}>
+            <div style={styles.avatarContainer}>
               <Users size={20} style={{ color: "white" }} />
             </div>
             <div>
-              <h2 style={{ fontWeight: "semibold", color: "white" }}>
+              <h2 style={styles.userName}>
                 {isDoctor ? `Dr. ${user?.name}` : user?.name}
               </h2>
-              <p style={{ color: "#94A3B8", fontSize: "0.875rem" }}>
+              <p style={styles.userRole}>
                 {isDoctor ? "Doctor" : "Patient"}
               </p>
             </div>
@@ -269,42 +335,27 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         </div>
 
         {/* Navigation */}
-        <nav style={{ padding: "1rem" }}>
+        <nav style={styles.navigation}>
           {menuItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeSection === item.id;
 
             if (item.id === "medical-data") {
               return (
-                <div key={item.id} style={{ space: "1" }}>
+                <div key={item.id} style={{ marginBottom: "0.5rem" }}>
                   <button
                     onClick={() => {
                       setIsMedicalDataExpanded(!isMedicalDataExpanded);
                       setActiveSection(item.id);
                     }}
                     style={{
-                      width: "100%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      padding: "0.75rem 1rem",
-                      borderRadius: "0.375rem",
-                      transition: "all 0.2s ease",
-                      backgroundColor: isActive
-                        ? "linear-gradient(to right, #60A5FA, #A78BFA)"
-                        : "transparent",
-                      color: isActive ? "white" : "#94A3B8",
+                      ...styles.menuItem,
+                      ...(isActive ? styles.menuItemActive : {}),
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.75rem",
-                      }}
-                    >
+                    <div style={styles.menuItemContent}>
                       <Icon size={20} />
-                      <span style={{ fontWeight: "medium" }}>{item.label}</span>
+                      <span>{item.label}</span>
                     </div>
                     {isMedicalDataExpanded ? (
                       <ChevronDown size={16} />
@@ -314,30 +365,21 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   </button>
 
                   {isMedicalDataExpanded && (
-                    <div style={{ marginLeft: "1rem", space: "1" }}>
+                    <div style={styles.subMenuContainer}>
                       <button
                         onClick={() => {
                           setActiveSection("medical-data");
                           setActiveSubSection("stl");
                         }}
                         style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.75rem",
-                          padding: "0.5rem 1rem",
-                          borderRadius: "0.375rem",
-                          transition: "all 0.2s ease",
-                          backgroundColor:
-                            activeSubSection === "stl"
-                              ? "rgba(99, 102, 241, 0.2)"
-                              : "transparent",
-                          color:
-                            activeSubSection === "stl" ? "#60A5FA" : "#94A3B8",
+                          ...styles.subMenuItem,
+                          ...(activeSubSection === "stl"
+                            ? styles.subMenuItemActive
+                            : {}),
                         }}
                       >
                         <FileText size={18} />
-                        <span style={{ fontSize: "0.875rem" }}>STL Files</span>
+                        <span>STL Files</span>
                       </button>
                       <button
                         onClick={() => {
@@ -345,27 +387,14 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                           setActiveSubSection("dicom");
                         }}
                         style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.75rem",
-                          padding: "0.5rem 1rem",
-                          borderRadius: "0.375rem",
-                          transition: "all 0.2s ease",
-                          backgroundColor:
-                            activeSubSection === "dicom"
-                              ? "rgba(99, 102, 241, 0.2)"
-                              : "transparent",
-                          color:
-                            activeSubSection === "dicom"
-                              ? "#60A5FA"
-                              : "#94A3B8",
+                          ...styles.subMenuItem,
+                          ...(activeSubSection === "dicom"
+                            ? styles.subMenuItemActive
+                            : {}),
                         }}
                       >
                         <Upload size={18} />
-                        <span style={{ fontSize: "0.875rem" }}>
-                          DICOM Uploads
-                        </span>
+                        <span>DICOM Uploads</span>
                       </button>
                     </div>
                   )}
@@ -381,40 +410,19 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   setActiveSubSection(null);
                 }}
                 style={{
-                  width: "100%",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.75rem",
-                  padding: "0.75rem 1rem",
-                  borderRadius: "0.375rem",
-                  transition: "all 0.2s ease",
-                  backgroundColor: isActive
-                    ? "linear-gradient(to right, #60A5FA, #A78BFA)"
-                    : "transparent",
-                  color: isActive ? "white" : "#94A3B8",
+                  ...styles.menuItem,
+                  ...(isActive ? styles.menuItemActive : {}),
                 }}
               >
                 <Icon size={20} />
-                <span style={{ fontWeight: "medium" }}>{item.label}</span>
+                <span>{item.label}</span>
               </button>
             );
           })}
 
-          <button
-            onClick={onLogout}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.75rem",
-              padding: "0.75rem 1rem",
-              borderRadius: "0.375rem",
-              color: "#EF4444",
-              transition: "all 0.2s ease",
-            }}
-          >
+          <button onClick={onLogout} style={styles.signOutButton}>
             <LogOut size={20} />
-            <span style={{ fontWeight: "medium" }}>Sign Out</span>
+            <span>Sign Out</span>
           </button>
         </nav>
       </aside>
@@ -422,10 +430,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       {/* Main Content */}
       <main
         style={{
-          minHeight: "100vh",
+          ...styles.mainContent,
           marginLeft: isSidebarOpen ? "16rem" : "0",
-          transition: "margin-left 0.3s ease",
-          padding: "2rem",
         }}
       >
         {renderContent()}

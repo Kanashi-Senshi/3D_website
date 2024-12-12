@@ -1,3 +1,4 @@
+// AboutSection/index.ts
 // src/AboutSection/index.ts
 // src/AboutSection/index.ts
 

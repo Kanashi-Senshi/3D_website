@@ -1,6 +1,4 @@
-// src/AboutSection/AboutSection.tsx
-// src/AboutSection/AboutSection.tsx
-
+// AboutSection/AboutSection.tsx
 import React from "react";
 import {
   Microscope,
@@ -15,6 +13,7 @@ import {
 } from "lucide-react";
 import TechSpecs from "./TechSpecs";
 import InteractiveModel from "./InteractiveModel";
+import { AboutSectionStyles, BenefitCardStyles, ProcessStepStyles } from "../types/styles";
 
 interface BenefitCardProps {
   icon: React.ReactNode;
@@ -22,28 +21,28 @@ interface BenefitCardProps {
   description: string;
 }
 
-const styles = {
+const styles: AboutSectionStyles = {
   container: {
     padding: "5rem 0",
-    position: "relative" as const,
-    overflow: "hidden" as const,
+    position: "relative",
+    overflow: "hidden",
   },
   backgroundGradient: {
-    position: "absolute" as const,
+    position: "absolute",
     inset: 0,
     background:
       "linear-gradient(to bottom, rgba(26,26,26,0), #1a1a1a, rgba(26,26,26,0))",
-    pointerEvents: "none" as const,
+    pointerEvents: "none",
   },
   contentWrapper: {
     maxWidth: "1200px",
     margin: "0 auto",
     padding: "0 1.5rem",
-    position: "relative" as const,
+    position: "relative",
     zIndex: 1,
   },
   header: {
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "4rem",
   },
   title: {
@@ -74,7 +73,7 @@ const styles = {
   processTitle: {
     fontSize: "1.875rem",
     fontWeight: "bold",
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "2.5rem",
     background: "linear-gradient(to right, #60A5FA, #A78BFA)",
     WebkitBackgroundClip: "text",
@@ -82,11 +81,11 @@ const styles = {
   },
   processSteps: {
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     gap: "2rem",
   },
   cta: {
-    textAlign: "center" as const,
+    textAlign: "center",
     marginTop: "5rem",
   },
   ctaTitle: {
@@ -117,7 +116,7 @@ const styles = {
   },
 };
 
-const benefitCardStyles = {
+const benefitCardStyles: BenefitCardStyles = {
   card: {
     background: "rgba(30, 41, 59, 0.5)",
     backdropFilter: "blur(8px)",
@@ -151,14 +150,14 @@ const benefitCardStyles = {
   },
 };
 
-const processStepStyles = {
+const processStepStyles: ProcessStepStyles = {
   container: {
     display: "flex",
     gap: "1rem",
     alignItems: "flex-start",
   },
   iconContainer: {
-    position: "relative" as const,
+    position: "relative",
   },
   iconCircle: {
     width: "2.5rem",
@@ -170,7 +169,7 @@ const processStepStyles = {
     justifyContent: "center",
   },
   line: {
-    position: "absolute" as const,
+    position: "absolute",
     top: "2.5rem",
     left: "50%",
     transform: "translateX(-50%)",

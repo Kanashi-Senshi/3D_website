@@ -1,3 +1,6 @@
+// controllers/appointment.controller.ts
+// backend/src/controllers/appointment.controller.ts
+// backend/src/controllers/appointment.controller.ts
 // backend/src/controllers/appointment.controller.ts
 import { Request, Response } from 'express';
 import { Appointment } from '@models/Appointment';

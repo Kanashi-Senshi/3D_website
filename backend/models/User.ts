@@ -1,3 +1,6 @@
+// models/User.ts
+// backend/models/User.ts
+// backend/models/User.ts
 // backend/models/User.ts
 import mongoose, { Document, Schema } from 'mongoose';
 import bcrypt from 'bcryptjs';

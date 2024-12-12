@@ -1,3 +1,4 @@
+// SocialSection.tsx
 // src/SocialSection.tsx
 // src/SocialSection.tsx
 import React, { useState } from "react";

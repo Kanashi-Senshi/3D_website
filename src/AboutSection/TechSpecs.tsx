@@ -1,8 +1,7 @@
-// src/AboutSection/TechSpecs.tsx
-// src/AboutSection/TechSpecs.tsx
-
+// AboutSection/TechSpecs.tsx
 import React from "react";
 import { FileType, Cpu, Lock } from "lucide-react";
+import { TechSpecsStyles, BlockStyles } from "../types/styles";
 
 interface SpecificationProps {
   title: string;
@@ -10,14 +9,14 @@ interface SpecificationProps {
   icon: React.ReactNode;
 }
 
-const styles = {
+const styles: TechSpecsStyles = {
   container: {
     marginBottom: "5rem",
   },
   title: {
     fontSize: "1.875rem",
     fontWeight: "bold",
-    textAlign: "center" as const,
+    textAlign: "center",
     marginBottom: "2.5rem",
     background: "linear-gradient(to right, #60A5FA, #A78BFA)",
     WebkitBackgroundClip: "text",
@@ -30,7 +29,7 @@ const styles = {
   },
 };
 
-const blockStyles = {
+const blockStyles: BlockStyles = {
   container: {
     background: "rgba(30, 41, 59, 0.5)",
     backdropFilter: "blur(8px)",
@@ -60,7 +59,7 @@ const blockStyles = {
     padding: 0,
     margin: 0,
     display: "flex",
-    flexDirection: "column" as const,
+    flexDirection: "column",
     gap: "0.5rem",
   },
   listItem: {

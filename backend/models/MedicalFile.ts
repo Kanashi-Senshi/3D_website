@@ -1,3 +1,6 @@
+// models/MedicalFile.ts
+// backend/models/MedicalFile.ts
+// backend/models/MedicalFile.ts
 // backend/models/MedicalFile.ts
 import mongoose, { Document, Schema } from 'mongoose';
 

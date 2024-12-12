@@ -1,3 +1,6 @@
+// models/Post.ts
+// backend/models/Post.ts
+// backend/models/Post.ts
 // backend/models/Post.ts
 import mongoose, { Document, Schema } from 'mongoose';
 

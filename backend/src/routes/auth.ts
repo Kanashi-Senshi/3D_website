@@ -1,3 +1,6 @@
+// routes/auth.ts
+// backend/src/routes/auth.ts
+// backend/src/routes/auth.ts
 // backend/src/routes/auth.ts
 import express from 'express';
 import { signup, login, getProfile, updateProfile } from '@controllers/auth.controller';

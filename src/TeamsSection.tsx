@@ -1,5 +1,4 @@
-// src/TeamsSection.tsx
-// src/TeamsSection.tsx
+// TeamsSection.tsx
 import React, { useState } from "react";
 import {
   FolderPlus,
@@ -9,9 +8,9 @@ import {
   Folder,
   ChevronRight,
   ChevronDown,
-  Plus,
   X,
 } from "lucide-react";
+import { TeamsSectionStyles } from "./types/styles";
 
 interface TeamFile {
   id: string;
@@ -39,9 +38,33 @@ interface Team {
   rootFolder: TeamFolder;
 }
 
+const styles: TeamsSectionStyles = {
+  folderItem: {
+    paddingLeft: "20px",
+  },
+  fileItem: {
+    paddingLeft: "40px",
+  },
+  modal: {
+    position: "fixed",
+    inset: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: "1rem",
+  },
+  modalContent: {
+    backgroundColor: "#1F2937",
+    borderRadius: "0.5rem",
+    padding: "1.5rem",
+    width: "100%",
+    maxWidth: "28rem",
+  },
+};
+
 const TeamsSection: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
-  const [selectedTeam, setSelectedTeam] = useState<Team | null>(null);
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [joinCode, setJoinCode] = useState("");
   const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
@@ -101,7 +124,6 @@ const TeamsSection: React.FC = () => {
           path: `${parentPath}/${folderName}`,
         };
 
-        // Helper function to add folder to the correct path
         const addFolderToPath = (
           folder: TeamFolder,
           targetPath: string
@@ -183,13 +205,7 @@ const TeamsSection: React.FC = () => {
   };
 
   const handleDownloadFolder = (folder: TeamFolder) => {
-    // In a real application, this would create a zip file of the folder contents
     console.log(`Downloading folder: ${folder.path}`);
-    // Implementation would include:
-    // 1. Recursively gathering all files in the folder and subfolders
-    // 2. Creating a zip file containing all files with preserved directory structure
-    // 3. Generating a download link for the zip file
-    // 4. Triggering the download
   };
 
   const renderFolder = (folder: TeamFolder, teamId: string, level = 0) => {
@@ -295,7 +311,6 @@ const TeamsSection: React.FC = () => {
         </div>
       </div>
 
-      {/* Team List */}
       <div className="grid grid-cols-1 gap-4">
         {teams.map((team) => (
           <div key={team.id} className="bg-gray-800 rounded-lg p-4">
@@ -315,10 +330,9 @@ const TeamsSection: React.FC = () => {
         ))}
       </div>
 
-      {/* Join Team Modal */}
       {showJoinModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Join Team</h3>
               <button
@@ -353,10 +367,9 @@ const TeamsSection: React.FC = () => {
         </div>
       )}
 
-      {/* Create Team Modal */}
       {showCreateTeamModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-gray-800 rounded-lg p-6 w-full max-w-md">
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">Create Team</h3>
               <button

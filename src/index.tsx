@@ -1,3 +1,4 @@
+// index.tsx
 // src/index.tsx
 // src/index.tsx
 import { StrictMode } from "react";

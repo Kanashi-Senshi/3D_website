@@ -1,3 +1,6 @@
+// controllers/team.controller.ts
+// backend/src/controllers/team.controller.ts
+// backend/src/controllers/team.controller.ts
 // backend/src/controllers/team.controller.ts
 import { Request, Response } from 'express';
 import { Team } from '@models/Team';

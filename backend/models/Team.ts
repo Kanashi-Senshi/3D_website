@@ -1,3 +1,6 @@
+// models/Team.ts
+// backend/models/Team.ts
+// backend/models/Team.ts
 // backend/models/Team.ts
 import mongoose, { Document, Schema } from 'mongoose';
 

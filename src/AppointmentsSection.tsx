@@ -1,6 +1,7 @@
-// src/AppointmentsSection.tsx
+// AppointmentsSection.tsx
 import React, { useState } from "react";
 import { Calendar, Clock, User, X } from "lucide-react";
+import { AppointmentsSectionStyles } from "./types/styles";
 
 interface Appointment {
   id: string;
@@ -16,6 +17,202 @@ interface AppointmentsSectionProps {
   userType: "patient" | "doctor";
   currentUserName: string;
 }
+
+const styles: AppointmentsSectionStyles = {
+  container: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1.5rem",
+  },
+  header: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  scheduleButton: {
+    padding: "0.5rem 1rem",
+    background: "linear-gradient(135deg, #6366f1, #a855f7)",
+    borderRadius: "0.5rem",
+    color: "white",
+    border: "none",
+    fontSize: "0.9rem",
+    cursor: "pointer",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  appointmentsList: {
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+  },
+  appointmentCard: {
+    backgroundColor: "#2d3748",
+    borderRadius: "0.5rem",
+    padding: "1rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  appointmentInfo: {
+    display: "flex",
+    alignItems: "start",
+    gap: "1rem",
+  },
+  iconContainer: {
+    padding: "0.75rem",
+    backgroundColor: "#374151",
+    borderRadius: "0.5rem",
+  },
+  appointmentTitle: {
+    fontWeight: "600",
+    marginBottom: "0.25rem",
+  },
+  appointmentDetails: {
+    fontSize: "0.875rem",
+    color: "#9ca3af",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.25rem",
+  },
+  appointmentMeta: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+  appointmentNotes: {
+    color: "#9ca3af",
+  },
+  statusContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+  },
+  actionButtons: {
+    display: "flex",
+    gap: "0.5rem",
+  },
+  actionButton: {
+    padding: "0.25rem 0.75rem",
+    borderRadius: "0.375rem",
+    color: "white",
+    fontSize: "0.875rem",
+    border: "none",
+    cursor: "pointer",
+  },
+  confirmButton: {
+    backgroundColor: "#22c55e",
+  },
+  cancelButton: {
+    backgroundColor: "#ef4444",
+  },
+  emptyState: {
+    textAlign: "center",
+    padding: "3rem",
+    color: "#9ca3af",
+    backgroundColor: "#2d3748",
+    borderRadius: "0.5rem",
+  },
+  modal: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 50,
+    backdropFilter: "blur(5px)",
+  },
+  modalContent: {
+    backgroundColor: "#1a1a1a",
+    padding: "2.5rem",
+    borderRadius: "1rem",
+    width: "100%",
+    maxWidth: "400px",
+    border: "1px solid rgba(255,255,255,0.1)",
+  },
+  modalHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "1.5rem",
+  },
+  modalTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "600",
+  },
+  closeButton: {
+    padding: "0.25rem",
+    backgroundColor: "#2d2d2d",
+    borderRadius: "0.375rem",
+    border: "none",
+    color: "white",
+    cursor: "pointer",
+  },
+  formGroup: {
+    marginBottom: "1rem",
+  },
+  label: {
+    display: "block",
+    fontSize: "0.875rem",
+    color: "#9ca3af",
+    marginBottom: "0.5rem",
+  },
+  input: {
+    width: "100%",
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    backgroundColor: "#2d2d2d",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "white",
+    fontSize: "0.9rem",
+  },
+  select: {
+    width: "100%",
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    backgroundColor: "#2d2d2d",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "white",
+    fontSize: "0.9rem",
+  },
+  textarea: {
+    width: "100%",
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    backgroundColor: "#2d2d2d",
+    border: "1px solid rgba(255,255,255,0.1)",
+    color: "white",
+    fontSize: "0.9rem",
+    resize: "none",
+  },
+  modalActions: {
+    display: "flex",
+    gap: "0.75rem",
+    marginTop: "1.5rem",
+  },
+  modalCancelButton: {
+    flex: 1,
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    backgroundColor: "#2d2d2d",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+  },
+  modalSubmitButton: {
+    flex: 1,
+    padding: "0.5rem",
+    borderRadius: "0.375rem",
+    background: "linear-gradient(135deg, #6366f1, #a855f7)",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+  },
+};
 
 const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
   userType,
@@ -48,7 +245,6 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
   const [selecteddoctor, setSelecteddoctor] = useState("");
   const [appointmentNotes, setAppointmentNotes] = useState("");
 
-  // Mock doctors list - in production, this would come from an API
   const doctors = [
     { id: "1", name: "Medion" },
     { id: "2", name: "Maker Space" },
@@ -96,7 +292,7 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return { backgroundColor: '#4CAF50' }; // Return an object, not just a color
+        return { backgroundColor: '#4CAF50' };
       case 'pending':
         return { backgroundColor: '#FFA500' };
       case 'cancelled':
@@ -107,24 +303,13 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div style={styles.container}>
+      <div style={styles.header}>
         <h2 className="text-2xl font-bold">Appointments</h2>
         {userType === "patient" && (
           <button
             onClick={() => setShowScheduleModal(true)}
-            style={{
-              padding: "0.5rem 1rem",
-              background: "linear-gradient(135deg, #6366f1, #a855f7)",
-              borderRadius: "0.5rem",
-              color: "white",
-              border: "none",
-              fontSize: "0.9rem",
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
+            style={styles.scheduleButton}
           >
             <Calendar size={20} />
             Schedule Appointment
@@ -132,8 +317,7 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
         )}
       </div>
 
-      {/* Appointments List */}
-      <div className="space-y-4">
+      <div style={styles.appointmentsList}>
         {appointments
           .filter((apt) =>
             userType === "patient"
@@ -141,96 +325,46 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
               : apt.doctorName === currentUserName
           )
           .map((appointment) => (
-            <div
-              key={appointment.id}
-              style={{
-                backgroundColor: "#2d3748",
-                borderRadius: "0.5rem",
-                padding: "1rem",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{ display: "flex", alignItems: "start", gap: "1rem" }}
-              >
-                <div
-                  style={{
-                    padding: "0.75rem",
-                    backgroundColor: "#374151",
-                    borderRadius: "0.5rem",
-                  }}
-                >
+            <div key={appointment.id} style={styles.appointmentCard}>
+              <div style={styles.appointmentInfo}>
+                <div style={styles.iconContainer}>
                   <Calendar size={24} style={{ color: "#6366f1" }} />
                 </div>
                 <div>
-                  <h3
-                    style={{
-                      fontWeight: "semibold",
-                      marginBottom: "0.25rem",
-                    }}
-                  >
+                  <h3 style={styles.appointmentTitle}>
                     {userType === "patient"
                       ? appointment.doctorName
                       : appointment.patientName}
                   </h3>
-                  <div
-                    style={{
-                      fontSize: "0.875rem",
-                      color: "#9ca3af",
-                      display: "flex",
-                      flexDirection: "column",
-                      gap: "0.25rem",
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.5rem",
-                      }}
-                    >
+                  <div style={styles.appointmentDetails}>
+                    <div style={styles.appointmentMeta}>
                       <Clock size={16} />
                       {new Date(appointment.date).toLocaleDateString()} at{" "}
                       {appointment.time}
                     </div>
                     {appointment.notes && (
-                      <p style={{ color: "#9ca3af" }}>{appointment.notes}</p>
+                      <p style={styles.appointmentNotes}>{appointment.notes}</p>
                     )}
                   </div>
                 </div>
               </div>
 
-              <div
-                style={{ display: "flex", alignItems: "center", gap: "1rem" }}
-              >
+              <div style={styles.statusContainer}>
                 <span
                   style={{
-                    // padding: "0.25rem 0.75rem",
-                    // borderRadius: "9999px",
-                    fontSize: "0.875rem",
-                    color: "white",
+                    ...styles.actionButton,
                     ...getStatusColor(appointment.status),
                   }}
                 >
                   {appointment.status}
                 </span>
                 {userType === "doctor" && appointment.status === "pending" && (
-                  <div style={{ display: "flex", gap: "0.5rem" }}>
+                  <div style={styles.actionButtons}>
                     <button
                       onClick={() =>
                         handleStatusChange(appointment.id, "confirmed")
                       }
-                      style={{
-                        padding: "0.25rem 0.75rem",
-                        background: "#22c55e",
-                        borderRadius: "0.375rem",
-                        color: "white",
-                        fontSize: "0.875rem",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
+                      style={{ ...styles.actionButton, ...styles.confirmButton }}
                     >
                       Confirm
                     </button>
@@ -238,15 +372,7 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
                       onClick={() =>
                         handleStatusChange(appointment.id, "cancelled")
                       }
-                      style={{
-                        padding: "0.25rem 0.75rem",
-                        background: "#ef4444",
-                        borderRadius: "0.375rem",
-                        color: "white",
-                        fontSize: "0.875rem",
-                        border: "none",
-                        cursor: "pointer",
-                      }}
+                      style={{ ...styles.actionButton, ...styles.cancelButton }}
                     >
                       Cancel
                     </button>
@@ -257,98 +383,33 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
           ))}
 
         {appointments.length === 0 && (
-          <div
-            style={{
-              textAlign: "center",
-              padding: "3rem",
-              color: "#9ca3af",
-              backgroundColor: "#2d3748",
-              borderRadius: "0.5rem",
-            }}
-          >
+          <div style={styles.emptyState}>
             <Calendar size={48} style={{ margin: "0 auto 1rem" }} />
             <p>No appointments scheduled</p>
           </div>
         )}
       </div>
 
-      {/* Schedule Appointment Modal */}
       {showScheduleModal && (
-        <div
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: "rgba(0, 0, 0, 0.8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            zIndex: 50,
-            backdropFilter: "blur(5px)",
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: "#1a1a1a",
-              padding: "2.5rem",
-              borderRadius: "1rem",
-              width: "100%",
-              maxWidth: "400px",
-              border: "1px solid rgba(255,255,255,0.1)",
-            }}
-          >
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-                marginBottom: "1.5rem",
-              }}
-            >
-              <h3 style={{ fontSize: "1.25rem", fontWeight: "semibold" }}>
-                Schedule Appointment
-              </h3>
+        <div style={styles.modal}>
+          <div style={styles.modalContent}>
+            <div style={styles.modalHeader}>
+              <h3 style={styles.modalTitle}>Schedule Appointment</h3>
               <button
                 onClick={() => setShowScheduleModal(false)}
-                style={{
-                  padding: "0.25rem",
-                  backgroundColor: "#2d2d2d",
-                  borderRadius: "0.375rem",
-                  border: "none",
-                  color: "white",
-                  cursor: "pointer",
-                }}
+                style={styles.closeButton}
               >
                 <X size={20} />
               </button>
             </div>
 
             <div className="space-y-4">
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    color: "#9ca3af",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Select doctor
-                </label>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Select doctor</label>
                 <select
                   value={selecteddoctor}
                   onChange={(e) => setSelecteddoctor(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    borderRadius: "0.375rem",
-                    backgroundColor: "#2d2d2d",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "white",
-                    fontSize: "0.9rem",
-                  }}
+                  style={styles.select}
                 >
                   <option value="">Choose a doctor</option>
                   {doctors.map((doctor) => (
@@ -359,121 +420,50 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
                 </select>
               </div>
 
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    color: "#9ca3af",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Date
-                </label>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Date</label>
                 <input
                   type="date"
                   value={selectedDate}
                   onChange={(e) => setSelectedDate(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    borderRadius: "0.375rem",
-                    backgroundColor: "#2d2d2d",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "white",
-                    fontSize: "0.9rem",
-                  }}
+                  style={styles.input}
                   min={new Date().toISOString().split("T")[0]}
                 />
               </div>
 
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    color: "#9ca3af",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Time
-                </label>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Time</label>
                 <input
                   type="time"
                   value={selectedTime}
                   onChange={(e) => setSelectedTime(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    borderRadius: "0.375rem",
-                    backgroundColor: "#2d2d2d",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "white",
-                    fontSize: "0.9rem",
-                  }}
+                  style={styles.input}
                 />
               </div>
 
-              <div>
-                <label
-                  style={{
-                    display: "block",
-                    fontSize: "0.875rem",
-                    color: "#9ca3af",
-                    marginBottom: "0.5rem",
-                  }}
-                >
-                  Notes (Optional)
-                </label>
+              <div style={styles.formGroup}>
+                <label style={styles.label}>Notes (Optional)</label>
                 <textarea
                   value={appointmentNotes}
                   onChange={(e) => setAppointmentNotes(e.target.value)}
-                  style={{
-                    width: "100%",
-                    padding: "0.5rem",
-                    borderRadius: "0.375rem",
-                    backgroundColor: "#2d2d2d",
-                    border: "1px solid rgba(255,255,255,0.1)",
-                    color: "white",
-                    fontSize: "0.9rem",
-                    resize: "none",
-                  }}
+                  style={styles.textarea}
                   rows={3}
                   placeholder="Add any notes or special requests..."
                 />
               </div>
 
-              <div
-                style={{
-                  display: "flex",
-                  gap: "0.75rem",
-                  marginTop: "1.5rem",
-                }}
-              >
+              <div style={styles.modalActions}>
                 <button
                   onClick={() => setShowScheduleModal(false)}
-                  style={{
-                    flex: 1,
-                    padding: "0.5rem",
-                    borderRadius: "0.375rem",
-                    backgroundColor: "#2d2d2d",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
-                  }}
+                  style={styles.modalCancelButton}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleScheduleAppointment}
                   style={{
-                    flex: 1,
-                    padding: "0.5rem",
-                    borderRadius: "0.375rem",
-                    background: "linear-gradient(135deg, #6366f1, #a855f7)",
-                    color: "white",
-                    border: "none",
-                    cursor: "pointer",
+                    ...styles.modalSubmitButton,
+                    opacity: !selectedDate || !selectedTime || !selecteddoctor ? 0.5 : 1,
                   }}
                   disabled={!selectedDate || !selectedTime || !selecteddoctor}
                 >
