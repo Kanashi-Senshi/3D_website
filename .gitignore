@@ -13,3 +13,5 @@ db_instructions.md
 supabase dets.txt
 vercel_instructions.md
 MONGODB_URI.txt
+
+.vercel

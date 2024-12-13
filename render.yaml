@@ -1,0 +1,13 @@
+# render.yaml
+
+services:
+  - type: web
+    name: cranioplasty-viewer-api
+    env: node
+    buildCommand: cd backend && npm install && npm run build
+    startCommand: cd backend && node dist/server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: MONGODB_URI
+        value: mongodb+srv://<new_user>:<8d3aWTyiLn0blD6s>@cluster0.wrjv0.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0

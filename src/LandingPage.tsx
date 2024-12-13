@@ -1,6 +1,4 @@
-// LandingPage.tsx
 // src/LandingPage.tsx
-// src/LandingPage
 
 import React, { useState, useEffect, useRef } from "react";
 import { AboutSection, InteractiveModel } from "./AboutSection";
