@@ -1,4 +1,5 @@
 {
+  "_comment": "backend/package.json",
   "name": "cranioplasty-viewer-backend",
   "version": "1.0.0",
   "scripts": {

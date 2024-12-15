@@ -1,3 +1,4 @@
 {
+  "_comment": ".eslintrc.json",
   "parser": "@typescript-eslint/parser"
 }

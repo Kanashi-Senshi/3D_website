@@ -1,7 +1,5 @@
-// models/Appointment.ts
 // backend/models/Appointment.ts
-// backend/models/Appointment.ts
-// backend/models/Appointment.ts
+
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IAppointment extends Document {
