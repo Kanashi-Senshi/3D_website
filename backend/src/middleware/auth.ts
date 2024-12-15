@@ -1,6 +1,3 @@
-
-// backend/src/middleware/auth.ts
-// backend/src/middleware/auth.ts
 // backend/src/middleware/auth.ts
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
@@ -48,9 +45,9 @@ export const doctorOnly = async (req: Request, res: Response, next: NextFunction
     if (req.user.role !== 'doctor') {
       return res.status(403).json({ error: 'Access denied. Doctors only.' });
     }
-    next();
+    return next();
   } catch (error) {
-    res.status(500).json({ error: 'Server error' });
+    return res.status(500).json({ error: 'Server error' });
   }
 };
 

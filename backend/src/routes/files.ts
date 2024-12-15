@@ -1,7 +1,5 @@
 // routes/files.ts
 // backend/src/routes/files.ts
-// backend/src/routes/files.ts
-// backend/src/routes/files.ts
 import express from 'express';
 import { auth, doctorOnly } from '@middleware/auth';
 import { upload } from '@middleware/upload';
@@ -48,7 +46,7 @@ router.use((err: any, req: express.Request, res: express.Response, next: express
       });
     }
   }
-  next(err);
+  return next(err);
 });
 
 export default router;
