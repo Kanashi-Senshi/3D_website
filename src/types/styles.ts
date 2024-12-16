@@ -1,6 +1,12 @@
 // types/styles.ts
 import { CSSProperties } from 'react';
 
+// Add support for media queries in CSSProperties
+interface ExtendedCSSProperties extends CSSProperties {
+  '@media (min-width: 768px)'?: CSSProperties;
+  '@media (min-width: 1024px)'?: CSSProperties;
+}
+
 export interface TeamsSectionStyles {
   folderItem: CSSProperties;
   fileItem: CSSProperties;
@@ -9,7 +15,7 @@ export interface TeamsSectionStyles {
 }
 
 export interface DashboardStyles {
-  container: CSSProperties;
+  container: ExtendedCSSProperties;
   zIndexContainer: CSSProperties;
   trendText: CSSProperties;
   menuContainer: CSSProperties;
@@ -23,9 +29,59 @@ export interface DashboardStyles {
   subMenuItem: CSSProperties;
   subMenuText: CSSProperties;
   signOutLabel: CSSProperties;
+  gradientBackground: CSSProperties;
+  mobileHeader: ExtendedCSSProperties;
+  menuButton: CSSProperties;
+  appTitle: CSSProperties;
+  sidebar: ExtendedCSSProperties;
+  userInfo: CSSProperties;
+  userInfoContainer: CSSProperties;
+  avatarContainer: CSSProperties;
+  menuItemActive: CSSProperties;
+  menuItemContent: CSSProperties;
+  subMenuContainer: CSSProperties;
+  subMenuItemActive: CSSProperties;
+  signOutButton: CSSProperties;
+  mainContent: CSSProperties;
+  welcomeTitle: CSSProperties;
+  statsGrid: ExtendedCSSProperties;
+  statsCard: CSSProperties;
+  statsCardContent: CSSProperties;
+  statsTitle: CSSProperties;
+  statsValue: CSSProperties;
+  statsTrend: CSSProperties;
+  statsGradientOverlay: CSSProperties;
 }
 
 export interface AppointmentsSectionStyles {
+  container: CSSProperties;
+  header: CSSProperties;
+  scheduleButton: CSSProperties;
+  appointmentsList: CSSProperties;
+  appointmentCard: CSSProperties;
+  appointmentInfo: CSSProperties;
+  iconContainer: CSSProperties;
+  appointmentTitle: CSSProperties;
+  appointmentDetails: CSSProperties;
+  appointmentMeta: CSSProperties;
+  statusContainer: CSSProperties;
+  actionButton: CSSProperties;
+  confirmButton: CSSProperties;
+  cancelButton: CSSProperties;
+  emptyState: CSSProperties;
+  modal: CSSProperties;
+  modalContent: CSSProperties;
+  modalHeader: CSSProperties;
+  modalTitle: CSSProperties;
+  closeButton: CSSProperties;
+  formGroup: CSSProperties;
+  label: CSSProperties;
+  select: CSSProperties;
+  input: CSSProperties;
+  textarea: CSSProperties;
+  modalActions: CSSProperties;
+  modalCancelButton: CSSProperties;
+  modalSubmitButton: CSSProperties;
   appointmentContainer: CSSProperties;
   appointmentIcon: CSSProperties;
   appointmentNotes: CSSProperties;

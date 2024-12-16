@@ -1,10 +1,6 @@
-// contexts/AuthContext.tsx
 // src/contexts/AuthContext.tsx
-// Import necessary dependencies
 import React, { useState, useEffect, createContext, useContext } from "react";
-import { X, AlertCircle, Check } from "lucide-react";
 
-// Define types for our authentication system
 interface User {
   id: string;
   name: string;
@@ -14,25 +10,19 @@ interface User {
 
 interface AuthContextType {
   user: User | null;
-  login: (
-    email: string,
-    password: string,
-    rememberMe: boolean
-  ) => Promise<void>;
+  login: (email: string, password: string, rememberMe: boolean) => Promise<User>;
   signup: (userData: {
     email: string;
     password: string;
     name: string;
     role: "doctor" | "patient";
-  }) => Promise<void>;
+  }) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
 }
 
-// Create the context
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// Create the AuthProvider component
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
@@ -41,15 +31,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   useEffect(() => {
     // Check for remembered user on mount
     const rememberedEmail = localStorage.getItem("userEmail");
-    const rememberedRole = localStorage.getItem("userRole");
+    const rememberedRole = localStorage.getItem("userRole") as "doctor" | "patient" | null;
     const rememberedName = localStorage.getItem("userName");
+    const rememberedId = localStorage.getItem("userId");
 
-    if (rememberedEmail && rememberedRole && rememberedName) {
+    if (rememberedEmail && rememberedRole && rememberedName && rememberedId) {
       setUser({
-        id: localStorage.getItem("userId") || "1",
+        id: rememberedId,
         name: rememberedName,
         email: rememberedEmail,
-        role: rememberedRole as "doctor" | "patient",
+        role: rememberedRole,
       });
     }
   }, []);
@@ -58,10 +49,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string,
     password: string,
     rememberMe: boolean
-  ) => {
+  ): Promise<User> => {
     try {
-      // Here you would typically make an API call to your authentication endpoint
-      // For demonstration, we're using mock data
+      // Mock authentication - replace with actual API call
       const response = await mockAuthCall(email, password);
 
       if (rememberMe) {
@@ -72,6 +62,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       }
 
       setUser(response);
+      return response;
     } catch (error) {
       throw new Error("Invalid credentials");
     }
@@ -82,11 +73,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     password: string;
     name: string;
     role: "doctor" | "patient";
-  }) => {
+  }): Promise<User> => {
     try {
-      // Here you would typically make an API call to your registration endpoint
       const response = await mockSignupCall(userData);
       setUser(response);
+      return response;
     } catch (error) {
       throw new Error("Registration failed");
     }
@@ -115,14 +106,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   );
 };
 
-// Custom hook for using auth context
-export const useAuth = () => {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-  return context;
-};
 // Mock authentication service functions
 const mockAuthCall = async (email: string, password: string): Promise<User> => {
   // Simulate API delay
@@ -162,3 +145,13 @@ const mockSignupCall = async (userData: {
     role: userData.role,
   };
 };
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+};
+
+export default AuthContext;

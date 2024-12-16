@@ -1,47 +1,79 @@
-// App.tsx
 // src/App.tsx
-import React, { useState } from "react";
+import React from "react";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import LandingPage from "./LandingPage";
 import Dashboard from "./Dashboard";
-import AuthModal from "./contexts/AuthModal";
-import { User } from "./types";
 
-const App: React.FC = () => {
-  return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
-  );
+const PrivateRoute: React.FC<{
+  element: React.ReactElement;
+  allowedRole?: "doctor" | "patient";
+}> = ({ element, allowedRole }) => {
+  const { isAuthenticated, user } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/" replace />;
+  }
+
+  if (allowedRole && user?.role !== allowedRole) {
+    return <Navigate to="/" replace />;
+  }
+
+  return element;
 };
 
 const AppContent: React.FC = () => {
   const { isAuthenticated, user, logout } = useAuth();
-  const [showLoginModal, setShowLoginModal] = useState(false);
-
-  const handleAuthSuccess = () => {
-    setShowLoginModal(false);
-  };
 
   const handleLogout = () => {
     logout();
   };
 
   return (
-    <>
-      {isAuthenticated && user ? (
-        <Dashboard onLogout={handleLogout} />
-      ) : (
-        <>
-          <LandingPage onLogin={handleAuthSuccess} />
-          <AuthModal
-            isOpen={showLoginModal}
-            onClose={() => setShowLoginModal(false)}
-            onSuccess={handleAuthSuccess}
-          />
-        </>
-      )}
-    </>
+    <Router>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            !isAuthenticated ? (
+              <LandingPage onLogin={() => {}} />
+            ) : (
+              <Navigate
+                to={user?.role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard"}
+                replace
+              />
+            )
+          }
+        />
+        <Route
+          path="/doctor-dashboard/*"
+          element={
+            <PrivateRoute
+              element={<Dashboard onLogout={handleLogout} />}
+              allowedRole="doctor"
+            />
+          }
+        />
+        <Route
+          path="/patient-dashboard/*"
+          element={
+            <PrivateRoute
+              element={<Dashboard onLogout={handleLogout} />}
+              allowedRole="patient"
+            />
+          }
+        />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 

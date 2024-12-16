@@ -19,18 +19,24 @@ interface AppointmentsSectionProps {
 }
 
 const styles: AppointmentsSectionStyles = {
+  // Main container layout
   container: {
     display: "flex",
     flexDirection: "column",
     gap: "1.5rem",
   },
+
+  // Header section styling
   header: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
+    marginBottom: "1.5rem",
   },
+
+  // Schedule button styling
   scheduleButton: {
-    padding: "0.5rem 1rem",
+    padding: "0.75rem 1.5rem",
     background: "linear-gradient(135deg, #6366f1, #a855f7)",
     borderRadius: "0.5rem",
     color: "white",
@@ -41,11 +47,15 @@ const styles: AppointmentsSectionStyles = {
     alignItems: "center",
     gap: "0.5rem",
   },
+
+  // Appointments list container
   appointmentsList: {
     display: "flex",
     flexDirection: "column",
     gap: "1rem",
   },
+
+  // Individual appointment card
   appointmentCard: {
     backgroundColor: "#2d3748",
     borderRadius: "0.5rem",
@@ -54,20 +64,28 @@ const styles: AppointmentsSectionStyles = {
     justifyContent: "space-between",
     alignItems: "center",
   },
+
+  // Appointment information section
   appointmentInfo: {
     display: "flex",
     alignItems: "start",
     gap: "1rem",
   },
+
+  // Icon container styling
   iconContainer: {
     padding: "0.75rem",
     backgroundColor: "#374151",
     borderRadius: "0.5rem",
   },
+
+  // Appointment title styling
   appointmentTitle: {
     fontWeight: "600",
     marginBottom: "0.25rem",
   },
+
+  // Appointment details styling
   appointmentDetails: {
     fontSize: "0.875rem",
     color: "#9ca3af",
@@ -75,23 +93,22 @@ const styles: AppointmentsSectionStyles = {
     flexDirection: "column",
     gap: "0.25rem",
   },
+
+  // Appointment metadata styling
   appointmentMeta: {
     display: "flex",
     alignItems: "center",
     gap: "0.5rem",
   },
-  appointmentNotes: {
-    color: "#9ca3af",
-  },
+
+  // Status container styling
   statusContainer: {
     display: "flex",
     alignItems: "center",
     gap: "1rem",
   },
-  actionButtons: {
-    display: "flex",
-    gap: "0.5rem",
-  },
+
+  // Action buttons styling
   actionButton: {
     padding: "0.25rem 0.75rem",
     borderRadius: "0.375rem",
@@ -100,12 +117,18 @@ const styles: AppointmentsSectionStyles = {
     border: "none",
     cursor: "pointer",
   },
+
+  // Confirm button specific styling
   confirmButton: {
     backgroundColor: "#22c55e",
   },
+
+  // Cancel button specific styling
   cancelButton: {
     backgroundColor: "#ef4444",
   },
+
+  // Empty state styling
   emptyState: {
     textAlign: "center",
     padding: "3rem",
@@ -113,6 +136,8 @@ const styles: AppointmentsSectionStyles = {
     backgroundColor: "#2d3748",
     borderRadius: "0.5rem",
   },
+
+  // Modal styling
   modal: {
     position: "fixed",
     top: 0,
@@ -126,6 +151,8 @@ const styles: AppointmentsSectionStyles = {
     zIndex: 50,
     backdropFilter: "blur(5px)",
   },
+
+  // Modal content styling
   modalContent: {
     backgroundColor: "#1a1a1a",
     padding: "2.5rem",
@@ -134,16 +161,22 @@ const styles: AppointmentsSectionStyles = {
     maxWidth: "400px",
     border: "1px solid rgba(255,255,255,0.1)",
   },
+
+  // Modal header styling
   modalHeader: {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
     marginBottom: "1.5rem",
   },
+
+  // Modal title styling
   modalTitle: {
     fontSize: "1.25rem",
     fontWeight: "600",
   },
+
+  // Close button styling
   closeButton: {
     padding: "0.25rem",
     backgroundColor: "#2d2d2d",
@@ -152,15 +185,21 @@ const styles: AppointmentsSectionStyles = {
     color: "white",
     cursor: "pointer",
   },
+
+  // Form group styling
   formGroup: {
     marginBottom: "1rem",
   },
+
+  // Label styling
   label: {
     display: "block",
     fontSize: "0.875rem",
     color: "#9ca3af",
     marginBottom: "0.5rem",
   },
+
+  // Input styling
   input: {
     width: "100%",
     padding: "0.5rem",
@@ -170,6 +209,8 @@ const styles: AppointmentsSectionStyles = {
     color: "white",
     fontSize: "0.9rem",
   },
+
+  // Select styling
   select: {
     width: "100%",
     padding: "0.5rem",
@@ -179,6 +220,8 @@ const styles: AppointmentsSectionStyles = {
     color: "white",
     fontSize: "0.9rem",
   },
+
+  // Textarea styling
   textarea: {
     width: "100%",
     padding: "0.5rem",
@@ -189,11 +232,15 @@ const styles: AppointmentsSectionStyles = {
     fontSize: "0.9rem",
     resize: "none",
   },
+
+  // Modal actions container
   modalActions: {
     display: "flex",
     gap: "0.75rem",
     marginTop: "1.5rem",
   },
+
+  // Modal cancel button
   modalCancelButton: {
     flex: 1,
     padding: "0.5rem",
@@ -203,6 +250,8 @@ const styles: AppointmentsSectionStyles = {
     border: "none",
     cursor: "pointer",
   },
+
+  // Modal submit button
   modalSubmitButton: {
     flex: 1,
     padding: "0.5rem",
@@ -211,6 +260,61 @@ const styles: AppointmentsSectionStyles = {
     color: "white",
     border: "none",
     cursor: "pointer",
+  },
+
+  // Previously missing properties
+  appointmentContainer: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    width: "100%",
+    padding: "1rem",
+    backgroundColor: "#2d3748",
+    borderRadius: "0.5rem",
+    marginBottom: "0.5rem",
+  },
+
+  appointmentIcon: {
+    width: "2.5rem",
+    height: "2.5rem",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: "0.5rem",
+    backgroundColor: "rgba(99, 102, 241, 0.1)",
+    color: "#6366f1",
+  },
+
+  actionsContainer: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    marginLeft: "auto",
+  },
+
+  emptyStateIcon: {
+    width: "3rem",
+    height: "3rem",
+    color: "#9CA3AF",
+    margin: "0 auto 1rem",
+  },
+
+  scheduleTitle: {
+    fontSize: "1.25rem",
+    fontWeight: "600",
+    color: "white",
+    marginBottom: "1rem",
+  },
+
+  appointmentNotes: {
+    color: "#9ca3af",
+    fontSize: "0.875rem",
+    marginTop: "0.25rem",
+  },
+  actionButtons: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
   },
 };
 

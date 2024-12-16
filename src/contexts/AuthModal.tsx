@@ -1,9 +1,8 @@
-// contexts/AuthModal.tsx
 // src/contexts/AuthModal.tsx
-// src/contexts/AuthModel.tsx
-
 import React, { useState } from "react";
 import { X, AlertCircle, Check } from "lucide-react";
+import { useAuth } from "./AuthContext";
+import { useNavigate } from "react-router-dom";
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -34,6 +33,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
   });
   const [error, setError] = useState<string>("");
   const [successMessage, setSuccessMessage] = useState<string>("");
+  const { login, signup } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -45,21 +46,24 @@ const AuthModal: React.FC<AuthModalProps> = ({
         if (!formData.name || !formData.role) {
           throw new Error("Please fill in all required fields");
         }
-        // Implement signup logic here
+        await signup({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+          role: formData.role,
+        });
         setSuccessMessage("Account created successfully!");
         setTimeout(() => {
           setIsSignup(false);
           setSuccessMessage("");
         }, 2000);
       } else {
-        // Implement login logic here
-        if (formData.rememberMe) {
-          localStorage.setItem("userEmail", formData.email);
-        }
+        const user = await login(formData.email, formData.password, formData.rememberMe);
         setSuccessMessage("Login successful!");
         setTimeout(() => {
           onSuccess();
           onClose();
+          navigate(user.role === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard');
         }, 1500);
       }
     } catch (err) {
@@ -73,8 +77,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]:
-        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -107,7 +110,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
           position: "relative",
         }}
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           style={{
@@ -142,7 +144,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
           {isSignup ? "Create Account" : "Login"}
         </h2>
 
-        {/* Error Message */}
         {error && (
           <div
             style={{
@@ -162,7 +163,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
           </div>
         )}
 
-        {/* Success Message */}
         {successMessage && (
           <div
             style={{
@@ -181,8 +181,8 @@ const AuthModal: React.FC<AuthModalProps> = ({
             {successMessage}
           </div>
         )}
+
         <form onSubmit={handleSubmit}>
-          {/* Signup Fields */}
           {isSignup && (
             <>
               <input
@@ -227,7 +227,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
             </>
           )}
 
-          {/* Common Fields */}
           <input
             type="email"
             name="email"
@@ -266,7 +265,6 @@ const AuthModal: React.FC<AuthModalProps> = ({
             required
           />
 
-          {/* Remember Me (only for login) */}
           {!isSignup && (
             <div
               style={{
@@ -297,7 +295,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
               </label>
             </div>
           )}
-          {/* Submit and Toggle Buttons */}
+
           <div
             style={{
               display: "flex",

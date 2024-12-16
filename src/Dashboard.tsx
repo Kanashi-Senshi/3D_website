@@ -1,4 +1,3 @@
-// Dashboard.tsx
 // src/Dashboard.tsx
 import React, { useState } from "react";
 import {
@@ -38,6 +37,64 @@ const styles: DashboardStyles = {
     background: "linear-gradient(to bottom right, #1F2937, #111827)",
     color: "white",
   },
+  zIndexContainer: {
+    zIndex: 1000,
+  },
+  trendText: {
+    color: "#94A3B8",
+    fontSize: "0.875rem",
+  },
+  menuContainer: {
+    padding: "1rem",
+  },
+  userIcon: {
+    width: "2.5rem",
+    height: "2.5rem",
+  },
+  userName: {
+    fontWeight: "600",
+    color: "white",
+  },
+  userRole: {
+    color: "#94A3B8",
+    fontSize: "0.875rem",
+  },
+  navigation: {
+    padding: "1rem",
+  },
+  menuItem: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    padding: "0.75rem 1rem",
+    borderRadius: "0.375rem",
+    transition: "all 0.2s ease",
+    color: "#94A3B8",
+  },
+  menuItemLabel: {
+    marginLeft: "0.75rem",
+  },
+  subMenu: {
+    marginLeft: "1.5rem",
+  },
+  subMenuItem: {
+    width: "100%",
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    padding: "0.5rem 1rem",
+    borderRadius: "0.375rem",
+    transition: "all 0.2s ease",
+    color: "#94A3B8",
+  },
+  subMenuText: {
+    marginLeft: "0.5rem",
+  },
+  signOutLabel: {
+    marginLeft: "0.75rem",
+    color: "#EF4444",
+  },
   gradientBackground: {
     backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
     backgroundClip: "text",
@@ -51,9 +108,6 @@ const styles: DashboardStyles = {
     backgroundColor: "rgba(31, 41, 55, 0.8)",
     backdropFilter: "blur(10px)",
     borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
-    "@media (min-width: 1024px)": {
-      display: "none",
-    },
   },
   menuButton: {
     padding: "0.5rem",
@@ -99,27 +153,6 @@ const styles: DashboardStyles = {
     alignItems: "center",
     justifyContent: "center",
   },
-  userName: {
-    fontWeight: "600",
-    color: "white",
-  },
-  userRole: {
-    color: "#94A3B8",
-    fontSize: "0.875rem",
-  },
-  navigation: {
-    padding: "1rem",
-  },
-  menuItem: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    padding: "0.75rem 1rem",
-    borderRadius: "0.375rem",
-    transition: "all 0.2s ease",
-    color: "#94A3B8",
-  },
   menuItemActive: {
     background: "linear-gradient(to right, #60A5FA, #A78BFA)",
     color: "white",
@@ -132,16 +165,6 @@ const styles: DashboardStyles = {
   },
   subMenuContainer: {
     marginLeft: "1rem",
-  },
-  subMenuItem: {
-    width: "100%",
-    display: "flex",
-    alignItems: "center",
-    gap: "0.75rem",
-    padding: "0.5rem 1rem",
-    borderRadius: "0.375rem",
-    transition: "all 0.2s ease",
-    color: "#94A3B8",
   },
   subMenuItemActive: {
     backgroundColor: "rgba(99, 102, 241, 0.2)",
@@ -168,17 +191,12 @@ const styles: DashboardStyles = {
     backgroundImage: "linear-gradient(to right, #60A5FA, #A78BFA)",
     backgroundClip: "text",
     color: "transparent",
+    marginBottom: "1.5rem",
   },
   statsGrid: {
     display: "grid",
     gridTemplateColumns: "repeat(1, minmax(0, 1fr))",
     gap: "1.5rem",
-    "@media (min-width: 768px)": {
-      gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-    },
-    "@media (min-width: 1024px)": {
-      gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
-    },
   },
   statsCard: {
     position: "relative",
@@ -272,7 +290,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       case "dashboard":
       default:
         return (
-          <div style={{ space: "6" }}>
+          <div style={{ marginBottom: "1.5rem" }}>
             <h2 style={styles.welcomeTitle}>
               Welcome Back, {isDoctor ? `Dr. ${user?.name}` : user?.name}!
             </h2>
@@ -294,149 +312,170 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
   };
 
-  return (
-    <div style={styles.container}>
-      {/* Mobile Header */}
-      <div style={styles.mobileHeader}>
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          style={styles.menuButton}
-        >
-          {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
-        </button>
-        <h1 style={styles.appTitle}>TechRetail Hub</h1>
-      </div>
+  // Apply responsive styles using CSS media queries in a style tag
+  const responsiveStyles = `
+    @media (min-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    @media (min-width: 1024px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .mobile-header {
+        display: none;
+      }
+      .sidebar {
+        transform: translateX(0) !important;
+      }
+    }
+  `;
 
-      {/* Sidebar */}
-      <aside
-        style={{
-          ...styles.sidebar,
-          transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
-          "@media (min-width: 1024px)": {
-            transform: "translateX(0)",
-          },
-        }}
-      >
-        {/* User Info */}
-        <div style={styles.userInfo}>
-          <div style={styles.userInfoContainer}>
-            <div style={styles.avatarContainer}>
-              <Users size={20} style={{ color: "white" }} />
-            </div>
-            <div>
-              <h2 style={styles.userName}>
-                {isDoctor ? `Dr. ${user?.name}` : user?.name}
-              </h2>
-              <p style={styles.userRole}>
-                {isDoctor ? "Doctor" : "Patient"}
-              </p>
-            </div>
-          </div>
+  return (
+    <>
+      <style>{responsiveStyles}</style>
+      <div style={styles.container}>
+        {/* Mobile Header */}
+        <div style={styles.mobileHeader} className="mobile-header">
+          <button
+            onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+            style={styles.menuButton}
+          >
+            {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          <h1 style={styles.appTitle}>TechRetail Hub</h1>
         </div>
 
-        {/* Navigation */}
-        <nav style={styles.navigation}>
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = activeSection === item.id;
+        {/* Sidebar */}
+        <aside
+          style={{
+            ...styles.sidebar,
+            transform: isSidebarOpen ? "translateX(0)" : "translateX(-100%)",
+          }}
+          className="sidebar"
+        >
+          {/* User Info */}
+          <div style={styles.userInfo}>
+            <div style={styles.userInfoContainer}>
+              <div style={styles.avatarContainer}>
+                <Users size={20} style={{ color: "white" }} />
+              </div>
+              <div>
+                <h2 style={styles.userName}>
+                  {isDoctor ? `Dr. ${user?.name}` : user?.name}
+                </h2>
+                <p style={styles.userRole}>
+                  {isDoctor ? "Doctor" : "Patient"}
+                </p>
+              </div>
+            </div>
+          </div>
 
-            if (item.id === "medical-data") {
-              return (
-                <div key={item.id} style={{ marginBottom: "0.5rem" }}>
-                  <button
-                    onClick={() => {
-                      setIsMedicalDataExpanded(!isMedicalDataExpanded);
-                      setActiveSection(item.id);
-                    }}
-                    style={{
-                      ...styles.menuItem,
-                      ...(isActive ? styles.menuItemActive : {}),
-                    }}
-                  >
-                    <div style={styles.menuItemContent}>
-                      <Icon size={20} />
-                      <span>{item.label}</span>
-                    </div>
-                    {isMedicalDataExpanded ? (
-                      <ChevronDown size={16} />
-                    ) : (
-                      <ChevronRight size={16} />
+          {/* Navigation */}
+          <nav style={styles.navigation}>
+            {menuItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = activeSection === item.id;
+
+              if (item.id === "medical-data") {
+                return (
+                  <div key={item.id} style={{ marginBottom: "0.5rem" }}>
+                    <button
+                      onClick={() => {
+                        setIsMedicalDataExpanded(!isMedicalDataExpanded);
+                        setActiveSection(item.id);
+                      }}
+                      style={{
+                        ...styles.menuItem,
+                        ...(isActive ? styles.menuItemActive : {}),
+                      }}
+                    >
+                      <div style={styles.menuItemContent}>
+                        <Icon size={20} />
+                        <span>{item.label}</span>
+                      </div>
+                      {isMedicalDataExpanded ? (
+                        <ChevronDown size={16} />
+                      ) : (
+                        <ChevronRight size={16} />
+                      )}
+                    </button>
+
+                    {isMedicalDataExpanded && (
+                      <div style={styles.subMenuContainer}>
+                        <button
+                          onClick={() => {
+                            setActiveSection("medical-data");
+                            setActiveSubSection("stl");
+                          }}
+                          style={{
+                            ...styles.subMenuItem,
+                            ...(activeSubSection === "stl"
+                              ? styles.subMenuItemActive
+                              : {}),
+                          }}
+                        >
+                          <FileText size={18} />
+                          <span>STL Files</span>
+                        </button>
+                        <button
+                          onClick={() => {
+                            setActiveSection("medical-data");
+                            setActiveSubSection("dicom");
+                          }}
+                          style={{
+                            ...styles.subMenuItem,
+                            ...(activeSubSection === "dicom"
+                              ? styles.subMenuItemActive
+                              : {}),
+                          }}
+                        >
+                          <Upload size={18} />
+                          <span>DICOM Uploads</span>
+                        </button>
+                      </div>
                     )}
-                  </button>
+                  </div>
+                );
+              }
 
-                  {isMedicalDataExpanded && (
-                    <div style={styles.subMenuContainer}>
-                      <button
-                        onClick={() => {
-                          setActiveSection("medical-data");
-                          setActiveSubSection("stl");
-                        }}
-                        style={{
-                          ...styles.subMenuItem,
-                          ...(activeSubSection === "stl"
-                            ? styles.subMenuItemActive
-                            : {}),
-                        }}
-                      >
-                        <FileText size={18} />
-                        <span>STL Files</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          setActiveSection("medical-data");
-                          setActiveSubSection("dicom");
-                        }}
-                        style={{
-                          ...styles.subMenuItem,
-                          ...(activeSubSection === "dicom"
-                            ? styles.subMenuItemActive
-                            : {}),
-                        }}
-                      >
-                        <Upload size={18} />
-                        <span>DICOM Uploads</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
+              return (
+                <button
+                  key={item.id}
+                  onClick={() => {
+                    setActiveSection(item.id);
+                    setActiveSubSection(null);
+                  }}
+                  style={{
+                    ...styles.menuItem,
+                    ...(isActive ? styles.menuItemActive : {}),
+                  }}
+                >
+                  <Icon size={20} />
+                  <span>{item.label}</span>
+                </button>
               );
-            }
+            })}
 
-            return (
-              <button
-                key={item.id}
-                onClick={() => {
-                  setActiveSection(item.id);
-                  setActiveSubSection(null);
-                }}
-                style={{
-                  ...styles.menuItem,
-                  ...(isActive ? styles.menuItemActive : {}),
-                }}
-              >
-                <Icon size={20} />
-                <span>{item.label}</span>
-              </button>
-            );
-          })}
+            <button onClick={onLogout} style={styles.signOutButton}>
+              <LogOut size={20} />
+              <span>Sign Out</span>
+            </button>
+          </nav>
+        </aside>
 
-          <button onClick={onLogout} style={styles.signOutButton}>
-            <LogOut size={20} />
-            <span>Sign Out</span>
-          </button>
-        </nav>
-      </aside>
-
-      {/* Main Content */}
-      <main
-        style={{
-          ...styles.mainContent,
-          marginLeft: isSidebarOpen ? "16rem" : "0",
-        }}
-      >
-        {renderContent()}
-      </main>
-    </div>
+        {/* Main Content */}
+        <main
+          style={{
+            ...styles.mainContent,
+            marginLeft: isSidebarOpen ? "16rem" : "0",
+          }}
+        >
+          {renderContent()}
+        </main>
+      </div>
+    </>
   );
 };
 
