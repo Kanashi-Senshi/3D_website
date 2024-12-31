@@ -1,14 +1,23 @@
-// controllers/auth.controller.ts
-// backend/src/controllers/auth.controller.ts
-// backend/src/controllers/auth.controller.ts
 // backend/src/controllers/auth.controller.ts
 import { Request, Response } from 'express';
-import { User } from '@models/User';
-import { generateToken } from '@middleware/auth';
+import { User } from "@models/User";
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 
-export const signup = async (req: Request, res: Response) => {
+const generateToken = (userId: string) => {
+  return jwt.sign({ userId }, process.env.JWT_SECRET || 'fallback_secret', {
+    expiresIn: '7d',
+  });
+};
+
+export const signup = async (req: Request, res: Response): Promise<Response> => {
   try {
-    const { email, password, name, role, specialization, licenseNumber } = req.body;
+    const { email, password, name, role } = req.body;
+
+    // Validate input
+    if (!email || !password || !name || !role) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -19,20 +28,28 @@ export const signup = async (req: Request, res: Response) => {
     // Create new user
     const user = new User({
       email,
-      password,
+      password, // Will be hashed by pre-save hook
       name,
       role,
-      ...(role === 'doctor' && { specialization, licenseNumber })
     });
 
     await user.save();
 
     // Generate token
-    const token = generateToken(user._id.toString(), user.role);
+    const token = generateToken(user._id.toString());
+
+    // Return user data and token
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
 
     return res.status(201).json({
-      user,
-      token
+      user: userResponse,
+      token,
+      message: 'Registration successful'
     });
   } catch (error) {
     console.error('Signup error:', error);
@@ -51,16 +68,24 @@ export const login = async (req: Request, res: Response) => {
     }
 
     // Check password
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: 'Invalid password' });
     }
 
     // Generate token
-    const token = generateToken(user._id.toString(), user.role);
+    const token = generateToken(user._id.toString());
+
+    // Return user data and token (excluding password)
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    };
 
     return res.json({
-      user,
+      user: userResponse,
       token
     });
   } catch (error) {
@@ -71,10 +96,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const getProfile = async (req: Request, res: Response) => {
   try {
-    const user = await User.findById(req.userId)
-      .select('-password')
-      .populate('teams', 'name');
-    
+    const user = await User.findById(req.userId).select('-password');
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
@@ -87,27 +109,17 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const updateProfile = async (req: Request, res: Response) => {
-  const updates = Object.keys(req.body);
-  const allowedUpdates = ['name', 'email', 'password', 'profilePicture', 'specialization'];
-  const isValidOperation = updates.every(update => allowedUpdates.includes(update));
-
-  if (!isValidOperation) {
-    return res.status(400).json({ error: 'Invalid updates' });
-  }
-
   try {
-    const user = await User.findById(req.userId);
+    const user = await User.findByIdAndUpdate(
+      req.userId,
+      { $set: req.body },
+      { new: true }
+    ).select('-password');
+
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    updates.forEach(update => {
-      if (req.body[update]) {
-        (user as any)[update] = req.body[update];
-      }
-    });
-
-    await user.save();
     return res.json(user);
   } catch (error) {
     console.error('Update profile error:', error);

@@ -18,6 +18,53 @@ interface AuthFormData {
   rememberMe: boolean;
 }
 
+interface RoleOptionProps {
+  role: "doctor" | "patient";
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+const RoleOption: React.FC<RoleOptionProps> = ({ role, isSelected, onClick }) => (
+  <div
+    onClick={onClick}
+    style={{
+      flex: 1,
+      padding: "1rem",
+      backgroundColor: isSelected ? "rgba(99, 102, 241, 0.1)" : "rgba(45, 45, 45, 0.5)",
+      borderRadius: "0.5rem",
+      border: isSelected ? "1px solid #6366f1" : "1px solid rgba(255,255,255,0.1)",
+      cursor: "pointer",
+      transition: "all 0.2s ease",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      gap: "0.5rem"
+    }}
+  >
+    {role === "doctor" ? (
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={isSelected ? "#6366f1" : "#9ca3af"}>
+        <path d="M8 2v4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M16 2v4" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <rect x="3" y="6" width="18" height="16" rx="2" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M8 14h8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M12 10v8" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    ) : (
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke={isSelected ? "#6366f1" : "#9ca3af"}>
+        <circle cx="12" cy="8" r="5" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M20 21a8 8 0 1 0-16 0" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+      </svg>
+    )}
+    <span style={{ 
+      color: isSelected ? "#6366f1" : "#9ca3af",
+      fontSize: "0.9rem",
+      fontWeight: isSelected ? "500" : "normal"
+    }}>
+      {role.charAt(0).toUpperCase() + role.slice(1)}
+    </span>
+  </div>
+);
+
 const AuthModal: React.FC<AuthModalProps> = ({
   isOpen,
   onClose,
@@ -72,7 +119,7 @@ const AuthModal: React.FC<AuthModalProps> = ({
   };
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
@@ -204,26 +251,33 @@ const AuthModal: React.FC<AuthModalProps> = ({
                 required
               />
 
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleInputChange}
-                style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  marginBottom: "1rem",
-                  borderRadius: "0.5rem",
-                  backgroundColor: "#2d2d2d",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  color: "white",
-                  fontSize: "0.9rem",
-                }}
-                required
-              >
-                <option value="">Select Role</option>
-                <option value="doctor">Doctor</option>
-                <option value="patient">Patient</option>
-              </select>
+              <div style={{
+                marginBottom: "1rem"
+              }}>
+                <label style={{
+                  display: "block",
+                  marginBottom: "0.5rem",
+                  color: "#9ca3af",
+                  fontSize: "0.9rem"
+                }}>
+                  Role
+                </label>
+                <div style={{
+                  display: "flex",
+                  gap: "1rem"
+                }}>
+                  <RoleOption
+                    role="doctor"
+                    isSelected={formData.role === "doctor"}
+                    onClick={() => setFormData(prev => ({ ...prev, role: "doctor" }))}
+                  />
+                  <RoleOption
+                    role="patient"
+                    isSelected={formData.role === "patient"}
+                    onClick={() => setFormData(prev => ({ ...prev, role: "patient" }))}
+                  />
+                </div>
+              </div>
             </>
           )}
 

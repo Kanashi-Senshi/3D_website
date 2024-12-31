@@ -51,6 +51,46 @@ export interface DashboardStyles {
   statsValue: CSSProperties;
   statsTrend: CSSProperties;
   statsGradientOverlay: CSSProperties;
+  statsIconContainer: {
+    width: string;
+    height: string;
+    borderRadius: string;
+    background: string;
+    display: string;
+    alignItems: string;
+    justifyContent: string;
+    marginBottom: string;
+  };
+  activityFeed: {
+    marginTop: string;
+    background: string;
+    borderRadius: string;
+    padding: string;
+  };
+  activityTitle: {
+    fontSize: string;
+    fontWeight: string;
+    marginBottom: string;
+    color: string;
+  };
+  activityItem: {
+    display: string;
+    alignItems: string;
+    gap: string;
+    padding: string;
+    borderBottom: string;
+  };
+  activityContent: {
+    flex: number;
+  };
+  activityText: {
+    color: string;
+    fontSize: string;
+  };
+  activityTime: {
+    color: string;
+    fontSize: string;
+  };
 }
 
 export interface AppointmentsSectionStyles {

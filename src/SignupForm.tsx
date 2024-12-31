@@ -1,5 +1,3 @@
-// SignupForm.tsx
-// src/SignupForm.tsx
 // src/SignupForm
 
 import React, { useState } from "react";

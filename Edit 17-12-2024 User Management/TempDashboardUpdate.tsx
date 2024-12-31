@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { DashboardData, ActivityItem } from './types/dashboard';
 import {
   Users,
   Calendar,
@@ -35,15 +34,15 @@ interface StatsCardProps {
   icon: React.ReactNode;
 }
 
-// interface DashboardData {
-//   activeFiles: number;
-//   newFiles: number;
-//   appointments: number;
-//   nextAppointment?: string;
-//   connections: number;
-//   newConnections: number;
-//   recentActivity: Activity[];
-// }
+interface DashboardData {
+  activeFiles: number;
+  newFiles: number;
+  appointments: number;
+  nextAppointment?: string;
+  connections: number;
+  newConnections: number;
+  recentActivity: Activity[];
+}
 
 interface Activity {
   id: string;
@@ -256,6 +255,7 @@ const styles: DashboardStyles = {
     inset: 0,
     backgroundImage: "linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))",
   },
+  // New styles for activity feed and icons
   statsIconContainer: {
     width: "3rem",
     height: "3rem",
@@ -392,7 +392,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
 
             <div style={styles.activityFeed}>
               <h3 style={styles.activityTitle}>Recent Activity</h3>
-              {data?.recentActivity?.map((activity: ActivityItem, index: number) => (
+              {data?.recentActivity?.map((activity, index) => (
                 <div key={index} style={styles.activityItem}>
                   {activity.icon}
                   <div style={styles.activityContent}>

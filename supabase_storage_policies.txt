@@ -1,0 +1,15 @@
+```sql
+   -- For medical-files bucket
+   CREATE POLICY "Medical files are private"
+   ON storage.objects
+   FOR SELECT
+   TO authenticated
+   USING (bucket_id = 'medical-files' AND auth.uid() = owner);
+
+   -- For profile-images bucket
+   CREATE POLICY "Profile images are public"
+   ON storage.objects
+   FOR SELECT
+   TO public
+   USING (bucket_id = 'profile-images');
+   ```

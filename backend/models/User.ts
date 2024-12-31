@@ -1,23 +1,22 @@
-// models/User.ts
 // backend/models/User.ts
-// backend/models/User.ts
-// backend/models/User.ts
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Document, Schema, Types } from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-interface IUser extends Document {
+export interface IUser extends Document {
   name: string;
   email: string;
   password: string;
   role: 'doctor' | 'patient';
-  createdAt: Date;
   profilePicture?: string;
   specialization?: string;
   licenseNumber?: string;
-  teams: mongoose.Types.ObjectId[];
-  following: mongoose.Types.ObjectId[];
-  followers: mongoose.Types.ObjectId[];
-  comparePassword(candidatePassword: string): Promise<boolean>;
+  patients?: Types.ObjectId[];
+  doctors?: Types.ObjectId[];
+  teams?: Types.ObjectId[];
+  following?: Types.ObjectId[];
+  followers?: Types.ObjectId[];
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const userSchema = new Schema<IUser>({
@@ -43,58 +42,71 @@ const userSchema = new Schema<IUser>({
     enum: ['doctor', 'patient'],
     required: true
   },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  },
   profilePicture: {
     type: String,
-    default: ''
+    default: ""
   },
   specialization: {
     type: String,
-    required: function(this: IUser) { 
-      return this.role === 'doctor';
-    }
+    default: ""
   },
   licenseNumber: {
     type: String,
-    required: function(this: IUser) { 
-      return this.role === 'doctor';
-    }
+    default: ""
   },
+  patients: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    default: []
+  }],
+  doctors: [{
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    default: []
+  }],
   teams: [{
     type: Schema.Types.ObjectId,
-    ref: 'Team'
+    ref: 'Team',
+    default: []
   }],
   following: [{
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: []
   }],
   followers: [{
     type: Schema.Types.ObjectId,
-    ref: 'User'
+    ref: 'User',
+    default: []
   }]
-});
-
-// Hash password before saving
-userSchema.pre('save', async function(next) {
-  if (this.isModified('password')) {
-    this.password = await bcrypt.hash(this.password, 8);
-  }
-  next();
+}, {
+  timestamps: true // This automatically handles createdAt and updatedAt
 });
 
 // Method to compare password for login
 userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
-  return bcrypt.compare(candidatePassword, this.password);
+  try {
+    return await bcrypt.compare(candidatePassword, this.password);
+  } catch (error) {
+    throw error;
+  }
 };
 
-// Remove sensitive information when converting to JSON
-userSchema.methods.toJSON = function() {
-  const user = this.toObject();
-  delete user.password;
-  return user;
-};
+// Pre-save hook to handle password hashing
+userSchema.pre('save', async function(next) {
+  if (this.isModified('password')) {
+    const salt = await bcrypt.genSalt(10);
+    this.password = await bcrypt.hash(this.password, salt);
+  }
+  next();
+});
+
+// Hide password when converting to JSON
+userSchema.set('toJSON', {
+  transform: function(doc, ret) {
+    delete ret.password;
+    return ret;
+  }
+});
 
 export const User = mongoose.model<IUser>('User', userSchema);

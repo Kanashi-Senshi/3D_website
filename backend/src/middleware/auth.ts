@@ -17,26 +17,40 @@ declare global {
   }
 }
 
-export const auth = async (req: Request, res: Response, next: NextFunction) => {
+export const auth = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
     if (!token) {
-      throw new Error();
+      throw new Error('No token provided');
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-    const user = await User.findById(decoded.userId);
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+      const user = await User.findById(decoded.userId);
 
-    if (!user) {
-      throw new Error();
+      if (!user) {
+        throw new Error('User not found');
+      }
+
+      req.user = user;
+      req.userId = user._id;
+      next();
+    } catch (err) {
+      // Handle JWT verification errors
+      if (err instanceof jwt.JsonWebTokenError) {
+        return res.status(401).json({ error: 'Invalid token' });
+      }
+      if (err instanceof jwt.TokenExpiredError) {
+        return res.status(401).json({ error: 'Token expired' });
+      }
+      throw err;
     }
-
-    req.user = user;
-    req.userId = user._id;
-    next();
   } catch (error) {
-    res.status(401).json({ error: 'Please authenticate' });
+    res.status(401).json({ 
+      error: 'Authentication failed',
+      message: error instanceof Error ? error.message : 'Please authenticate'
+    });
   }
 };
 
@@ -58,3 +72,5 @@ export const generateToken = (userId: string, role: string): string => {
     { expiresIn: '7d' }
   );
 };
+
+

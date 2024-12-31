@@ -1,83 +1,87 @@
-.
-├── MONGODB_URI.txt
-├── Technical Requirements.docx
-├── User requirements.docx
-├── Website (Bugs not features).txt
-├── backend
-│   ├── models
-│   │   ├── Appointment.ts
-│   │   ├── Community.ts
-│   │   ├── MedicalFile.ts
-│   │   ├── Post.ts
-│   │   ├── Team.ts
-│   │   └── User.ts
-│   ├── package-lock.json
-│   ├── package.json
-│   ├── src
-│   │   ├── config
-│   │   │   ├── database.ts
-│   │   │   └── supabase.ts
-│   │   ├── controllers
-│   │   │   ├── appointment.controller.ts
-│   │   │   ├── auth.controller.ts
-│   │   │   ├── file.controller.ts
-│   │   │   ├── social.controller.ts
-│   │   │   └── team.controller.ts
-│   │   ├── middleware
-│   │   │   ├── auth.ts
-│   │   │   └── upload.ts
-│   │   ├── routes
-│   │   │   ├── appointments.ts
-│   │   │   ├── auth.ts
-│   │   │   ├── files.ts
-│   │   │   ├── social.ts
-│   │   │   └── teams.ts
-│   │   ├── server.ts
-│   │   └── types
-│   │       └── express.d.ts
-│   ├── tsconfig.json
-│   └── vercel.json
-├── db_instructions.md
-├── design principles.txt
-├── file_structure.md
-├── package-lock.json
+3D Website/
+│
+├── src/
+│   ├── components/
+│   │   ├── LoadingSpinner.tsx
+│   │   ├── ErrorDisplay.tsx
+│   │   ├── layout.tsx
+│   │   └── ui/
+│   │       ├── alert.tsx
+│   │       └── card.tsx
+│   │
+│   ├── contexts/
+│   │   ├── AuthContext.tsx
+│   │   └── AuthModal.tsx
+│   │
+│   ├── hooks/
+│   │   └── useDashboardData.ts
+│   │
+│   ├── services/
+│   │   └── api.ts
+│   │
+│   ├── types/
+│   │   ├── dashboard.ts
+│   │   ├── express.d.ts
+│   │   ├── index.ts
+│   │   └── styles.ts
+│   │
+│   ├── AboutSection.tsx
+│   ├── App.tsx
+│   ├── AppointmentsSection.tsx
+│   ├── Dashboard.tsx
+│   ├── DicomUploadsSection.tsx
+│   ├── LandingPage.tsx
+│   ├── SettingsSection.tsx
+│   ├── SocialSection.tsx
+│   ├── STLFilesSection.tsx
+│   └── TeamsSection.tsx
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── database.ts
+│   │   │   └── supabase.ts
+│   │   │
+│   │   ├── controllers/
+│   │   │   ├── appointment.controller.ts
+│   │   │   ├── auth.controller.ts
+│   │   │   ├── file.controller.ts
+│   │   │   ├── social.controller.ts
+│   │   │   ├── team.controller.ts
+│   │   │   └── user.controller.ts
+│   │   │
+│   │   ├── middleware/
+│   │   │   ├── auth.ts
+│   │   │   └── upload.ts
+│   │   │
+│   │   ├── models/
+│   │   │   ├── Appointment.ts
+│   │   │   ├── Community.ts
+│   │   │   ├── MedicalFile.ts
+│   │   │   ├── Post.ts
+│   │   │   ├── Team.ts
+│   │   │   └── User.ts
+│   │   │
+│   │   ├── routes/
+│   │   │   ├── appointments.ts
+│   │   │   ├── auth.ts
+│   │   │   ├── files.ts
+│   │   │   ├── social.ts
+│   │   │   ├── teams.ts
+│   │   │   └── users.ts
+│   │   │
+│   │   └── server.ts
+│   │
+│   ├── package.json
+│   └── tsconfig.json
+│
+├── public/
+│   └── index.html
+│
+├── .eslintrc.json
 ├── package.json
 ├── postcss.config.js
-├── public
-│   └── index.html
 ├── render.yaml
-├── src
-│   ├── AboutSection
-│   │   ├── AboutSection.tsx
-│   │   ├── InteractiveModel.tsx
-│   │   ├── TechSpecs.tsx
-│   │   └── index.ts
-│   ├── App.tsx
-│   ├── AppointmentsSection.tsx
-│   ├── Dashboard.tsx
-│   ├── DicomUploadsSection.tsx
-│   ├── LandingPage.tsx
-│   ├── STLFilesSection.tsx
-│   ├── SettingsSection.tsx
-│   ├── SignupForm.tsx
-│   ├── SocialSection.tsx
-│   ├── TeamsSection.tsx
-│   ├── components
-│   │   ├── layout.tsx
-│   │   └── ui
-│   │       ├── alert.tsx
-│   │       └── card.tsx
-│   ├── config.ts
-│   ├── contexts
-│   │   ├── AuthContext.tsx
-│   │   └── AuthModal.tsx
-│   ├── index.tsx
-│   ├── styles.css
-│   └── types
-│       ├── index.ts
-│       └── styles.ts
-├── supabase dets.txt
 ├── tailwind.config.js
 ├── tsconfig.json
-├── vercel.json
-└── vercel_instructions.md
+└── vercel.json

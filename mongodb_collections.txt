@@ -1,0 +1,17 @@
+3D_website.appointments:
+{"_id":{"$oid":"6759fb7abdabea7fb26c6625"},"userId":"ObjectId","date":"date","status":"string","type":"string","notes":"string","createdAt":"date","updatedAt":"date"}
+
+3D_website.communities
+{"_id":{"$oid":"6759fba2bdabea7fb26c6627"},"name":"string","description":"string","members":"array[ObjectId]","createdAt":"date"}
+
+3D_website.medicalFiles
+{"_id":{"$oid":"6759fbcebdabea7fb26c6628"},"userId":"ObjectId","fileUrl":"string","fileType":"string","uploadDate":"date","metadata":"object"}
+
+3D_website.posts
+{"_id":{"$oid":"6759fbdabdabea7fb26c6629"},"userId":"ObjectId","content":"string","communityId":"ObjectId","createdAt":"date","updatedAt":"date"}
+
+3D_website.teams
+{"_id":{"$oid":"6759fbe7bdabea7fb26c662a"},"name":"string","members":"array[ObjectId]","createdAt":"date","updatedAt":"date"}
+
+3D_website.users
+{"_id":{"$oid":"6759fbf9bdabea7fb26c662b"},"email":"string","password":"string (hashed)","name":"string","role":"string","createdAt":"date","updatedAt":"date"}
