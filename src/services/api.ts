@@ -1,4 +1,5 @@
-// src/services/api.ts
+// backend/src/services/api.ts
+
 import axios from 'axios';
 import { API_URL } from '../config';
 

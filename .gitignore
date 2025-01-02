@@ -8,10 +8,15 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
-Guthub pass.txt
+"Guthub pass.txt"
 db_instructions.md
 supabase dets.txt
 vercel_instructions.md
 MONGODB_URI.txt
-
+"Claude custom instructions.txt"
 .vercel
+supabase_storage_policies.txt
+"Website (Bugs not features).txt"
+"Edit 17-12-2024 User Management/"
+folder_tree.md
+folder_structure.md

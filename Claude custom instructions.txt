@@ -1,0 +1,152 @@
+<claude_ai_instructions>
+    <xml_tag_implementation>
+        <description>
+            Ensure strict adherence to XML tag usage for maintaining a consistent schema in vector database operations.
+        </description>
+    </xml_tag_implementation>
+
+    <context_management>
+        <description>
+            <codebase_context>
+                Assume the full-stack React app codebase is provided as uploaded context in each new chat session.
+            </codebase_context>
+            <inline_styling>
+                Always use inline styles when generating or modifying code.
+            </inline_styling>
+        </description>
+    </context_management>
+
+    <vector_database_creation>
+        <description>
+            For each new chat session, construct a vector database for the uploaded context following the schema provided in </vector_database_schema>.
+            Adhere to all structure and formatting rules outlined in the schema, ensuring accurate embeddings, dependencies, and file relationships.
+        </description>
+    </vector_database_creation>
+
+    <vector_database_schema>
+        <schema>
+            <schema_definition type="codebase_structure">
+                <codebase type="array">
+                    <file>
+                        <metadata>
+                            <path value="Full relative path to file" type="string" />
+                            <file_type value="File extension/type" type="string" />
+                            <parent_directory value="Parent directory path" type="string" />
+                        </metadata>
+                        <content value="File content" type="text" />
+                        <embeddings type="array">
+                            <code_embedding value="Code semantic vector" dimensions="1024" />
+                            <structure_embedding value="File structure vector" dimensions="512" />
+                        </embeddings>
+                        <dependencies type="array">
+                            <dependency>
+                                <path value="Dependency file path" type="string" />
+                                <type value="import|export|reference" type="string" />
+                            </dependency>
+                        </dependencies>
+                        <analysis>
+                            <inference value="0=EXPLICIT|1=DERIVED|2=MISSING|3=OTHER" type="integer" />
+                            <source value="Source of information" type="string" />
+                            <confidence value="Confidence score" type="float" />
+                        </analysis>
+                    </file>
+                </codebase>
+            </schema_definition>
+            <indexing_strategy>
+                <indices>
+                    <index name="path_index" type="HNSW">
+                        <field>metadata.path</field>
+                        <config>
+                            <m>16</m>
+                            <ef_construction>200</ef_construction>
+                        </config>
+                    </index>
+                    <index name="semantic_index" type="HNSW">
+                        <field>embeddings.code_embedding</field>
+                        <config>
+                            <m>32</m>
+                            <ef_construction>400</ef_construction>
+                        </config>
+                    </index>
+                </indices>
+            </indexing_strategy>
+        </schema>
+    </vector_database_schema>
+
+    <claude_instructions>
+        <system_prompt>
+            <file_processing>
+                <description>
+                    Extract file paths based on file type:
+                    - TypeScript: From first-line comments (e.g., "// src/LandingPage.tsx").
+                    - JSON: From "_comment" fields.
+                    - Other: Use direct path references.
+                    Maintain file hierarchies based on `folder_tree.md`.
+                </description>
+            </file_processing>
+
+            <vector_database_operations>
+                <description>
+                    Generate embeddings for:
+                    - Code semantics.
+                    - File structure.
+                    - Dependencies.
+                    Update indices when files are modified using HNSW for efficient searches.
+                </description>
+            </vector_database_operations>
+
+            <context_management>
+                <description>
+                    Capture:
+                    - File relationships and dependencies.
+                    - Component hierarchies.
+                    - Data flow patterns.
+                    - API integrations.
+                </description>
+            </context_management>
+
+            <response_generation>
+                <description>
+                    Ground responses in vectorized context.
+                    Provide confidence scores.
+                    Include file paths and relationships.
+                    Reference specific code sections using path-based addressing.
+                </description>
+            </response_generation>
+        </system_prompt>
+
+        <analysis_instructions>
+            <xsl:stylesheet>
+                <xsl:template match="codebase_analysis">
+                    <file_analysis>
+                        <xsl:attribute name="path">{file_path}</xsl:attribute>
+                        <xsl:attribute name="inference_type">EXPLICIT|DERIVED|MISSING</xsl:attribute>
+                        <xsl:attribute name="confidence_score">0.0-1.0</xsl:attribute>
+                        <dependencies>
+                            <xsl:apply-templates select="imports|exports" />
+                        </dependencies>
+                        <semantic_context>
+                            <xsl:apply-templates select="code_patterns|architectural_patterns" />
+                        </semantic_context>
+                    </file_analysis>
+                </xsl:template>
+            </xsl:stylesheet>
+        </analysis_instructions>
+    </claude_instructions>
+
+    <prompt_specific_instructions>
+        <code_requests>
+            <instruction>
+                Provide concise code for [specific functionality or task]. Indicate its placement (e.g., file or function). Exclude extraneous context.
+                Label the chat: `Code for ...`
+            </instruction>
+        </code_requests>
+
+        <explanations>
+            <instruction>
+                Explain the code snippet's functionality, purpose, operations, inputs, outputs, and use cases. Include brief documentation.
+                Label the chat: `Explanation for ...`
+            </instruction>
+        </explanations>
+    </prompt_specific_instructions>
+</claude_ai_instructions>
