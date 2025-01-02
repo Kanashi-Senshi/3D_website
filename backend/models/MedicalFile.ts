@@ -1,6 +1,3 @@
-// models/MedicalFile.ts
-// backend/models/MedicalFile.ts
-// backend/models/MedicalFile.ts
 // backend/models/MedicalFile.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
@@ -84,23 +81,19 @@ const medicalFileSchema = new Schema<IMedicalFile>({
   timestamps: true
 });
 
-// Indexes for efficient querying
 medicalFileSchema.index({ uploadedBy: 1, createdAt: -1 });
 medicalFileSchema.index({ patient: 1, createdAt: -1 });
 medicalFileSchema.index({ fileType: 1 });
 medicalFileSchema.index({ tags: 1 });
 
-// Virtual for file URL (to be populated when needed)
 medicalFileSchema.virtual('fileUrl').get(function(this: IMedicalFile) {
   return null; // Will be populated by the controller when needed
 });
 
-// Virtual for segmented file URL (to be populated when needed)
 medicalFileSchema.virtual('segmentedFileUrl').get(function(this: IMedicalFile) {
   return this.segmentedFilePath ? null : undefined; // Will be populated by the controller when needed
 });
 
-// Method to check if a user has access to this file
 medicalFileSchema.methods.hasAccess = function(this: IMedicalFile, userId: string): boolean {
   return (
     this.uploadedBy.toString() === userId ||
@@ -109,20 +102,17 @@ medicalFileSchema.methods.hasAccess = function(this: IMedicalFile, userId: strin
   );
 };
 
-// Method to add a note
 medicalFileSchema.methods.addNote = function(this: IMedicalFile, note: string) {
   this.notes.push(note);
   return this.save();
 };
 
-// Method to add tags
 medicalFileSchema.methods.addTags = function(this: IMedicalFile, newTags: string[]) {
   const uniqueTags = new Set([...this.tags, ...newTags]);
   this.tags = Array.from(uniqueTags);
   return this.save();
 };
 
-// Method to share with users
 medicalFileSchema.methods.shareWith = function(this: IMedicalFile, userIds: string[]) {
   const uniqueUserIds = userIds.map(id => new mongoose.Types.ObjectId(id));
   const currentSharedWithStrings = this.sharedWith.map(id => id.toString());

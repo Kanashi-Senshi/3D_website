@@ -3,7 +3,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { AboutSection, InteractiveModel } from "./AboutSection";
 
-// import SignupForm from "./SignupForm";
 import { useAuth } from "./contexts/AuthContext";
 import AuthModal from "./contexts/AuthModal";
 

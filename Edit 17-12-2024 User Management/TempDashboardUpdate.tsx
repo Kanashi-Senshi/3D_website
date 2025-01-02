@@ -255,7 +255,6 @@ const styles: DashboardStyles = {
     inset: 0,
     backgroundImage: "linear-gradient(to bottom right, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))",
   },
-  // New styles for activity feed and icons
   statsIconContainer: {
     width: "3rem",
     height: "3rem",
@@ -551,4 +550,3 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   );
 };
 
-export default Dashboard;

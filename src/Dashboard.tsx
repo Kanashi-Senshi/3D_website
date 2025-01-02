@@ -35,15 +35,6 @@ interface StatsCardProps {
   icon: React.ReactNode;
 }
 
-// interface DashboardData {
-//   activeFiles: number;
-//   newFiles: number;
-//   appointments: number;
-//   nextAppointment?: string;
-//   connections: number;
-//   newConnections: number;
-//   recentActivity: Activity[];
-// }
 
 interface Activity {
   id: string;
@@ -551,4 +542,3 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   );
 };
 
-export default Dashboard;

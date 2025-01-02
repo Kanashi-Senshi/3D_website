@@ -1,4 +1,3 @@
-// src/SignupForm
 
 import React, { useState } from "react";
 import { User, Mail, Lock, Stethoscope, UserCircle } from "lucide-react";
@@ -59,7 +58,6 @@ const SignupForm: React.FC<SignupFormProps> = ({ onSuccess }) => {
     }
 
     try {
-      // Mock API call - replace with actual registration endpoint
       await new Promise((resolve) => setTimeout(resolve, 1000));
       setSuccess(true);
       setTimeout(() => {

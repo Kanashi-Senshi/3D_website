@@ -31,7 +31,6 @@ export const useDashboardData = () => {
   return { loading, error, dashboardData };
 };
 
-// Usage in Dashboard.tsx
 const Dashboard = () => {
   const { loading, error, dashboardData } = useDashboardData();
   
@@ -39,11 +38,9 @@ const Dashboard = () => {
   if (error) return <ErrorMessage message={error} />;
   
   return (
-    // Render dashboard with real data
     <div>
       <h2>Welcome {dashboardData.user.name}</h2>
       <StatsSection stats={dashboardData.stats} />
       {/* Other sections */}
     </div>
   );
-};

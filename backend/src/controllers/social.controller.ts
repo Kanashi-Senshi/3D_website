@@ -1,14 +1,9 @@
-// controllers/social.controller.ts
-// backend/src/controllers/social.controller.ts
-// backend/src/controllers/social.controller.ts
-// backend/src/controllers/social.controller.ts
 import { Request, Response } from 'express';
 import { Community } from '@models/Community';
 import { Post } from '@models/Post';
 import { User } from '@models/User';
 import { uploadFile, generateFilePath, FileType } from '@config/supabase';
 
-// Community Controllers
 export const createCommunity = async (req: Request, res: Response) => {
   try {
     const { name, description, productType, isPrivate } = req.body;
@@ -18,7 +13,6 @@ export const createCommunity = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Verify user is a doctor
     const user = await User.findById(userId);
     if (!user || user.role !== 'doctor') {
       return res.status(403).json({ error: 'Only doctors can create communities' });
@@ -93,7 +87,6 @@ export const joinCommunity = async (req: Request, res: Response) => {
   }
 };
 
-// Post Controllers
 export const createPost = async (req: Request, res: Response) => {
   try {
     const { title, content, communityId, tags } = req.body;
@@ -104,13 +97,11 @@ export const createPost = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Verify user is a doctor
     const user = await User.findById(userId);
     if (!user || user.role !== 'doctor') {
       return res.status(403).json({ error: 'Only doctors can create posts' });
     }
 
-    // Verify community exists and user is a member
     const community = await Community.findById(communityId);
     if (!community) {
       return res.status(404).json({ error: 'Community not found' });
@@ -119,7 +110,6 @@ export const createPost = async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Must be a community member to post' });
     }
 
-    // Upload images if any
     const imageUrls: string[] = [];
     if (files && files.length > 0) {
       for (const file of files) {
@@ -157,7 +147,6 @@ export const getPosts = async (req: Request, res: Response) => {
 
     const query: any = {};
     if (communityId) {
-      // Verify user has access to community
       const community = await Community.findById(communityId);
       if (!community) {
         return res.status(404).json({ error: 'Community not found' });
@@ -181,7 +170,6 @@ export const getPosts = async (req: Request, res: Response) => {
   }
 };
 
-// Social Interaction Controllers
 export const addComment = async (req: Request, res: Response) => {
   try {
     const { content } = req.body;

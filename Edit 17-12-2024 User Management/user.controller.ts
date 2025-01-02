@@ -1,4 +1,3 @@
-// backend/src/controllers/user.controller.ts
 
 import { Request, Response } from 'express';
 import { User } from '@models/User';
@@ -16,7 +15,6 @@ export const getDashboardData = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Get role-specific data
     let dashboardData: any = {
       user: {
         name: user.name,
@@ -26,7 +24,6 @@ export const getDashboardData = async (req: Request, res: Response) => {
     };
 
     if (user.role === 'doctor') {
-      // Get doctor-specific data
       const patients = await User.find({ 
         _id: { $in: await Appointment.distinct('patient', { doctor: userId }) }
       });
@@ -37,7 +34,6 @@ export const getDashboardData = async (req: Request, res: Response) => {
         totalFiles: await MedicalFile.countDocuments({ uploadedBy: userId })
       };
     } else {
-      // Get patient-specific data
       const doctors = await User.find({
         _id: { $in: await Appointment.distinct('doctor', { patient: userId }) }
       });
@@ -56,5 +52,3 @@ export const getDashboardData = async (req: Request, res: Response) => {
   }
 };
 
-// Add this to routes/user.ts
-router.get('/:userId/dashboard', auth, getDashboardData);

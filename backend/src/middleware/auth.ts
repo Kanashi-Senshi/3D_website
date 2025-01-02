@@ -37,7 +37,6 @@ export const auth = async (req: Request, res: Response, next: NextFunction): Pro
       req.userId = user._id;
       next();
     } catch (err) {
-      // Handle JWT verification errors
       if (err instanceof jwt.JsonWebTokenError) {
         return res.status(401).json({ error: 'Invalid token' });
       }

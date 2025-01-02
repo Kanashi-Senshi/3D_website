@@ -1,7 +1,5 @@
 // config/supabase.ts
 // backend/src/config/supabase.ts
-// backend/src/config/supabase.ts
-// backend/src/config/supabase.ts
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 
@@ -18,24 +16,20 @@ export const supabase = createClient(
 
 export type FileType = 'stl' | 'dicom' | 'post-image';
 
-// Helper function to generate a unique file path
 export const generateFilePath = (userId: string, fileType: FileType, fileName: string) => {
   const timestamp = Date.now();
   const cleanFileName = fileName.replace(/[^a-zA-Z0-9.]/g, '_');
   return `${fileType}/${userId}/${timestamp}_${cleanFileName}`;
 };
 
-// Helper to get file extension
 export const getFileExtension = (fileName: string): string => {
   return fileName.slice(((fileName.lastIndexOf(".") - 1) >>> 0) + 2).toLowerCase();
 };
 
-// Validate file type
 export const isValidFileType = (fileType: string, allowedTypes: string[]): boolean => {
   return allowedTypes.includes(fileType.toLowerCase());
 };
 
-// Get bucket name based on file type
 export const getBucketName = (fileType: FileType): string => {
   switch (fileType) {
     case 'stl':
@@ -48,7 +42,6 @@ export const getBucketName = (fileType: FileType): string => {
   }
 };
 
-// Get signed URL for file download
 export const getSignedUrl = async (filePath: string, bucketName: string = 'medical-files') => {
   const { data, error } = await supabase
     .storage
@@ -59,7 +52,6 @@ export const getSignedUrl = async (filePath: string, bucketName: string = 'medic
   return data.signedUrl;
 };
 
-// Upload file to Supabase
 export const uploadFile = async (
   filePath: string,
   fileBuffer: Buffer,

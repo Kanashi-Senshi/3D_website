@@ -1,6 +1,4 @@
 // components/ui/card.tsx
-// src/components/ui/card.tsx
-// src/components/ui/card
 
 // src/components/ui/card.tsx
 

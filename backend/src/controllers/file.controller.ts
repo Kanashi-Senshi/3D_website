@@ -1,7 +1,3 @@
-// controllers/file.controller.ts
-// backend/src/controllers/file.controller.ts
-// backend/src/controllers/file.controller.ts
-// backend/src/controllers/file.controller.ts
 import { Request, Response } from 'express';
 import { MedicalFile } from '@models/MedicalFile';
 import { User } from '@models/User';
@@ -21,12 +17,10 @@ export const uploadFile = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'No file provided or user not authenticated' });
     }
 
-    // Validate file size
     if (file.size > MAX_FILE_SIZE) {
       return res.status(400).json({ error: 'File size exceeds limit' });
     }
 
-    // Validate file type
     const extension = getFileExtension(file.originalname);
     const allowedTypes = fileType === 'stl' ? ALLOWED_STL_TYPES : ALLOWED_DICOM_TYPES;
     
@@ -34,16 +28,13 @@ export const uploadFile = async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Invalid file type' });
     }
 
-    // Verify patient exists
     const patient = await User.findById(patientId);
     if (!patient) {
       return res.status(404).json({ error: 'Patient not found' });
     }
 
-    // Generate unique file path
     const filePath = generateFilePath(req.userId, fileType, file.originalname);
 
-    // Upload to Supabase
     const { error: uploadError } = await supabase
       .storage
       .from('medical-files')
@@ -56,7 +47,6 @@ export const uploadFile = async (req: Request, res: Response) => {
       throw new Error(`Upload failed: ${uploadError.message}`);
     }
 
-    // Create file record in MongoDB
     const medicalFile = new MedicalFile({
       fileName: file.originalname,
       fileType,
@@ -70,10 +60,7 @@ export const uploadFile = async (req: Request, res: Response) => {
 
     await medicalFile.save();
 
-    // If it's a DICOM file, trigger processing (implement this based on your processing service)
     if (fileType === 'dicom') {
-      // TODO: Implement DICOM processing service integration
-      // triggerDicomProcessing(medicalFile._id);
     }
 
     return res.status(201).json(medicalFile);
@@ -100,17 +87,14 @@ export const getFiles = async (req: Request, res: Response) => {
 
     const query: any = {};
 
-    // Filter by file type if provided
     if (fileType) {
       query.fileType = fileType;
     }
 
-    // Filter by status if provided
     if (status) {
       query.status = status;
     }
 
-    // Filter based on user role and access
     if (user.role === 'doctor') {
       if (patientId) {
         query.patient = patientId;
@@ -120,7 +104,6 @@ export const getFiles = async (req: Request, res: Response) => {
         { sharedWith: user._id }
       ];
     } else {
-      // Patients can only see their own files
       query.patient = user._id;
     }
 
@@ -129,7 +112,6 @@ export const getFiles = async (req: Request, res: Response) => {
       .populate('patient', 'name email')
       .sort({ createdAt: -1 });
 
-    // Generate signed URLs for each file
     const filesWithUrls = await Promise.all(files.map(async (file) => {
       const fileObj = file.toObject() as FileDocument;
       fileObj.fileUrl = await getSignedUrl(file.filePath);
@@ -225,13 +207,11 @@ export const shareFile = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'File not found' });
     }
 
-    // Only file owner or patient can share
     if (userId !== file.uploadedBy.toString() && 
         userId !== file.patient.toString()) {
       return res.status(403).json({ error: 'Not authorized to share this file' });
     }
 
-    // Verify all users exist and are doctors
     const users = await User.find({
       _id: { $in: userIds },
       role: 'doctor'

@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { User, Mail, Lock, Bell, Shield } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
 
-// Define an interface for the notifications state
 interface NotificationSettings {
   email: boolean;
   appointments: boolean;

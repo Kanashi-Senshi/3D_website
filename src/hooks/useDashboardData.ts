@@ -16,7 +16,6 @@ export const useDashboardData = () => {
       setLoading(true);
       setError(null);
 
-      // Get token from storage
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       
       if (!token || !user?.id) {
@@ -45,7 +44,6 @@ export const useDashboardData = () => {
         const errMsg = err.response?.data?.error || err.response?.data?.details || err.message;
         setError(new Error(errMsg));
         
-        // Handle authentication errors
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           sessionStorage.removeItem('token');
@@ -66,4 +64,3 @@ export const useDashboardData = () => {
   }, [user?.id]);
 
   return { data, loading, error, refetch: fetchData };
-};

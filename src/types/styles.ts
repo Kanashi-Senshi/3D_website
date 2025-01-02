@@ -1,7 +1,6 @@
 // types/styles.ts
 import { CSSProperties } from 'react';
 
-// Add support for media queries in CSSProperties
 interface ExtendedCSSProperties extends CSSProperties {
   '@media (min-width: 768px)'?: CSSProperties;
   '@media (min-width: 1024px)'?: CSSProperties;

@@ -1,14 +1,9 @@
-// middleware/upload.ts
-// backend/src/middleware/upload.ts
-// backend/src/middleware/upload.ts
 // backend/src/middleware/upload.ts
 import multer from 'multer';
 
 const storage = multer.memoryStorage();
 
-// File filter function
 const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
-  // Allow STL and DICOM files
   if (file.mimetype === 'application/sla' || 
       file.mimetype === 'application/stl' ||
       file.mimetype === 'application/dicom' ||
@@ -21,7 +16,6 @@ const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.
   }
 };
 
-// Configure multer
 export const upload = multer({
   storage: storage,
   fileFilter: fileFilter,

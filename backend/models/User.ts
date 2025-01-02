@@ -83,7 +83,6 @@ const userSchema = new Schema<IUser>({
   timestamps: true // This automatically handles createdAt and updatedAt
 });
 
-// Method to compare password for login
 userSchema.methods.comparePassword = async function(candidatePassword: string): Promise<boolean> {
   try {
     return await bcrypt.compare(candidatePassword, this.password);
@@ -92,7 +91,6 @@ userSchema.methods.comparePassword = async function(candidatePassword: string): 
   }
 };
 
-// Pre-save hook to handle password hashing
 userSchema.pre('save', async function(next) {
   if (this.isModified('password')) {
     const salt = await bcrypt.genSalt(10);
@@ -101,7 +99,6 @@ userSchema.pre('save', async function(next) {
   next();
 });
 
-// Hide password when converting to JSON
 userSchema.set('toJSON', {
   transform: function(doc, ret) {
     delete ret.password;
@@ -109,4 +106,3 @@ userSchema.set('toJSON', {
   }
 });
 
-export const User = mongoose.model<IUser>('User', userSchema);

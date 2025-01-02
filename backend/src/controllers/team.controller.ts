@@ -1,7 +1,3 @@
-// controllers/team.controller.ts
-// backend/src/controllers/team.controller.ts
-// backend/src/controllers/team.controller.ts
-// backend/src/controllers/team.controller.ts
 import { Request, Response } from 'express';
 import { Team } from '@models/Team';
 import { User } from '@models/User';
@@ -16,7 +12,6 @@ export const createTeam = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Verify user is a doctor
     const user = await User.findById(userId);
     if (!user || user.role !== 'doctor') {
       return res.status(403).json({ error: 'Only doctors can create teams' });
@@ -31,7 +26,6 @@ export const createTeam = async (req: Request, res: Response) => {
 
     await team.save();
 
-    // Add team reference to user
     await User.findByIdAndUpdate(userId, {
       $push: { teams: team._id }
     });
@@ -51,7 +45,6 @@ export const getTeams = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Get teams where user is owner or member
     const teams = await Team.find({
       $or: [
         { owner: userId },
@@ -110,7 +103,6 @@ export const joinTeam = async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Verify user is a doctor
     const user = await User.findById(userId);
     if (!user || user.role !== 'doctor') {
       return res.status(403).json({ error: 'Only doctors can join teams' });
@@ -127,7 +119,6 @@ export const joinTeam = async (req: Request, res: Response) => {
 
     await team.addMember(userId);
 
-    // Add team reference to user
     await User.findByIdAndUpdate(userId, {
       $push: { teams: team._id }
     });
@@ -162,7 +153,6 @@ export const leaveTeam = async (req: Request, res: Response) => {
 
     await team.removeMember(userId);
 
-    // Remove team reference from user
     await User.findByIdAndUpdate(userId, {
       $pull: { teams: team._id }
     });
@@ -192,7 +182,6 @@ export const shareFile = async (req: Request, res: Response) => {
       return res.status(403).json({ error: 'Not authorized to share files in this team' });
     }
 
-    // Verify file exists and user has access
     const file = await MedicalFile.findById(fileId);
     if (!file) {
       return res.status(404).json({ error: 'File not found' });
@@ -204,7 +193,6 @@ export const shareFile = async (req: Request, res: Response) => {
 
     await team.shareFile(fileId, userId, notes);
 
-    // Share file with all team members
     const memberIds = team.members.map(member => member.toString());
     memberIds.push(team.owner.toString());
     await file.shareWith(memberIds);

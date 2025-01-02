@@ -1,7 +1,5 @@
 // models/Post.ts
 // backend/models/Post.ts
-// backend/models/Post.ts
-// backend/models/Post.ts
 import mongoose, { Document, Schema } from 'mongoose';
 
 interface IComment extends Document {
@@ -96,12 +94,10 @@ const postSchema = new Schema<IPost>({
   timestamps: true
 });
 
-// Indexes for efficient querying
 postSchema.index({ community: 1, createdAt: -1 });
 postSchema.index({ author: 1, createdAt: -1 });
 postSchema.index({ tags: 1 });
 
-// Method to add a comment
 postSchema.methods.addComment = async function(userId: string, content: string) {
   const comment = {
     user: new mongoose.Types.ObjectId(userId),
@@ -114,7 +110,6 @@ postSchema.methods.addComment = async function(userId: string, content: string) 
   await this.save();
 };
 
-// Method to remove a comment
 postSchema.methods.removeComment = async function(commentId: string) {
   const commentIndex = this.comments.findIndex(
     (comment: IComment) => comment._id.toString() === commentId
@@ -125,7 +120,6 @@ postSchema.methods.removeComment = async function(commentId: string) {
   }
 };
 
-// Method to toggle like on post
 postSchema.methods.toggleLike = async function(userId: string) {
   const userIdObj = new mongoose.Types.ObjectId(userId);
   const likeIndex = this.likes.findIndex(
@@ -140,7 +134,6 @@ postSchema.methods.toggleLike = async function(userId: string) {
   await this.save();
 };
 
-// Method to toggle like on comment
 postSchema.methods.toggleCommentLike = async function(commentId: string, userId: string) {
   const comment = this.comments.find(
     (comment: IComment) => comment._id.toString() === commentId
@@ -160,12 +153,10 @@ postSchema.methods.toggleCommentLike = async function(commentId: string, userId:
   await this.save();
 };
 
-// Virtual for comment count
 postSchema.virtual('commentCount').get(function() {
   return this.comments.length;
 });
 
-// Virtual for like count
 postSchema.virtual('likeCount').get(function() {
   return this.likes.length;
 });

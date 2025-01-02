@@ -31,10 +31,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    // Check for stored auth token on mount
     const token = localStorage.getItem('token');
     if (token) {
-      // Validate token and fetch user data
       fetchUserData(token);
     }
   }, []);
@@ -127,4 +125,3 @@ export const useAuth = () => {
   return context;
 };
 
-export default AuthContext;

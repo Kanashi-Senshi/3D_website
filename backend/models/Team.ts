@@ -75,23 +75,19 @@ const teamSchema = new Schema<ITeam>({
   timestamps: true
 });
 
-// Indexes for efficient querying
 teamSchema.index({ owner: 1 });
 teamSchema.index({ members: 1 });
 teamSchema.index({ joinCode: 1 });
 
-// Method to check if user is a member
 teamSchema.methods.isMember = function(userId: string): boolean {
   return this.members.some((id: mongoose.Types.ObjectId) => id.toString() === userId) ||
          this.owner.toString() === userId;
 };
 
-// Method to check if user is the owner
 teamSchema.methods.isOwner = function(userId: string): boolean {
   return this.owner.toString() === userId;
 };
 
-// Method to add a member
 teamSchema.methods.addMember = async function(userId: string) {
   if (!this.isMember(userId)) {
     this.members.push(new mongoose.Types.ObjectId(userId));
@@ -99,7 +95,6 @@ teamSchema.methods.addMember = async function(userId: string) {
   }
 };
 
-// Method to remove a member
 teamSchema.methods.removeMember = async function(userId: string) {
   if (!this.isOwner(userId)) {
     this.members = this.members.filter(
@@ -109,7 +104,6 @@ teamSchema.methods.removeMember = async function(userId: string) {
   }
 };
 
-// Method to share a file
 teamSchema.methods.shareFile = async function(
   fileId: string,
   userId: string,
@@ -126,7 +120,6 @@ teamSchema.methods.shareFile = async function(
   }
 };
 
-// Generate unique join code
 teamSchema.pre('save', function(next) {
   if (!this.joinCode) {
     this.joinCode = Math.random().toString(36).substring(2, 10).toUpperCase();

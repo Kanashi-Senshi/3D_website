@@ -1,4 +1,3 @@
-// backend/src/controllers/auth.controller.ts
 import { Request, Response } from 'express';
 import { User } from "@models/User";
 import jwt from 'jsonwebtoken';
@@ -14,18 +13,15 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
   try {
     const { email, password, name, role } = req.body;
 
-    // Validate input
     if (!email || !password || !name || !role) {
       return res.status(400).json({ error: 'All fields are required' });
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({ error: 'Email already registered' });
     }
 
-    // Create new user
     const user = new User({
       email,
       password, // Will be hashed by pre-save hook
@@ -35,10 +31,8 @@ export const signup = async (req: Request, res: Response): Promise<Response> => 
 
     await user.save();
 
-    // Generate token
     const token = generateToken(user._id.toString());
 
-    // Return user data and token
     const userResponse = {
       id: user._id,
       name: user.name,
@@ -61,22 +55,18 @@ export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body;
 
-    // Find user
     const user = await User.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Check password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(401).json({ error: 'Invalid password' });
     }
 
-    // Generate token
     const token = generateToken(user._id.toString());
 
-    // Return user data and token (excluding password)
     const userResponse = {
       id: user._id,
       name: user.name,
@@ -125,4 +115,3 @@ export const updateProfile = async (req: Request, res: Response) => {
     console.error('Update profile error:', error);
     return res.status(500).json({ error: 'Error updating profile' });
   }
-};

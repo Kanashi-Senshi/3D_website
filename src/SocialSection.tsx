@@ -1,6 +1,5 @@
 // SocialSection.tsx
 // src/SocialSection.tsx
-// src/SocialSection.tsx
 import React, { useState } from "react";
 import { Heart, MessageCircle, Share2 } from "lucide-react";
 

@@ -1,7 +1,3 @@
-// controllers/appointment.controller.ts
-// backend/src/controllers/appointment.controller.ts
-// backend/src/controllers/appointment.controller.ts
-// backend/src/controllers/appointment.controller.ts
 import { Request, Response } from 'express';
 import { Appointment } from '@models/Appointment';
 import { User } from '@models/User';
@@ -10,7 +6,6 @@ export const createAppointment = async (req: Request, res: Response) => {
   try {
     const { doctorId, dateTime, duration, type, notes } = req.body;
     
-    // Verify doctor exists and is actually a doctor
     const doctor = await User.findOne({ _id: doctorId, role: 'doctor' });
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor not found' });
@@ -50,7 +45,6 @@ export const getAppointments = async (req: Request, res: Response) => {
       dateTime: {}
     };
 
-    // Add date range filters if provided
     if (startDate) {
       query.dateTime.$gte = new Date(startDate as string);
     }
@@ -58,12 +52,10 @@ export const getAppointments = async (req: Request, res: Response) => {
       query.dateTime.$lte = new Date(endDate as string);
     }
 
-    // Add status filter if provided
     if (status) {
       query.status = status;
     }
 
-    // Filter based on user role
     if (user.role === 'doctor') {
       query.doctor = user._id;
     } else {
@@ -92,7 +84,6 @@ export const getAppointmentById = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Appointment not found' });
     }
 
-    // Verify user has permission to view this appointment
     if (appointment.doctor.toString() !== req.userId && 
         appointment.patient.toString() !== req.userId) {
       return res.status(403).json({ error: 'Not authorized to view this appointment' });
@@ -114,18 +105,15 @@ export const updateAppointment = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Appointment not found' });
     }
 
-    // Verify user has permission to update this appointment
     if (appointment.doctor.toString() !== req.userId && 
         appointment.patient.toString() !== req.userId) {
       return res.status(403).json({ error: 'Not authorized to update this appointment' });
     }
 
-    // Only allow cancellation if appointment hasn't happened yet
     if (status === 'cancelled' && appointment.dateTime < new Date()) {
       return res.status(400).json({ error: 'Cannot cancel past appointments' });
     }
 
-    // Update allowed fields
     if (status) appointment.status = status;
     if (notes) appointment.notes = notes;
 
@@ -156,7 +144,6 @@ export const getDoctorAvailability = async (req: Request, res: Response) => {
       status: { $ne: 'cancelled' }
     }).select('dateTime duration');
 
-    // Create array of busy time slots
     const busySlots = appointments.map(apt => ({
       start: apt.dateTime,
       end: new Date(apt.dateTime.getTime() + apt.duration * 60000)

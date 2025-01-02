@@ -19,14 +19,12 @@ interface AppointmentsSectionProps {
 }
 
 const styles: AppointmentsSectionStyles = {
-  // Main container layout
   container: {
     display: "flex",
     flexDirection: "column",
     gap: "1.5rem",
   },
 
-  // Header section styling
   header: {
     display: "flex",
     justifyContent: "space-between",
@@ -34,7 +32,6 @@ const styles: AppointmentsSectionStyles = {
     marginBottom: "1.5rem",
   },
 
-  // Schedule button styling
   scheduleButton: {
     padding: "0.75rem 1.5rem",
     background: "linear-gradient(135deg, #6366f1, #a855f7)",
@@ -48,14 +45,12 @@ const styles: AppointmentsSectionStyles = {
     gap: "0.5rem",
   },
 
-  // Appointments list container
   appointmentsList: {
     display: "flex",
     flexDirection: "column",
     gap: "1rem",
   },
 
-  // Individual appointment card
   appointmentCard: {
     backgroundColor: "#2d3748",
     borderRadius: "0.5rem",
@@ -65,27 +60,23 @@ const styles: AppointmentsSectionStyles = {
     alignItems: "center",
   },
 
-  // Appointment information section
   appointmentInfo: {
     display: "flex",
     alignItems: "start",
     gap: "1rem",
   },
 
-  // Icon container styling
   iconContainer: {
     padding: "0.75rem",
     backgroundColor: "#374151",
     borderRadius: "0.5rem",
   },
 
-  // Appointment title styling
   appointmentTitle: {
     fontWeight: "600",
     marginBottom: "0.25rem",
   },
 
-  // Appointment details styling
   appointmentDetails: {
     fontSize: "0.875rem",
     color: "#9ca3af",
@@ -94,21 +85,18 @@ const styles: AppointmentsSectionStyles = {
     gap: "0.25rem",
   },
 
-  // Appointment metadata styling
   appointmentMeta: {
     display: "flex",
     alignItems: "center",
     gap: "0.5rem",
   },
 
-  // Status container styling
   statusContainer: {
     display: "flex",
     alignItems: "center",
     gap: "1rem",
   },
 
-  // Action buttons styling
   actionButton: {
     padding: "0.25rem 0.75rem",
     borderRadius: "0.375rem",
@@ -118,17 +106,14 @@ const styles: AppointmentsSectionStyles = {
     cursor: "pointer",
   },
 
-  // Confirm button specific styling
   confirmButton: {
     backgroundColor: "#22c55e",
   },
 
-  // Cancel button specific styling
   cancelButton: {
     backgroundColor: "#ef4444",
   },
 
-  // Empty state styling
   emptyState: {
     textAlign: "center",
     padding: "3rem",
@@ -137,7 +122,6 @@ const styles: AppointmentsSectionStyles = {
     borderRadius: "0.5rem",
   },
 
-  // Modal styling
   modal: {
     position: "fixed",
     top: 0,
@@ -152,7 +136,6 @@ const styles: AppointmentsSectionStyles = {
     backdropFilter: "blur(5px)",
   },
 
-  // Modal content styling
   modalContent: {
     backgroundColor: "#1a1a1a",
     padding: "2.5rem",
@@ -162,7 +145,6 @@ const styles: AppointmentsSectionStyles = {
     border: "1px solid rgba(255,255,255,0.1)",
   },
 
-  // Modal header styling
   modalHeader: {
     display: "flex",
     justifyContent: "space-between",
@@ -170,13 +152,11 @@ const styles: AppointmentsSectionStyles = {
     marginBottom: "1.5rem",
   },
 
-  // Modal title styling
   modalTitle: {
     fontSize: "1.25rem",
     fontWeight: "600",
   },
 
-  // Close button styling
   closeButton: {
     padding: "0.25rem",
     backgroundColor: "#2d2d2d",
@@ -186,12 +166,10 @@ const styles: AppointmentsSectionStyles = {
     cursor: "pointer",
   },
 
-  // Form group styling
   formGroup: {
     marginBottom: "1rem",
   },
 
-  // Label styling
   label: {
     display: "block",
     fontSize: "0.875rem",
@@ -199,7 +177,6 @@ const styles: AppointmentsSectionStyles = {
     marginBottom: "0.5rem",
   },
 
-  // Input styling
   input: {
     width: "100%",
     padding: "0.5rem",
@@ -210,7 +187,6 @@ const styles: AppointmentsSectionStyles = {
     fontSize: "0.9rem",
   },
 
-  // Select styling
   select: {
     width: "100%",
     padding: "0.5rem",
@@ -221,7 +197,6 @@ const styles: AppointmentsSectionStyles = {
     fontSize: "0.9rem",
   },
 
-  // Textarea styling
   textarea: {
     width: "100%",
     padding: "0.5rem",
@@ -233,14 +208,12 @@ const styles: AppointmentsSectionStyles = {
     resize: "none",
   },
 
-  // Modal actions container
   modalActions: {
     display: "flex",
     gap: "0.75rem",
     marginTop: "1.5rem",
   },
 
-  // Modal cancel button
   modalCancelButton: {
     flex: 1,
     padding: "0.5rem",
@@ -251,7 +224,6 @@ const styles: AppointmentsSectionStyles = {
     cursor: "pointer",
   },
 
-  // Modal submit button
   modalSubmitButton: {
     flex: 1,
     padding: "0.5rem",
@@ -262,7 +234,6 @@ const styles: AppointmentsSectionStyles = {
     cursor: "pointer",
   },
 
-  // Previously missing properties
   appointmentContainer: {
     display: "flex",
     alignItems: "center",
@@ -582,4 +553,3 @@ const AppointmentsSection: React.FC<AppointmentsSectionProps> = ({
   );
 };
 
-export default AppointmentsSection;
