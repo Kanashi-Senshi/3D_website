@@ -1,4 +1,4 @@
-// DicomUploadsSection.tsx
+// src/DicomUploadsSection.tsx
 import React, { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DicomUploadsSectionStyles } from "./types/styles";

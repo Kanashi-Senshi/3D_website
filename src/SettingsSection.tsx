@@ -1,4 +1,3 @@
-// SettingsSection.tsx
 // src/SettingsSection.tsx
 import React, { useState } from "react";
 import { User, Mail, Lock, Bell, Shield } from "lucide-react";

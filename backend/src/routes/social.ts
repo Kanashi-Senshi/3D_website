@@ -1,4 +1,3 @@
-// routes/social.ts
 // backend/src/routes/social.ts
 import express from 'express';
 import { auth, doctorOnly } from '@middleware/auth';

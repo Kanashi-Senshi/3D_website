@@ -1,4 +1,4 @@
-// types/styles.ts
+// src/types/styles.ts
 import { CSSProperties } from 'react';
 
 interface ExtendedCSSProperties extends CSSProperties {

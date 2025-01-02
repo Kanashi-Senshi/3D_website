@@ -1,4 +1,4 @@
-// STLFilesSection.tsx
+// src/STLFilesSection.tsx
 import React, { useState } from "react";
 import { Upload, FolderOpen, Share2, Trash2, Eye } from "lucide-react";
 import { STLFilesSectionStyles } from "./types/styles";

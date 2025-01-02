@@ -1,4 +1,4 @@
-// AboutSection/InteractiveModel.tsx
+// src/AboutSection/InteractiveModel.tsx
 import React from "react";
 import { InteractiveModelStyles } from "../types/styles";
 

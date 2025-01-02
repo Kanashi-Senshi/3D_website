@@ -1,3 +1,4 @@
+// backend/src/controllers/user.controller.ts
 import { Request, Response } from 'express';
 import mongoose, { Types } from 'mongoose';
 import { User, IUser } from '@models/User';

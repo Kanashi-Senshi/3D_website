@@ -1,4 +1,4 @@
-// AboutSection/TechSpecs.tsx
+// src/AboutSection/TechSpecs.tsx
 import React from "react";
 import { FileType, Cpu, Lock } from "lucide-react";
 import { TechSpecsStyles, BlockStyles } from "../types/styles";

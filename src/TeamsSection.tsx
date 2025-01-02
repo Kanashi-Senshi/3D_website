@@ -1,4 +1,4 @@
-// TeamsSection.tsx
+// src/TeamsSection.tsx
 import React, { useState } from "react";
 import {
   FolderPlus,

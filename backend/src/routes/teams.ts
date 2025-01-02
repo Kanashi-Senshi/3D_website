@@ -1,4 +1,3 @@
-// routes/teams.ts
 // backend/src/routes/teams.ts
 import express from 'express';
 import { auth, doctorOnly } from '@middleware/auth';

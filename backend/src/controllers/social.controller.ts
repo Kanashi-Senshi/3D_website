@@ -1,3 +1,4 @@
+// backend/src/controllers/social.controller.ts
 import { Request, Response } from 'express';
 import { Community } from '@models/Community';
 import { Post } from '@models/Post';

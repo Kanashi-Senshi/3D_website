@@ -1,4 +1,3 @@
-// routes/files.ts
 // backend/src/routes/files.ts
 import express from 'express';
 import { auth, doctorOnly } from '@middleware/auth';

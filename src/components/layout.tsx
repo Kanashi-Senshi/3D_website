@@ -1,4 +1,3 @@
-// components/layout.tsx
 // src/components/layout.tsx
 import React from "react";
 

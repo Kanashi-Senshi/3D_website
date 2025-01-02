@@ -1,3 +1,4 @@
+// backend/src/controllers/appointment.controller.ts
 import { Request, Response } from 'express';
 import { Appointment } from '@models/Appointment';
 import { User } from '@models/User';

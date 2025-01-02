@@ -1,4 +1,4 @@
-// AboutSection/AboutSection.tsx
+// src/AboutSection/AboutSection.tsx
 import React from "react";
 import {
   Microscope,

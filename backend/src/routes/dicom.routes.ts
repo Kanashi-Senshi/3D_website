@@ -1,4 +1,4 @@
-// backend/src/routes/dicom.route.ts
+// backend/src/routes/dicom.routes.ts
 import express from 'express';
 import { auth, doctorOnly } from '../middleware/auth';
 import multer from 'multer';

@@ -1,4 +1,3 @@
-// routes/appointments.ts
 // backend/src/routes/appointments.ts
 import express from 'express';
 import { auth, doctorOnly } from '@middleware/auth';

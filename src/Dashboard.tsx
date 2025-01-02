@@ -1,3 +1,4 @@
+// src/Dashboard.tsx
 import React, { useState } from "react";
 import { DashboardData, ActivityItem } from './types/dashboard';
 import {

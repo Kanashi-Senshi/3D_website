@@ -1,4 +1,4 @@
-// AppointmentsSection.tsx
+// src/AppointmentsSection.tsx
 import React, { useState } from "react";
 import { Calendar, Clock, User, X } from "lucide-react";
 import { AppointmentsSectionStyles } from "./types/styles";

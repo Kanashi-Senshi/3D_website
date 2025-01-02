@@ -1,4 +1,3 @@
-// models/Community.ts
 // backend/models/Community.ts
 import mongoose, { Document, Schema } from 'mongoose';
 

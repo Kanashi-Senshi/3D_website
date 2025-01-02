@@ -1,4 +1,3 @@
-// AboutSection/index.ts
 // src/AboutSection/index.ts
 
 export { default as AboutSection } from "./AboutSection";
