@@ -5,7 +5,7 @@ export interface User {
   id: string;
   name: string;
   email: string;
-  role: "doctor" | "patient";
+  role: 'doctor' | 'patient';
 }
 
 export interface DashboardProps {

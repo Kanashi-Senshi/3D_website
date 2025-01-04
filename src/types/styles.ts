@@ -213,6 +213,16 @@ export interface STLFilesSectionStyles {
 
 export interface DicomUploadsSectionStyles {
   container: CSSProperties;
+  header: CSSProperties;
+  uploadButton: CSSProperties;
+  uploadModal: CSSProperties;
+  modalContent: CSSProperties;
+  modalHeader: CSSProperties;
+  modalTitle: CSSProperties;
+  closeButton: CSSProperties;
+  uploadArea: CSSProperties;
+  uploadAreaActive: CSSProperties;
+  input: CSSProperties;
   tabs: CSSProperties;
   tabButton: CSSProperties;
   activeTabButton: CSSProperties;
@@ -240,4 +250,15 @@ export interface DicomUploadsSectionStyles {
   paginationButtonDisabled: CSSProperties;
   paginationNumbers: CSSProperties;
   paginationActive: CSSProperties;
+  emptyState: CSSProperties;
+  emptyStateIcon: CSSProperties;
+  emptyStateButton: CSSProperties;
+  filePreview: CSSProperties;
+  fileName: CSSProperties;
+  fileSize: CSSProperties;
+  disabledButton: CSSProperties;
+  folderStructure: CSSProperties;
+  folderItem: CSSProperties;
+  folderIcon: CSSProperties;
+  fileIcon: CSSProperties;
 }

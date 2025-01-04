@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { MedicalFile } from '@models/MedicalFile';
 import { User } from '@models/User';
 import { FileDocument } from '../types/express';
-import { supabase, generateFilePath, getFileExtension, isValidFileType, getSignedUrl } from '@config/supabase';
+import { supabase, generateFilePath, getFileExtension, isValidFileType, getSignedUrl } from '@/config/supabase';
 
 const ALLOWED_STL_TYPES = ['stl'];
 const ALLOWED_DICOM_TYPES = ['dcm', 'dicom'];

@@ -1,5 +1,5 @@
 // src/components/layout.tsx
-import React from "react";
+import React from 'react';
 
 interface LayoutProps {
   children: React.ReactNode;

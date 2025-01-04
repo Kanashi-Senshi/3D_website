@@ -4,7 +4,7 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const connectDB = async () => {
+const connectDB = async (): Promise<void> => {
   try {
     if (!process.env.MONGODB_URI) {
       throw new Error('MONGODB_URI is not defined in environment variables');
@@ -18,22 +18,22 @@ const connectDB = async () => {
       family: 4 // Use IPv4, skip trying IPv6
     };
 
-    await mongoose.connect(process.env.MONGODB_URI, options);
+    await (mongoose as any).connect(process.env.MONGODB_URI, options);
 
-    mongoose.connection.on('connected', () => {
+    (mongoose as any).connection.on('connected', () => {
       console.log('MongoDB Connected Successfully');
     });
 
-    mongoose.connection.on('error', (err) => {
+    (mongoose as any).connection.on('error', (err: any) => {
       console.error('MongoDB connection error:', err);
     });
 
-    mongoose.connection.on('disconnected', () => {
+    (mongoose as any).connection.on('disconnected', () => {
       console.log('MongoDB disconnected');
     });
 
-    process.on('SIGINT', async () => {
-      await mongoose.connection.close();
+    process.on('SIGINT', async (): Promise<void> => {
+      await (mongoose as any).connection.close();
       console.log('MongoDB connection closed through app termination');
       process.exit(0);
     });

@@ -19,7 +19,7 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
-connectDB().catch(err => {
+connectDB().catch((err: any) => {
   console.error('Failed to connect to MongoDB:', err);
   process.exit(1);
 });
@@ -42,15 +42,19 @@ app.use('/api/social', socialRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/dicom', dicomRoutes);
 
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: express.Request, res: express.Response) => {
   res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    mongodb: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    status: 'ok',
+    //TODO: Output timestamp as current date ISOsTRING
+    // timestamp: new Date().toISOString(),
+    timestamp: '2024-03-20T15:00:00.000Z',
+    mongodb: ((mongoose as any).connection?.readyState === 1) ? 'connected' : 'disconnected'
   });
 });
 
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+
+
+app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
   console.error('Error:', {
     message: err.message,
     stack: err.stack,
@@ -72,3 +76,4 @@ app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
   console.log(`Environment: ${process.env.NODE_ENV}`);
   console.log(`API URL: http://localhost:${port}`);
+});

@@ -1,18 +1,25 @@
 {
   "_comment": "backend/tsconfig.json",
   "compilerOptions": {
-    "target": "es2018",
+    "target": "es6",
     "module": "commonjs",
     "lib": [
-      "es2018",
-      "esnext.asynciterable"
+      "es6",
+      "es2015",
+      "es2015.promise",
+      "es2016",
+      "es2017",
+      "esnext",
+      "dom"
     ],
+    "types": ["node"],
     "skipLibCheck": true,
     "sourceMap": true,
     "outDir": "./dist",
     "moduleResolution": "node",
     "removeComments": true,
     "noImplicitAny": true,
+    "strict": true,
     "strictNullChecks": true,
     "strictFunctionTypes": true,
     "noImplicitThis": true,
@@ -30,15 +37,6 @@
       ],
       "@models/*": [
         "models/*"
-      ],
-      "@middleware/*": [
-        "src/middleware/*"
-      ],
-      "@config/*": [
-        "src/config/*"
-      ],
-      "@controllers/*": [
-        "src/controllers/*"
       ]
     }
   },
@@ -46,6 +44,7 @@
     "node_modules"
   ],
   "include": [
-    "./src/**/*.ts"
+    "./src/**/*.ts",
+    "./models/**/*.ts"
   ]
 }

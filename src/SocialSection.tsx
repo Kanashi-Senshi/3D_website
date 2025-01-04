@@ -1,9 +1,9 @@
 // src/SocialSection.tsx
-import React, { useState } from "react";
-import { Heart, MessageCircle, Share2 } from "lucide-react";
+import React, { useState } from 'react';
+import { Heart, MessageCircle, Share2 } from 'lucide-react';
 
 const SocialSection: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<"Feed" | "Communities">("Feed");
+  const [activeTab, setActiveTab] = useState<'Feed' | 'Communities'>('Feed');
 
   return (
     <div className="w-full min-h-screen bg-[#0d1117] text-white">
@@ -12,14 +12,14 @@ const SocialSection: React.FC = () => {
 
         {/* Navigation Tabs */}
         <div className="flex">
-          {["Feed", "Communities"].map((tab) => (
+          {['Feed', 'Communities'].map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab as "Feed" | "Communities")}
+              onClick={() => setActiveTab(tab as 'Feed' | 'Communities')}
               className={`px-6 py-2 text-sm font-medium border-b-2 transition-colors ${
                 activeTab === tab
-                  ? "border-blue-500 text-blue-500"
-                  : "border-transparent text-gray-400 hover:text-gray-300"
+                  ? 'border-blue-500 text-blue-500'
+                  : 'border-transparent text-gray-400 hover:text-gray-300'
               }`}
             >
               {tab}
@@ -37,12 +37,9 @@ const SocialSection: React.FC = () => {
             <div className="flex items-center gap-2 mb-1">
               <span className="text-lg font-medium">Tech Solutions Inc.</span>
             </div>
-            <div className="text-sm text-gray-400 mb-3">
-              Posted in Prototyping • 15/03/2024
-            </div>
+            <div className="text-sm text-gray-400 mb-3">Posted in Prototyping • 15/03/2024</div>
             <p className="text-gray-300 mb-4">
-              Just launched our new 3D printing service! Check out these amazing
-              prototypes.
+              Just launched our new 3D printing service! Check out these amazing prototypes.
             </p>
             <div className="flex gap-4">
               <button className="flex items-center gap-2 text-gray-400 hover:text-gray-300">
@@ -91,12 +88,7 @@ const SocialSection: React.FC = () => {
           <div className="bg-[#161b22] rounded-lg p-4">
             <h3 className="text-lg font-medium mb-4">Trending Topics</h3>
             <div className="flex flex-wrap gap-2">
-              {[
-                "3D Printing",
-                "Product Design",
-                "Manufacturing",
-                "Innovation",
-              ].map((topic) => (
+              {['3D Printing', 'Product Design', 'Manufacturing', 'Innovation'].map((topic) => (
                 <span
                   key={topic}
                   className="inline-block px-2 py-1 bg-[#1f2937] rounded text-sm text-gray-300"

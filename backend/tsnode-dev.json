@@ -1,0 +1,17 @@
+{
+    "_commment": "backend/tsnode-dev.json",
+    "compilerOptions": {
+      "module": "commonjs",
+      "target": "es6",
+      "moduleResolution": "node",
+      "sourceMap": true
+    },
+    "include": ["src/**/*", "models/**/*"],
+    "ts-node": {
+      "transpileOnly": true,
+      "files": true,
+      "compilerOptions": {
+        "rootDir": "."
+      }
+    }
+  }

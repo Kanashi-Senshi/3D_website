@@ -19,7 +19,7 @@ api.interceptors.request.use((config) => {
 export const dicomService = {
   uploadFiles: async (files: File[], patientId: string) => {
     const formData = new FormData();
-    files.forEach(file => formData.append('files', file));
+    files.forEach((file) => formData.append('files', file));
     formData.append('patientId', patientId);
     const { data } = await api.post('/dicom/upload', formData);
     return data;
@@ -38,17 +38,17 @@ export const dicomService = {
   updateOrderStatus: async (orderId: string, status: string, progress: number) => {
     const { data } = await api.patch(`/dicom/orders/${orderId}/status`, {
       status,
-      progress
+      progress,
     });
     return data;
   },
 
   addCollaboratingDoctor: async (orderId: string, doctorId: string) => {
     const { data } = await api.post(`/dicom/orders/${orderId}/collaborators`, {
-      doctorId
+      doctorId,
     });
     return data;
-  }
+  },
 };
 
 export const dashboardService = {
@@ -64,3 +64,4 @@ export const dashboardService = {
     const { data } = await api.get(`/users/${userId}/files`);
     return data;
   },
+};

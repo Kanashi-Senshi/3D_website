@@ -1,9 +1,13 @@
 // backend/src/controllers/user.controller.ts
 import { Request, Response } from 'express';
-import mongoose, { Types } from 'mongoose';
-import { User, IUser } from '@models/User';
-import { Appointment } from '@models/Appointment';
+import mongoose, { Types } from "mongoose";
+import { User } from '@models/User';
+import { IAppointment } from '@models/Appointment';
 import { MedicalFile } from '@models/MedicalFile';
+
+
+const Appointment = mongoose.model<IAppointment>('Appointment');
+
 
 export const getDashboardStats = async (req: Request, res: Response) => {
   try {
@@ -180,3 +184,4 @@ export const removeConnection = async (req: Request, res: Response) => {
     console.error('Remove connection error:', error);
     return res.status(500).json({ error: 'Error removing connection' });
   }
+};

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { Community } from '@models/Community';
 import { Post } from '@models/Post';
 import { User } from '@models/User';
-import { uploadFile, generateFilePath, FileType } from '@config/supabase';
+import { uploadFile, generateFilePath, FileType } from '@/config/supabase';
 
 export const createCommunity = async (req: Request, res: Response) => {
   try {

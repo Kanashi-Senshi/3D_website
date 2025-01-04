@@ -1,7 +1,7 @@
 // backend/src/routes/social.ts
 import express from 'express';
-import { auth, doctorOnly } from '@middleware/auth';
-import { upload } from '@middleware/upload';
+import { auth, doctorOnly } from '@/middleware/auth';
+import { upload } from '@/middleware/upload';
 import {
   createCommunity,
   getCommunities,
@@ -11,7 +11,7 @@ import {
   addComment,
   toggleLike,
   toggleCommentLike
-} from '@controllers/social.controller';
+} from '@/controllers/social.controller';
 
 const router = express.Router();
 

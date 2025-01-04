@@ -1,8 +1,10 @@
 // backend/models/User.ts
-import mongoose, { Document, Schema, Types } from 'mongoose';
+import mongoose, { Schema } from 'mongoose';
+import Document from 'mongoose';
+// import Types from 'mongoose';
 import bcrypt from 'bcryptjs';
 
-export interface IUser extends Document {
+interface IUser extends Document {
   name: string;
   email: string;
   password: string;
@@ -10,11 +12,11 @@ export interface IUser extends Document {
   profilePicture?: string;
   specialization?: string;
   licenseNumber?: string;
-  patients?: Types.ObjectId[];
-  doctors?: Types.ObjectId[];
-  teams?: Types.ObjectId[];
-  following?: Types.ObjectId[];
-  followers?: Types.ObjectId[];
+  patients?: mongoose.Types.ObjectId[];
+  doctors?:  mongoose.Types.ObjectId[];
+  teams?:  mongoose.Types.ObjectId[];
+  following?:  mongoose.Types.ObjectId[];
+  followers?:  mongoose.Types.ObjectId[];
   createdAt: Date;
   updatedAt: Date;
 }
@@ -105,4 +107,6 @@ userSchema.set('toJSON', {
     return ret;
   }
 });
+
+export const User = mongoose.model<IUser>('User', userSchema);
 

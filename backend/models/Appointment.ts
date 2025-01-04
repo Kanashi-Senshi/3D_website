@@ -1,5 +1,6 @@
 // backend/models/Appointment.ts
-import mongoose, { Document, Schema } from 'mongoose';
+import mongoose, { Schema, Types, model } from 'mongoose';
+import type { Document } from 'mongoose';
 
 export interface IAppointment extends Document {
   doctor: mongoose.Types.ObjectId;
@@ -44,3 +45,4 @@ const appointmentSchema = new Schema<IAppointment>({
   timestamps: true
 });
 
+export const Appointment = mongoose.model<IAppointment>('Appointment', appointmentSchema);

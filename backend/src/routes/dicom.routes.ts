@@ -62,3 +62,4 @@ router.use((error: any, req: express.Request, res: express.Response, next: expre
   });
 });
 
+export default router;

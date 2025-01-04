@@ -1,8 +1,8 @@
 // src/AboutSection/index.ts
 
-export { default as AboutSection } from "./AboutSection";
-export { default as TechSpecs } from "./TechSpecs";
-export { default as InteractiveModel } from "./InteractiveModel";
+export { default as AboutSection } from './AboutSection';
+export { default as TechSpecs } from './TechSpecs';
+export { default as InteractiveModel } from './InteractiveModel';
 
 export interface BenefitCardProps {
   icon: React.ReactNode;

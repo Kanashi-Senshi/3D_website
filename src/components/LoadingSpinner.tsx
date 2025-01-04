@@ -6,20 +6,19 @@ interface LoadingSpinnerProps {
   color?: string;
 }
 
-export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ 
-  size = 40, 
-  color = '#6366F1' 
-}) => {
+export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 40, color = '#6366F1' }) => {
   return (
-    <div style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '2rem',
-      width: '100%',
-      height: '100%',
-      minHeight: '200px'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: '2rem',
+        width: '100%',
+        height: '100%',
+        minHeight: '200px',
+      }}
+    >
       <svg
         width={size}
         height={size}
@@ -35,15 +34,7 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
             }
           `}
         </style>
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-          stroke={color}
-          strokeWidth="4"
-          fill="none"
-          opacity="0.25"
-        />
+        <circle cx="12" cy="12" r="10" stroke={color} strokeWidth="4" fill="none" opacity="0.25" />
         <circle
           cx="12"
           cy="12"
@@ -57,3 +48,4 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({
       </svg>
     </div>
   );
+};

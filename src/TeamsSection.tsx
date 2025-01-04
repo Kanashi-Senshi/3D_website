@@ -1,5 +1,5 @@
 // src/TeamsSection.tsx
-import React, { useState } from "react";
+import React, { useState } from 'react';
 import {
   FolderPlus,
   Download,
@@ -9,8 +9,8 @@ import {
   ChevronRight,
   ChevronDown,
   X,
-} from "lucide-react";
-import { TeamsSectionStyles } from "./types/styles";
+} from 'lucide-react';
+import { TeamsSectionStyles } from './types/styles';
 
 interface TeamFile {
   id: string;
@@ -40,36 +40,36 @@ interface Team {
 
 const styles: TeamsSectionStyles = {
   folderItem: {
-    paddingLeft: "20px",
+    paddingLeft: '20px',
   },
   fileItem: {
-    paddingLeft: "40px",
+    paddingLeft: '40px',
   },
   modal: {
-    position: "fixed",
+    position: 'fixed',
     inset: 0,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    padding: "1rem",
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '1rem',
   },
   modalContent: {
-    backgroundColor: "#1F2937",
-    borderRadius: "0.5rem",
-    padding: "1.5rem",
-    width: "100%",
-    maxWidth: "28rem",
+    backgroundColor: '#1F2937',
+    borderRadius: '0.5rem',
+    padding: '1.5rem',
+    width: '100%',
+    maxWidth: '28rem',
   },
 };
 
 const TeamsSection: React.FC = () => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [showJoinModal, setShowJoinModal] = useState(false);
-  const [joinCode, setJoinCode] = useState("");
+  const [joinCode, setJoinCode] = useState('');
   const [expandedFolders, setExpandedFolders] = useState<string[]>([]);
   const [showCreateTeamModal, setShowCreateTeamModal] = useState(false);
-  const [newTeamName, setNewTeamName] = useState("");
+  const [newTeamName, setNewTeamName] = useState('');
 
   const handleCreateTeam = () => {
     if (!newTeamName) return;
@@ -77,19 +77,19 @@ const TeamsSection: React.FC = () => {
     const newTeam: Team = {
       id: Date.now().toString(),
       name: newTeamName,
-      members: ["Current User"],
+      members: ['Current User'],
       joinCode: Math.random().toString(36).substring(2, 8).toUpperCase(),
       rootFolder: {
-        id: "root",
-        name: "Root",
+        id: 'root',
+        name: 'Root',
         files: [],
         subfolders: [],
-        path: "/",
+        path: '/',
       },
     };
 
     setTeams([...teams, newTeam]);
-    setNewTeamName("");
+    setNewTeamName('');
     setShowCreateTeamModal(false);
   };
 
@@ -97,19 +97,15 @@ const TeamsSection: React.FC = () => {
     const team = teams.find((t) => t.joinCode === joinCode);
     if (team) {
       setTeams(
-        teams.map((t) =>
-          t.id === team.id
-            ? { ...t, members: [...t.members, "Current User"] }
-            : t
-        )
+        teams.map((t) => (t.id === team.id ? { ...t, members: [...t.members, 'Current User'] } : t))
       );
-      setJoinCode("");
+      setJoinCode('');
       setShowJoinModal(false);
     }
   };
 
   const handleCreateFolder = (teamId: string, parentPath: string) => {
-    const folderName = prompt("Enter folder name:");
+    const folderName = prompt('Enter folder name:');
     if (!folderName) return;
 
     setTeams(
@@ -124,10 +120,7 @@ const TeamsSection: React.FC = () => {
           path: `${parentPath}/${folderName}`,
         };
 
-        const addFolderToPath = (
-          folder: TeamFolder,
-          targetPath: string
-        ): TeamFolder => {
+        const addFolderToPath = (folder: TeamFolder, targetPath: string): TeamFolder => {
           if (folder.path === parentPath) {
             return {
               ...folder,
@@ -137,9 +130,7 @@ const TeamsSection: React.FC = () => {
 
           return {
             ...folder,
-            subfolders: folder.subfolders.map((sf) =>
-              addFolderToPath(sf, targetPath)
-            ),
+            subfolders: folder.subfolders.map((sf) => addFolderToPath(sf, targetPath)),
           };
         };
 
@@ -152,8 +143,8 @@ const TeamsSection: React.FC = () => {
   };
 
   const handleUploadFile = (teamId: string, folderPath: string) => {
-    const input = document.createElement("input");
-    input.type = "file";
+    const input = document.createElement('input');
+    input.type = 'file';
     input.multiple = true;
 
     input.onchange = (e) => {
@@ -163,9 +154,9 @@ const TeamsSection: React.FC = () => {
       const newFiles: TeamFile[] = Array.from(files).map((file) => ({
         id: Date.now().toString(),
         name: file.name,
-        type: file.type || "unknown",
+        type: file.type || 'unknown',
         size: `${(file.size / 1024).toFixed(1)} KB`,
-        uploadedBy: "Current User",
+        uploadedBy: 'Current User',
         timestamp: new Date().toISOString(),
         path: `${folderPath}/${file.name}`,
       }));
@@ -174,10 +165,7 @@ const TeamsSection: React.FC = () => {
         teams.map((team) => {
           if (team.id !== teamId) return team;
 
-          const addFilesToPath = (
-            folder: TeamFolder,
-            targetPath: string
-          ): TeamFolder => {
+          const addFilesToPath = (folder: TeamFolder, targetPath: string): TeamFolder => {
             if (folder.path === folderPath) {
               return {
                 ...folder,
@@ -187,9 +175,7 @@ const TeamsSection: React.FC = () => {
 
             return {
               ...folder,
-              subfolders: folder.subfolders.map((sf) =>
-                addFilesToPath(sf, targetPath)
-              ),
+              subfolders: folder.subfolders.map((sf) => addFilesToPath(sf, targetPath)),
             };
           };
 
@@ -220,17 +206,11 @@ const TeamsSection: React.FC = () => {
           <button
             onClick={() =>
               setExpandedFolders((prev) =>
-                isExpanded
-                  ? prev.filter((p) => p !== folder.path)
-                  : [...prev, folder.path]
+                isExpanded ? prev.filter((p) => p !== folder.path) : [...prev, folder.path]
               )
             }
           >
-            {isExpanded ? (
-              <ChevronDown size={16} />
-            ) : (
-              <ChevronRight size={16} />
-            )}
+            {isExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
           </button>
           <Folder size={16} className="text-blue-400" />
           <span>{folder.name}</span>
@@ -261,10 +241,7 @@ const TeamsSection: React.FC = () => {
             {folder.files
               .sort((a, b) => {
                 if (a.type !== b.type) return a.type.localeCompare(b.type);
-                return (
-                  new Date(b.timestamp).getTime() -
-                  new Date(a.timestamp).getTime()
-                );
+                return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
               })
               .map((file) => (
                 <div
@@ -277,14 +254,10 @@ const TeamsSection: React.FC = () => {
                   <span className="text-sm text-gray-400 ml-2">
                     {new Date(file.timestamp).toLocaleString()}
                   </span>
-                  <span className="text-sm text-gray-400 ml-2">
-                    {file.size}
-                  </span>
+                  <span className="text-sm text-gray-400 ml-2">{file.size}</span>
                 </div>
               ))}
-            {folder.subfolders.map((subfolder) =>
-              renderFolder(subfolder, teamId, level + 1)
-            )}
+            {folder.subfolders.map((subfolder) => renderFolder(subfolder, teamId, level + 1))}
           </div>
         )}
       </div>
@@ -317,12 +290,8 @@ const TeamsSection: React.FC = () => {
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-semibold">{team.name}</h3>
               <div className="flex items-center gap-4">
-                <span className="text-sm text-gray-400">
-                  Join Code: {team.joinCode}
-                </span>
-                <span className="text-sm text-gray-400">
-                  {team.members.length} members
-                </span>
+                <span className="text-sm text-gray-400">Join Code: {team.joinCode}</span>
+                <span className="text-sm text-gray-400">{team.members.length} members</span>
               </div>
             </div>
             {renderFolder(team.rootFolder, team.id)}
@@ -356,10 +325,7 @@ const TeamsSection: React.FC = () => {
               >
                 Cancel
               </button>
-              <button
-                onClick={handleJoinTeam}
-                className="flex-1 px-4 py-2 bg-blue-600 rounded-lg"
-              >
+              <button onClick={handleJoinTeam} className="flex-1 px-4 py-2 bg-blue-600 rounded-lg">
                 Join
               </button>
             </div>

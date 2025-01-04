@@ -17,7 +17,7 @@ declare global {
   }
 }
 
-export const auth = async (req: Request, res: Response, next: NextFunction): Promise<void | Response> => {
+export const auth = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try {
     const token = req.header('Authorization')?.replace('Bearer ', '');
 
@@ -34,7 +34,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction): Pro
       }
 
       req.user = user;
-      req.userId = user._id;
+      req.userId = user._id.toString();
       next();
     } catch (err) {
       if (err instanceof jwt.JsonWebTokenError) {
@@ -71,5 +71,3 @@ export const generateToken = (userId: string, role: string): string => {
     { expiresIn: '7d' }
   );
 };
-
-

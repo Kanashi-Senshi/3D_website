@@ -1,0 +1,145 @@
+<cline_ai_instructions>
+    <xml_tag_implementation>
+        <description>
+            Ensure strict adherence to XML tag usage for maintaining a consistent schema in vector database operations.
+        </description>
+    </xml_tag_implementation>
+
+    <cline_instructions>
+        <system_prompt>
+            <file_processing>
+                <description>
+                    Extract file paths based on file type:
+                    - TypeScript: From first-line comments (e.g., "// src/LandingPage.tsx").
+                    - JSON: From "_comment" fields.
+                    - Other: Use direct path references.
+                    Maintain file path comments in both TypeScript and JSON files.
+                    When modifying a file, prioritize finding similar implementations in sibling files within the same parent directory.
+                </description>
+            </file_processing>
+
+            <vector_database_operations>
+                <description>
+                    Generate embeddings for:
+                    - Code semantics.
+                    - File structure.
+                    - Dependencies.
+                    When fixing code, perform localized searches starting with sibling files in the same parent directory.
+                </description>
+            </vector_database_operations>
+
+            <context_management>
+                <description>
+                    Capture:
+                    - File relationships and dependencies.
+                    - Component hierarchies.
+                    - Data flow patterns.
+                    - API integrations.
+                </description>
+            </context_management>
+
+            <response_generation>
+                <description>
+                    Provide confidence scores.
+                    Maintain file path comments in both TypeScript and JSON files.
+                    Reference specific code sections using path-based addressing.
+                    Clearly indicate when a sibling file template was used for modification.
+                </description>
+            </response_generation>
+        </system_prompt>
+
+        <code_generation_guidelines>
+            <core_principles>
+                <principle>Path-based architecture for code generation</principle>
+                <principle>Complete functionality without placeholders</principle>
+                <principle>Hierarchical dependency tracking</principle>
+                <principle>Intelligent caching strategies</principle>
+            </core_principles>
+            <generation_requirements>
+                <path_structure>
+                    <requirement>Use full relative file paths for all code generation</requirement>
+                    <requirement>Maintain repository structure integrity</requirement>
+                    <requirement>Apply path-specific templates and standards</requirement>
+                    <requirement>Track dependency networks</requirement>
+                </path_structure>
+                <code_completeness>
+                    <requirement>Generate fully functional code</requirement>
+                    <requirement>Include all necessary dependencies</requirement>
+                    <requirement>Implement error handling</requirement>
+                    <requirement>Provide comprehensive documentation</requirement>
+                    <requirement>Avoid partial implementations</requirement>
+                </code_completeness>
+                <artifact_control>
+                    <requirement>Execute precise file path updates</requirement>
+                    <requirement>Use unique section identifiers</requirement>
+                    <requirement>Maintain complete file content</requirement>
+                    <requirement>Track dependency updates</requirement>
+                    <requirement>Structure caching hierarchically</requirement>
+                </artifact_control>
+            </generation_requirements>
+            <component_architecture>
+                <development_standards>
+                    <standard>Prioritize stateless components</standard>
+                    <standard>Manage effects and cleanup</standard>
+                    <standard>Implement strategic memoization</standard>
+                    <standard>Follow location-based patterns</standard>
+                    <standard>Track component relationships</standard>
+                </development_standards>
+                <performance>
+                    <standard>Configure lazy loading by structure</standard>
+                    <standard>Implement structural code splitting</standard>
+                    <standard>Utilize worker processes</standard>
+                    <standard>Optimize asset management</standard>
+                    <standard>Cache component hierarchies</standard>
+                </performance>
+            </component_architecture>
+            <data_management>
+                <api_standards>
+                    <standard>Generate efficient endpoints</standard>
+                    <standard>Cache responses by path</standard>
+                    <standard>Compress data transfers</standard>
+                    <standard>Batch requests</standard>
+                    <standard>Minimize response nesting</standard>
+                </api_standards>
+                <token_efficiency>
+                    <standard>Path-based template selection</standard>
+                    <standard>Strategic update patterns</standard>
+                    <standard>Structured cache configuration</standard>
+                    <standard>Optimize generation patterns</standard>
+                </token_efficiency>
+            </data_management>
+            <maintenance_patterns>
+                <updates>
+                    <standard>Path-targeted modifications</standard>
+                    <standard>Smart dependency handling</standard>
+                    <standard>Pattern caching and reuse</standard>
+                    <standard>Location-based templating</standard>
+                    <standard>Consistent update protocols</standard>
+                </updates>
+                <security>
+                    <standard>Path-specific security measures</standard>
+                    <standard>Structured access controls</standard>
+                    <standard>Location-based validation</standard>
+                    <standard>Error boundary implementation</standard>
+                    <standard>Rate limit configuration</standard>
+                </security>
+            </maintenance_patterns>
+            <architecture_management>
+                <implementation>
+                    <standard>Path analysis and templating</standard>
+                    <standard>Pattern-based generation</standard>
+                    <standard>Dependency updates</standard>
+                    <standard>Cache strategy execution</standard>
+                    <standard>Requirement validation</standard>
+                </implementation>
+                <dependencies>
+                    <standard>Import-based tracking</standard>
+                    <standard>Automated updates</standard>
+                    <standard>Relationship caching</standard>
+                    <standard>Strategic invalidation</standard>
+                    <standard>Dependency cycle prevention</standard>
+                </dependencies>
+            </architecture_management>
+        </code_generation_guidelines>
+    </cline_instructions>
+</cline_ai_instructions>

@@ -1,5 +1,5 @@
 // src/hooks/useDashboardData.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { DashboardData } from '../types/dashboard';
 import axios from 'axios';
@@ -11,13 +11,13 @@ export const useDashboardData = () => {
   const [error, setError] = useState<Error | null>(null);
   const { user } = useAuth();
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
       const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-      
+
       if (!token || !user?.id) {
         throw new Error('Authentication required');
       }
@@ -27,8 +27,8 @@ export const useDashboardData = () => {
       const response = await axios.get(`${API_URL}/api/users/dashboard/stats`, {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
+          'Content-Type': 'application/json',
+        },
       });
 
       console.log('Dashboard response:', response.data);
@@ -43,7 +43,7 @@ export const useDashboardData = () => {
       if (axios.isAxiosError(err)) {
         const errMsg = err.response?.data?.error || err.response?.data?.details || err.message;
         setError(new Error(errMsg));
-        
+
         if (err.response?.status === 401) {
           localStorage.removeItem('token');
           sessionStorage.removeItem('token');
@@ -55,12 +55,13 @@ export const useDashboardData = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user?.id]); // Only recreate function when user.id changes
 
   useEffect(() => {
     if (user?.id) {
       fetchData();
     }
-  }, [user?.id]);
+  }, [user?.id, fetchData]); // Now fetchData is stable and won't cause unnecessary rerenders
 
   return { data, loading, error, refetch: fetchData };
+};

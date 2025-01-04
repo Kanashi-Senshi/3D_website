@@ -1,13 +1,13 @@
 // src/App.tsx
-import React from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./contexts/AuthContext";
-import LandingPage from "./LandingPage";
-import Dashboard from "./Dashboard";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import LandingPage from './LandingPage';
+import Dashboard from './Dashboard';
 
 const PrivateRoute: React.FC<{
   element: React.ReactElement;
-  allowedRole?: "doctor" | "patient";
+  allowedRole?: 'doctor' | 'patient';
 }> = ({ element, allowedRole }) => {
   const { isAuthenticated, user } = useAuth();
 
@@ -39,7 +39,7 @@ const AppContent: React.FC = () => {
               <LandingPage onLogin={() => {}} />
             ) : (
               <Navigate
-                to={user?.role === "doctor" ? "/doctor-dashboard" : "/patient-dashboard"}
+                to={user?.role === 'doctor' ? '/doctor-dashboard' : '/patient-dashboard'}
                 replace
               />
             )
@@ -48,19 +48,13 @@ const AppContent: React.FC = () => {
         <Route
           path="/doctor-dashboard/*"
           element={
-            <PrivateRoute
-              element={<Dashboard onLogout={handleLogout} />}
-              allowedRole="doctor"
-            />
+            <PrivateRoute element={<Dashboard onLogout={handleLogout} />} allowedRole="doctor" />
           }
         />
         <Route
           path="/patient-dashboard/*"
           element={
-            <PrivateRoute
-              element={<Dashboard onLogout={handleLogout} />}
-              allowedRole="patient"
-            />
+            <PrivateRoute element={<Dashboard onLogout={handleLogout} />} allowedRole="patient" />
           }
         />
         <Route path="*" element={<Navigate to="/" replace />} />
@@ -77,3 +71,4 @@ const App: React.FC = () => {
   );
 };
 
+export default App;

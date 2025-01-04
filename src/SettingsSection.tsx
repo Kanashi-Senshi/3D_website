@@ -1,7 +1,7 @@
 // src/SettingsSection.tsx
-import React, { useState } from "react";
-import { User, Mail, Lock, Bell, Shield } from "lucide-react";
-import { Alert, AlertDescription, AlertTitle } from "./components/ui/alert";
+import React, { useState } from 'react';
+import { User, Mail, Lock, Bell, Shield } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from './components/ui/alert';
 
 interface NotificationSettings {
   email: boolean;
@@ -44,9 +44,9 @@ const SettingsSection = () => {
 
       <div
         style={{
-          backgroundColor: "#1E293B",
-          borderRadius: "0.5rem",
-          padding: "1.5rem",
+          backgroundColor: '#1E293B',
+          borderRadius: '0.5rem',
+          padding: '1.5rem',
         }}
       >
         <div className="space-y-6">
@@ -54,28 +54,26 @@ const SettingsSection = () => {
           <div className="space-y-4">
             <h3
               style={{
-                fontSize: "1.125rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
+                fontSize: '1.125rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
               }}
             >
               <User size={20} />
               Profile Information
             </h3>
-            <form onSubmit={handleSubmit}>
-              {/* Form content remains the same */}
-            </form>
+            <form onSubmit={handleSubmit}>{/* Form content remains the same */}</form>
           </div>
 
           {/* Notifications section with fixed typing */}
           <div className="space-y-4">
             <h3
               style={{
-                fontSize: "1.125rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
+                fontSize: '1.125rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
               }}
             >
               <Bell size={20} />
@@ -83,60 +81,51 @@ const SettingsSection = () => {
             </h3>
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
               }}
             >
-              {(
-                Object.entries(notifications) as [
-                  keyof NotificationSettings,
-                  boolean
-                ][]
-              ).map(([key, value]) => (
-                <div
-                  key={key}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                  }}
-                >
-                  <span
-                    style={{ color: "#94A3B8", textTransform: "capitalize" }}
-                  >
-                    {key}
-                  </span>
-                  <button
-                    onClick={() => handleNotificationToggle(key)}
+              {(Object.entries(notifications) as [keyof NotificationSettings, boolean][]).map(
+                ([key, value]) => (
+                  <div
+                    key={key}
                     style={{
-                      width: "2.75rem",
-                      height: "1.5rem",
-                      backgroundColor: value ? "#4F46E5" : "#4A5568",
-                      borderRadius: "9999px",
-                      position: "relative",
-                      transition: "background-color 0.2s",
-                      cursor: "pointer",
-                      border: "none",
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
                     }}
                   >
-                    <span
+                    <span style={{ color: '#94A3B8', textTransform: 'capitalize' }}>{key}</span>
+                    <button
+                      onClick={() => handleNotificationToggle(key)}
                       style={{
-                        position: "absolute",
-                        width: "1rem",
-                        height: "1rem",
-                        backgroundColor: "white",
-                        borderRadius: "50%",
-                        transition: "transform 0.2s",
-                        transform: `translateX(${
-                          value ? "1.5rem" : "0.25rem"
-                        })`,
-                        top: "0.25rem",
+                        width: '2.75rem',
+                        height: '1.5rem',
+                        backgroundColor: value ? '#4F46E5' : '#4A5568',
+                        borderRadius: '9999px',
+                        position: 'relative',
+                        transition: 'background-color 0.2s',
+                        cursor: 'pointer',
+                        border: 'none',
                       }}
-                    />
-                  </button>
-                </div>
-              ))}
+                    >
+                      <span
+                        style={{
+                          position: 'absolute',
+                          width: '1rem',
+                          height: '1rem',
+                          backgroundColor: 'white',
+                          borderRadius: '50%',
+                          transition: 'transform 0.2s',
+                          transform: `translateX(${value ? '1.5rem' : '0.25rem'})`,
+                          top: '0.25rem',
+                        }}
+                      />
+                    </button>
+                  </div>
+                )
+              )}
             </div>
           </div>
 
@@ -144,10 +133,10 @@ const SettingsSection = () => {
           <div className="space-y-4">
             <h3
               style={{
-                fontSize: "1.125rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
+                fontSize: '1.125rem',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
               }}
             >
               <Shield size={20} />
@@ -155,23 +144,23 @@ const SettingsSection = () => {
             </h3>
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.75rem",
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.75rem',
               }}
             >
               <button
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  backgroundColor: "#2D3748",
-                  border: "none",
-                  borderRadius: "0.375rem",
-                  color: "white",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  cursor: "pointer",
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#2D3748',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  color: 'white',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  cursor: 'pointer',
                 }}
               >
                 <span>Change Password</span>
@@ -179,16 +168,16 @@ const SettingsSection = () => {
               </button>
               <button
                 style={{
-                  width: "100%",
-                  padding: "0.75rem",
-                  backgroundColor: "#2D3748",
-                  border: "none",
-                  borderRadius: "0.375rem",
-                  color: "white",
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  cursor: "pointer",
+                  width: '100%',
+                  padding: '0.75rem',
+                  backgroundColor: '#2D3748',
+                  border: 'none',
+                  borderRadius: '0.375rem',
+                  color: 'white',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  cursor: 'pointer',
                 }}
               >
                 <span>Two-Factor Authentication</span>
@@ -200,21 +189,21 @@ const SettingsSection = () => {
           {/* Buttons section remains the same */}
           <div
             style={{
-              paddingTop: "1rem",
-              display: "flex",
-              justifyContent: "flex-end",
-              gap: "1rem",
+              paddingTop: '1rem',
+              display: 'flex',
+              justifyContent: 'flex-end',
+              gap: '1rem',
             }}
           >
             <button
               type="button"
               style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#2D3748",
-                color: "white",
-                borderRadius: "0.375rem",
-                border: "none",
-                cursor: "pointer",
+                padding: '0.5rem 1rem',
+                backgroundColor: '#2D3748',
+                color: 'white',
+                borderRadius: '0.375rem',
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
               Cancel
@@ -222,12 +211,12 @@ const SettingsSection = () => {
             <button
               onClick={handleSubmit}
               style={{
-                padding: "0.5rem 1rem",
-                backgroundColor: "#4F46E5",
-                color: "white",
-                borderRadius: "0.375rem",
-                border: "none",
-                cursor: "pointer",
+                padding: '0.5rem 1rem',
+                backgroundColor: '#4F46E5',
+                color: 'white',
+                borderRadius: '0.375rem',
+                border: 'none',
+                cursor: 'pointer',
               }}
             >
               Save Changes

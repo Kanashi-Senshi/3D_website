@@ -1,13 +1,13 @@
 // backend/src/routes/appointments.ts
 import express from 'express';
-import { auth, doctorOnly } from '@middleware/auth';
+import { auth, doctorOnly } from '@/middleware/auth';
 import {
   createAppointment,
   getAppointments,
   getAppointmentById,
   updateAppointment,
   getDoctorAvailability
-} from '@controllers/appointment.controller';
+} from '@/controllers/appointment.controller';
 
 const router = express.Router();
 

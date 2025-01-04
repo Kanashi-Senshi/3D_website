@@ -1,13 +1,19 @@
-// src/controllers/dicom.controller.ts
+// backend/src/controllers/dicom.controller.ts
 import { Request, Response } from 'express';
-import { MedicalFile } from '@models/MedicalFile';
+import { MedicalFile, IMedicalFile } from '@models/MedicalFile';
 import { User } from '@models/User';
 import { uploadFile, generateFilePath } from '../config/supabase';
 import { v4 as uuidv4 } from 'uuid';
+import mongoose from 'mongoose';
 
 interface DicomOrderStatus {
   state: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
   progress: number;
+}
+
+interface ExtendedIMedicalFile extends IMedicalFile {
+  collaboratingDoctors?: mongoose.Types.ObjectId[];
+  orderId?: string;
 }
 
 export const uploadDicomFiles = async (req: Request, res: Response) => {
@@ -19,49 +25,79 @@ export const uploadDicomFiles = async (req: Request, res: Response) => {
     const { patientId } = req.body;
     const userId = req.userId;
 
-    // Validate patient exists
-    const patient = await User.findById(patientId);
-    if (!patient) {
-      return res.status(404).json({ error: 'Patient not found' });
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!patientId) {
+      return res.status(400).json({ error: 'Patient ID is required' });
+    }
+
+    // For registered patients, validate they exist
+    if (mongoose.Types.ObjectId.isValid(patientId)) {
+      const patient = await User.findById(patientId);
+      if (!patient) {
+        return res.status(404).json({ error: 'Patient not found' });
+      }
     }
 
     // Create new order ID
     const orderId = uuidv4();
+
+    // Process files and maintain folder structure
     const files = req.files as Express.Multer.File[];
+    const folderStructure = new Map<string, Express.Multer.File[]>();
 
-    // Process each file
-    const uploadPromises = files.map(async (file) => {
-      try {
-        // Generate unique file path
-        const filePath = generateFilePath(userId, 'dicom', file.originalname);
+    files.forEach(file => {
+      // Get the directory path from the originalname
+      const pathParts = file.originalname.split('/');
+      pathParts.pop(); // Remove the filename
+      const dirPath = pathParts.join('/');
 
-        // Upload to Supabase
-        await uploadFile(filePath, file.buffer, file.mimetype, 'dicom');
-
-        // Create medical file record
-        const medicalFile = new MedicalFile({
-          fileName: file.originalname,
-          fileType: 'dicom',
-          filePath,
-          uploadedBy: userId,
-          patient: patientId,
-          size: file.size,
-          orderId,
-          status: {
-            state: 'PENDING',
-            progress: 0
-          },
-          collaboratingDoctors: [],
-          notes: [],
-          tags: ['DICOM']
-        });
-
-        return medicalFile.save();
-      } catch (error) {
-        console.error('File upload error:', error);
-        throw error;
+      if (!folderStructure.has(dirPath)) {
+        folderStructure.set(dirPath, []);
       }
+      folderStructure.get(dirPath)?.push(file);
     });
+
+    // Process each folder
+    const uploadPromises: Promise<any>[] = [];
+
+    for (const [folderPath, folderFiles] of folderStructure.entries()) {
+      for (const file of folderFiles) {
+        const uploadPromise = (async () => {
+          try {
+            // Generate unique file path preserving folder structure
+            const filePath = generateFilePath(userId.toString(), 'dicom', `${folderPath}/${file.originalname}`);
+
+            // Upload to Supabase
+            await uploadFile(filePath, file.buffer, file.mimetype, 'dicom');
+
+            // Create medical file record
+            const medicalFile = new MedicalFile({
+              fileName: file.originalname,
+              fileType: 'dicom',
+              filePath,
+              uploadedBy: userId,
+              patient: patientId,
+              size: file.size,
+              orderId,
+              status: 'processing',
+              notes: [],
+              tags: ['DICOM'],
+              folderPath: folderPath,
+              collaboratingDoctors: [] // Initialize empty array
+            });
+
+            return medicalFile.save();
+          } catch (error) {
+            console.error('File upload error:', error);
+            throw error;
+          }
+        })();
+        uploadPromises.push(uploadPromise);
+      }
+    }
 
     // Wait for all files to be processed
     await Promise.all(uploadPromises);
@@ -70,10 +106,7 @@ export const uploadDicomFiles = async (req: Request, res: Response) => {
       success: true,
       message: 'DICOM files uploaded successfully',
       orderId,
-      status: {
-        state: 'PENDING',
-        progress: 0
-      },
+      status: 'processing',
       creationDate: new Date().toISOString(),
       lastUpdate: new Date().toISOString()
     });
@@ -86,6 +119,7 @@ export const uploadDicomFiles = async (req: Request, res: Response) => {
     });
   }
 };
+
 
 export const getDicomOrders = async (req: Request, res: Response) => {
   try {
@@ -267,22 +301,27 @@ export const getOrderDetails = async (req: Request, res: Response) => {
     const { orderId } = req.params;
     const userId = req.userId;
 
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     const files = await MedicalFile.find({ orderId, uploadedBy: userId })
-      .populate('collaboratingDoctors', 'name email')
-      .populate('patient', 'name email')
+      .populate('collaboratingDoctors', 'name email role')
       .sort({ createdAt: -1 });
 
     if (files.length === 0) {
       return res.status(404).json({ error: 'Order not found' });
     }
 
+    const firstFile = files[0] as ExtendedIMedicalFile;
+
     const orderDetails = {
       orderId,
-      patientInfo: files[0].patient,
-      status: files[0].status,
-      collaboratingDoctors: files[0].collaboratingDoctors,
-      creationDate: files[0].createdAt,
-      lastUpdate: files[0].updatedAt,
+      patientInfo: firstFile.patient,
+      status: firstFile.status,
+      collaboratingDoctors: firstFile.collaboratingDoctors || [],
+      creationDate: firstFile.createdAt,
+      lastUpdate: firstFile.updatedAt,
       files: files.map(file => ({
         fileName: file.fileName,
         size: file.size,

@@ -1,6 +1,6 @@
 // backend/src/routes/teams.ts
 import express from 'express';
-import { auth, doctorOnly } from '@middleware/auth';
+import { auth, doctorOnly } from '@/middleware/auth';
 import {
   createTeam,
   getTeams,
@@ -8,7 +8,7 @@ import {
   joinTeam,
   leaveTeam,
   shareFile
-} from '@controllers/team.controller';
+} from '@/controllers/team.controller';
 
 const router = express.Router();
 

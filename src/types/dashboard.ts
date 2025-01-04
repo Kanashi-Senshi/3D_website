@@ -17,3 +17,4 @@ export interface ActivityItem {
   description: string;
   time: string;
   type: 'file' | 'appointment' | 'team';
+}

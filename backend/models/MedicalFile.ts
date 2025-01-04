@@ -2,11 +2,21 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IMedicalFile extends Document {
+  folderPath: {
+    type: String,
+    default: '/'
+  };
   fileName: string;
   fileType: 'stl' | 'dicom';
   filePath: string;
   uploadedBy: mongoose.Types.ObjectId;
-  patient: mongoose.Types.ObjectId;
+  // TODO: Add patient validation when patient account system is implemented
+    // For now, we'll store the patientId as a string identifier
+  // patient: mongoose.Types.ObjectId;
+  patient: {
+    type: String,  // Changed from ObjectId to String
+    required: true
+  },
   size: number;
   status: 'processing' | 'completed' | 'failed';
   notes: string[];
@@ -23,6 +33,10 @@ export interface IMedicalFile extends Document {
 }
 
 const medicalFileSchema = new Schema<IMedicalFile>({
+  folderPath: {
+    type: String,
+    default: '/'
+  },
   fileName: {
     type: String,
     required: true,

@@ -9,32 +9,40 @@ interface ErrorDisplayProps {
 
 export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onRetry }) => {
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      padding: '2rem',
-      backgroundColor: 'rgba(239, 68, 68, 0.1)',
-      borderRadius: '0.5rem',
-      color: '#EF4444',
-      gap: '1rem'
-    }}>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: '2rem',
+        backgroundColor: 'rgba(239, 68, 68, 0.1)',
+        borderRadius: '0.5rem',
+        color: '#EF4444',
+        gap: '1rem',
+      }}
+    >
       <AlertTriangle size={32} />
-      <div style={{
-        textAlign: 'center'
-      }}>
-        <h3 style={{
-          fontSize: '1.125rem',
-          fontWeight: '600',
-          marginBottom: '0.5rem'
-        }}>
+      <div
+        style={{
+          textAlign: 'center',
+        }}
+      >
+        <h3
+          style={{
+            fontSize: '1.125rem',
+            fontWeight: '600',
+            marginBottom: '0.5rem',
+          }}
+        >
           Error Loading Data
         </h3>
-        <p style={{
-          color: '#9CA3AF',
-          fontSize: '0.875rem'
-        }}>
+        <p
+          style={{
+            color: '#9CA3AF',
+            fontSize: '0.875rem',
+          }}
+        >
           {error.message || 'An unexpected error occurred.'}
         </p>
       </div>
@@ -52,10 +60,10 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onRetry }) =>
             border: 'none',
             cursor: 'pointer',
             fontSize: '0.875rem',
-            transition: 'background-color 0.2s ease'
+            transition: 'background-color 0.2s ease',
           }}
-          onMouseOver={e => (e.currentTarget.style.backgroundColor = '#DC2626')}
-          onMouseOut={e => (e.currentTarget.style.backgroundColor = '#EF4444')}
+          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#DC2626')}
+          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#EF4444')}
         >
           <RefreshCw size={16} />
           Try Again
@@ -63,3 +71,4 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({ error, onRetry }) =>
       )}
     </div>
   );
+};

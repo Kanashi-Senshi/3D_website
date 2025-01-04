@@ -1,13 +1,14 @@
 {
   "_comment": "backend/package.json",
-  "name": "cranioplasty-viewer-backend",
+  "name": "stl-cranioplasty-viewer-backend",
   "version": "1.0.0",
   "scripts": {
     "start": "node -r tsconfig-paths/register dist/server.js",
     "build": "tsc",
-    "dev":  "ts-node -r tsconfig-paths/register src/server.ts"  
+    "dev": "ts-node-dev -r tsconfig-paths/register src/server.ts",
+    "typecheck": "tsc --noEmit",
+    "clean": "rimraf dist"
   },
-
   "dependencies": {
     "@supabase/supabase-js": "^2.38.4",
     "bcryptjs": "^2.4.3",
@@ -20,13 +21,17 @@
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
-    "@types/bcryptjs": "^2.4.5",
+    "@types/bcryptjs": "^2.4.6",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
+    "@types/express-rate-limit": "^5.1.3",
     "@types/jsonwebtoken": "^9.0.7",
     "@types/multer": "^1.4.12",
-    "@types/node": "^20.8.7",
+    "@types/node": "^20.17.11",
+    "@types/uuid": "^10.0.0",
+    "rimraf": "^5.0.5",
     "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
     "typescript": "^5.2.2"
   }
 }

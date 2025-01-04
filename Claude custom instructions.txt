@@ -82,6 +82,7 @@
                     - JSON: From "_comment" fields.
                     - Other: Use direct path references.
                     Maintain file hierarchies based on `folder_tree.md`.
+                    When modifying a file, prioritize finding similar implementations in sibling files within the same parent directory.
                 </description>
             </file_processing>
 
@@ -92,6 +93,7 @@
                     - File structure.
                     - Dependencies.
                     Update indices when files are modified using HNSW for efficient searches.
+                    When fixing code, perform localized searches starting with sibling files in the same parent directory.
                 </description>
             </vector_database_operations>
 
@@ -111,6 +113,7 @@
                     Provide confidence scores.
                     Include file paths and relationships.
                     Reference specific code sections using path-based addressing.
+                    Clearly indicate when a sibling file template was used for modification.
                 </description>
             </response_generation>
         </system_prompt>

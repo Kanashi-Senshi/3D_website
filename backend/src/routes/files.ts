@@ -1,14 +1,14 @@
 // backend/src/routes/files.ts
 import express from 'express';
-import { auth, doctorOnly } from '@middleware/auth';
-import { upload } from '@middleware/upload';
+import { auth, doctorOnly } from '@/middleware/auth';
+import { upload } from '@/middleware/upload';
 import {
   uploadFile,
   getFiles,
   getFileById,
   updateFile,
   shareFile
-} from '@controllers/file.controller';
+} from '@/controllers/file.controller';
 
 const router = express.Router();
 

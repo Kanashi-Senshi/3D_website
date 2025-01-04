@@ -1,5 +1,5 @@
 // src/contexts/AuthContext.tsx
-import React, { useState, useEffect, createContext, useContext } from "react";
+import React, { useState, useEffect, createContext, useContext } from 'react';
 import { API_URL } from '../config';
 import axios from 'axios';
 
@@ -7,7 +7,7 @@ interface User {
   id: string;
   name: string;
   email: string;
-  role: "doctor" | "patient";
+  role: 'doctor' | 'patient';
 }
 
 interface AuthContextType {
@@ -17,7 +17,7 @@ interface AuthContextType {
     email: string;
     password: string;
     name: string;
-    role: "doctor" | "patient";
+    role: 'doctor' | 'patient';
   }) => Promise<User>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -25,9 +25,7 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
-  children,
-}) => {
+export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
@@ -52,11 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
   };
 
-  const login = async (
-    email: string,
-    password: string,
-    rememberMe: boolean
-  ): Promise<User> => {
+  const login = async (email: string, password: string, rememberMe: boolean): Promise<User> => {
     try {
       const response = await axios.post(`${API_URL}/api/auth/login`, {
         email,
@@ -82,12 +76,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     email: string;
     password: string;
     name: string;
-    role: "doctor" | "patient";
+    role: 'doctor' | 'patient';
   }): Promise<User> => {
     try {
       const response = await axios.post(`${API_URL}/api/auth/signup`, userData);
       const { user, token } = response.data;
-      
+
       localStorage.setItem('token', token);
       setUser(user);
       return user;
@@ -120,8 +114,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (context === undefined) {
-    throw new Error("useAuth must be used within an AuthProvider");
+    throw new Error('useAuth must be used within an AuthProvider');
   }
   return context;
 };
-

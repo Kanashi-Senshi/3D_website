@@ -1,8 +1,13 @@
 // backend/src/controllers/auth.controller.ts
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import { User } from "@models/User";
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import { config } from 'dotenv';
+
+// Initialize dotenv
+config();
 
 const generateToken = (userId: string) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET || 'fallback_secret', {
@@ -116,3 +121,4 @@ export const updateProfile = async (req: Request, res: Response) => {
     console.error('Update profile error:', error);
     return res.status(500).json({ error: 'Error updating profile' });
   }
+};
