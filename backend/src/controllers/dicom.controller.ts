@@ -1,130 +1,190 @@
 // backend/src/controllers/dicom.controller.ts
+import { DicomService, DicomFile } from '@/services/dicom.service';
 import { Request, Response } from 'express';
-import { MedicalFile, IMedicalFile } from '@models/MedicalFile';
+import { MedicalFile } from '@models/MedicalFile';
 import { User } from '@models/User';
-import { uploadFile, generateFilePath } from '../config/supabase';
-import { v4 as uuidv4 } from 'uuid';
+import { generateFilePath } from '../config/supabase';
 import mongoose from 'mongoose';
 
-interface DicomOrderStatus {
-  state: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
-  progress: number;
+interface ExtendedFile extends Express.Multer.File {
+  webkitRelativePath: string;
 }
 
-interface ExtendedIMedicalFile extends IMedicalFile {
-  collaboratingDoctors?: mongoose.Types.ObjectId[];
-  orderId?: string;
+interface FileInfo {
+  id: string;
+  name: string;
+  size: number;
+  status: string;
+  uploadDate: Date;
 }
 
-export const uploadDicomFiles = async (req: Request, res: Response) => {
+interface FolderStructure{
+  [path: string]: FileInfo[];
+}
+
+// Type guard to validate DicomFile properties
+const isDicomFile = (file: any): file is DicomFile => {
+  return file &&
+    typeof file.name === 'string' &&
+    typeof file.webkitRelativePath === 'string' &&
+    file.type !== undefined &&
+    typeof file.arrayBuffer === 'function' &&
+    typeof file.slice === 'function' &&
+    typeof file.stream === 'function' &&
+    typeof file.text === 'function';
+};
+
+
+// Convert Multer file to DicomFile
+const convertToDigomFile = (multerFile: ExtendedFile): DicomFile => {
+  return {
+    lastModified: Date.now(),
+    name: multerFile.originalname,
+    size: multerFile.size,
+    type: multerFile.mimetype,
+    webkitRelativePath: multerFile.webkitRelativePath,
+    arrayBuffer: async (): Promise<ArrayBuffer> => {
+      const buffer = new ArrayBuffer(multerFile.buffer.length);
+      new Uint8Array(buffer).set(new Uint8Array(multerFile.buffer));
+      return buffer;
+    },
+    slice: (start?: number, end?: number, contentType?: string) => {
+      const buffer = multerFile.buffer.slice(start, end);
+      return new Blob([buffer], { type: contentType || multerFile.mimetype });
+    },
+    stream: () => new ReadableStream({
+      start(controller) {
+        controller.enqueue(multerFile.buffer);
+        controller.close();
+      }
+    }),
+    text: async () => multerFile.buffer.toString('utf-8'),
+    bytes: async () => new Uint8Array(multerFile.buffer)
+  };
+};
+
+export const uploadDicomFiles = async (req: Request, res: Response): Promise<Response | void> => {
+  let sseConnection: Response | null = null;
+
   try {
-    if (!req.files || !Array.isArray(req.files) || req.files.length === 0) {
-      return res.status(400).json({ error: 'No files provided' });
-    }
-
-    const { patientId } = req.body;
     const userId = req.userId;
+    const { patientId } = req.body;
 
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    if (!patientId) {
-      return res.status(400).json({ error: 'Patient ID is required' });
+    // Validate patient exists if it's a registered patient
+    // if (patientId) {
+    //   const patient = await User.findById(patientId);
+    //   if (!patient) {
+    //     return res.status(404).json({ error: 'Patient not found' });
+    //   }
+    // }
+
+    // Setup SSE for progress tracking if client supports it
+    if (req.headers.accept?.includes('text/event-stream')) {
+      sseConnection = res.writeHead(200, {
+        'Content-Type': 'text/event-stream',
+        'Connection': 'keep-alive',
+        'Cache-Control': 'no-cache'
+      });
     }
 
-    // For registered patients, validate they exist
-    if (mongoose.Types.ObjectId.isValid(patientId)) {
-      const patient = await User.findById(patientId);
-      if (!patient) {
-        return res.status(404).json({ error: 'Patient not found' });
+    const multerFiles = req.files as ExtendedFile[];
+    const dicomFiles = multerFiles.map(convertToDigomFile);
+    const token = req.headers.authorization?.replace('Bearer ', '') || '';
+
+    // Initialize DICOM service with progress tracking
+    const dicomService = new DicomService(
+      process.env.API_URL || 'http://localhost:5000',
+      token,
+      (progress) => {
+        if (sseConnection) {
+          sseConnection.write(`data: ${JSON.stringify(progress)}\n\n`);
+        }
       }
+    );
+
+    
+    // Upload files and maintain folder structure
+    const result = await dicomService.uploadDicomFolder(dicomFiles, patientId);
+    if (!result.success) {
+      throw new Error(result.error);
     }
 
-    // Create new order ID
-    const orderId = uuidv4();
+    // Create medical file records with folder structure
+    const medicalFiles = await Promise.all(
+      dicomFiles.map(async (file) => {
+        const folderPath = file.webkitRelativePath.split('/').slice(0, -1).join('/');
+        const filePath = generateFilePath(userId, 'dicom', file.webkitRelativePath);
 
-    // Process files and maintain folder structure
-    const files = req.files as Express.Multer.File[];
-    const folderStructure = new Map<string, Express.Multer.File[]>();
+        const medicalFile = new MedicalFile({
+          fileName: file.name,
+          fileType: 'dicom',
+          filePath,
+          folderPath,
+          uploadedBy: userId,
+          patient: patientId,
+          size: file.size,
+          status: 'processing',
+          notes: [],
+          tags: ['DICOM'],
+          sharedWith: []
+        });
 
-    files.forEach(file => {
-      // Get the directory path from the originalname
-      const pathParts = file.originalname.split('/');
-      pathParts.pop(); // Remove the filename
-      const dirPath = pathParts.join('/');
+        return medicalFile.save();
+      })
+    );
 
-      if (!folderStructure.has(dirPath)) {
-        folderStructure.set(dirPath, []);
-      }
-      folderStructure.get(dirPath)?.push(file);
-    });
-
-    // Process each folder
-    const uploadPromises: Promise<any>[] = [];
-
-    for (const [folderPath, folderFiles] of folderStructure.entries()) {
-      for (const file of folderFiles) {
-        const uploadPromise = (async () => {
-          try {
-            // Generate unique file path preserving folder structure
-            const filePath = generateFilePath(userId.toString(), 'dicom', `${folderPath}/${file.originalname}`);
-
-            // Upload to Supabase
-            await uploadFile(filePath, file.buffer, file.mimetype, 'dicom');
-
-            // Create medical file record
-            const medicalFile = new MedicalFile({
-              fileName: file.originalname,
-              fileType: 'dicom',
-              filePath,
-              uploadedBy: userId,
-              patient: patientId,
-              size: file.size,
-              orderId,
-              status: 'processing',
-              notes: [],
-              tags: ['DICOM'],
-              folderPath: folderPath,
-              collaboratingDoctors: [] // Initialize empty array
-            });
-
-            return medicalFile.save();
-          } catch (error) {
-            console.error('File upload error:', error);
-            throw error;
-          }
-        })();
-        uploadPromises.push(uploadPromise);
-      }
-    }
-
-    // Wait for all files to be processed
-    await Promise.all(uploadPromises);
-
-    return res.status(201).json({
+    // Send final success response
+    const response = {
       success: true,
       message: 'DICOM files uploaded successfully',
-      orderId,
-      status: 'processing',
-      creationDate: new Date().toISOString(),
-      lastUpdate: new Date().toISOString()
-    });
+      totalFiles: dicomFiles.length,
+      totalSize: dicomFiles.reduce((acc, file) => acc + file.size, 0),
+      files: medicalFiles.map(file => ({
+        id: file._id,
+        name: file.fileName,
+        path: file.folderPath,
+        size: file.size,
+        status: file.status
+      }))
+    };
+
+    if (sseConnection) {
+      sseConnection.write(`data: ${JSON.stringify({ ...response, type: 'complete' })}\n\n`);
+      sseConnection.end();
+    } else {
+      return res.status(201).json(response);
+    }
 
   } catch (error) {
     console.error('DICOM upload error:', error);
-    return res.status(500).json({ 
+
+    const errorResponse = {
       error: 'Error uploading DICOM files',
-      details: error instanceof Error ? error.message : 'Unknown error'
-    });
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId: req.headers['X-Request-ID']
+    };
+
+    if (sseConnection) {
+      sseConnection.write(`data: ${JSON.stringify({ ...errorResponse, type: 'error' })}\n\n`);
+      sseConnection.end();
+    } else {
+      return res.status(500).json(errorResponse);
+    }
   }
 };
-
 
 export const getDicomOrders = async (req: Request, res: Response) => {
   try {
     const { status } = req.query;
     const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
 
     // Parse status filter
     let statusFilter: string[] = [];
@@ -134,72 +194,49 @@ export const getDicomOrders = async (req: Request, res: Response) => {
       statusFilter = ['COMPLETED'];
     }
 
-    // Aggregate orders
-    const orders = await MedicalFile.aggregate([
+    // Get files with folder structure
+    const files = await MedicalFile.aggregate([
       {
         $match: {
-          uploadedBy: userId,
-          'status.state': { $in: statusFilter }
+          uploadedBy: new mongoose.Types.ObjectId(userId),
+          status: { $in: statusFilter }
         }
       },
       {
         $group: {
-          _id: '$orderId',
-          patientId: { $first: '$patient' },
-          status: { $first: '$status' },
-          collaboratingDoctors: { $first: '$collaboratingDoctors' },
-          creationDate: { $first: '$createdAt' },
-          lastUpdate: { $max: '$updatedAt' },
-          fileCount: { $sum: 1 }
+          _id: '$folderPath',
+          files: { $push: '$$ROOT' },
+          totalSize: { $sum: '$size' },
+          count: { $sum: 1 }
         }
       },
       {
-        $lookup: {
-          from: 'users',
-          localField: 'collaboratingDoctors',
-          foreignField: '_id',
-          as: 'doctorDetails'
-        }
-      },
-      {
-        $project: {
-          orderId: '$_id',
-          patientId: 1,
-          status: 1,
-          collaboratingDoctors: {
-            $map: {
-              input: '$doctorDetails',
-              as: 'doctor',
-              in: { $concat: ['Dr. ', '$doctor.name'] }
-            }
-          },
-          fileCount: 1,
-          creationDate: {
-            $dateToString: {
-              format: '%Y-%m-%d',
-              date: '$creationDate'
-            }
-          },
-          lastUpdate: {
-            $dateToString: {
-              format: '%Y-%m-%d',
-              date: '$lastUpdate'
-            }
-          }
-        }
-      },
-      {
-        $sort: { creationDate: -1 }
+        $sort: { '_id': 1 }
       }
     ]);
 
-    return res.json(orders);
+    return res.json({
+      success: true,
+      folders: files.map(folder => ({
+        path: folder._id,
+        fileCount: folder.count,
+        totalSize: folder.totalSize,
+        files: folder.files.map((file: { _id: string; fileName: string; size: number; status: string; createdAt: Date }) => ({
+          id: file._id,
+          name: file.fileName,
+          size: file.size,
+          status: file.status,
+          uploadDate: file.createdAt
+        }))
+      }))
+    });
 
   } catch (error) {
     console.error('Get DICOM orders error:', error);
-    return res.status(500).json({ 
+    return res.status(500).json({
       error: 'Error fetching DICOM orders',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId: req.headers['X-Request-ID']
     });
   }
 };
@@ -208,13 +245,18 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   try {
     const { orderId } = req.params;
     const { status, progress } = req.body as {
-      status: DicomOrderStatus['state'];
+      status: 'PENDING' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
       progress: number;
     };
     const userId = req.userId;
 
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
     // Validate status
-    if (!['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'].includes(status)) {
+    const validStatuses = ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED'];
+    if (!validStatuses.includes(status)) {
       return res.status(400).json({ error: 'Invalid status' });
     }
 
@@ -226,9 +268,9 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
       },
       {
         $set: {
-          'status.state': status,
-          'status.progress': progress,
-          updatedAt: new Date()
+          status,
+          'processingProgress.current': progress,
+          'processingProgress.updatedAt': new Date()
         }
       }
     );
@@ -247,7 +289,8 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
     console.error('Update order status error:', error);
     return res.status(500).json({ 
       error: 'Error updating order status',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId: req.headers['X-Request-ID']
     });
   }
 };
@@ -257,6 +300,10 @@ export const addCollaboratingDoctor = async (req: Request, res: Response) => {
     const { orderId } = req.params;
     const { doctorId } = req.body;
     const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
 
     // Validate doctor exists and is actually a doctor
     const doctor = await User.findOne({ _id: doctorId, role: 'doctor' });
@@ -291,7 +338,8 @@ export const addCollaboratingDoctor = async (req: Request, res: Response) => {
     console.error('Add collaborating doctor error:', error);
     return res.status(500).json({ 
       error: 'Error adding collaborating doctor',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId: req.headers['X-Request-ID']
     });
   }
 };
@@ -307,26 +355,39 @@ export const getOrderDetails = async (req: Request, res: Response) => {
 
     const files = await MedicalFile.find({ orderId, uploadedBy: userId })
       .populate('collaboratingDoctors', 'name email role')
+      .populate('patient', 'name email')
       .sort({ createdAt: -1 });
 
     if (files.length === 0) {
       return res.status(404).json({ error: 'Order not found' });
     }
 
-    const firstFile = files[0] as ExtendedIMedicalFile;
+    // Get first file for order-level information
+    const firstFile = files[0];
 
     const orderDetails = {
       orderId,
       patientInfo: firstFile.patient,
       status: firstFile.status,
-      collaboratingDoctors: firstFile.collaboratingDoctors || [],
-      creationDate: firstFile.createdAt,
-      lastUpdate: firstFile.updatedAt,
-      files: files.map(file => ({
-        fileName: file.fileName,
-        size: file.size,
-        uploadDate: file.createdAt
-      }))
+      collaboratingDoctors: firstFile.sharedWith,
+      createdAt: firstFile.createdAt,
+      updatedAt: firstFile.updatedAt,
+      folderStructure: files.reduce<FolderStructure>((acc, file) => {
+        const path = file.folderPath || '/';
+        if (!acc[path]) {
+          acc[path] = [];
+        }
+        acc[path].push({
+          id: file._id,
+          name: file.fileName,
+          size: file.size,
+          status: file.status,
+          uploadDate: file.createdAt
+        });
+        return acc;
+      }, {} as Record<string, any[]>),
+      totalFiles: files.length,
+      totalSize: files.reduce((sum, file) => sum + file.size, 0)
     };
 
     return res.json(orderDetails);
@@ -335,7 +396,57 @@ export const getOrderDetails = async (req: Request, res: Response) => {
     console.error('Get order details error:', error);
     return res.status(500).json({ 
       error: 'Error fetching order details',
-      details: error instanceof Error ? error.message : 'Unknown error'
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId: req.headers['X-Request-ID']
+    });
+  }
+};
+
+export const updateDicomStatus = async (req: Request, res: Response) => {
+  try {
+    const { fileId } = req.params;
+    const { status, progress } = req.body;
+    const userId = req.userId;
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    const file = await MedicalFile.findOneAndUpdate(
+      { 
+        _id: fileId,
+        uploadedBy: userId
+      },
+      {
+        $set: {
+          status,
+          'processingProgress.current': progress,
+          'processingProgress.updatedAt': new Date()
+        }
+      },
+      { new: true }
+    );
+
+    if (!file) {
+      return res.status(404).json({ error: 'File not found' });
+    }
+
+    return res.json({
+      success: true,
+      file: {
+        id: file._id,
+        name: file.fileName,
+        status: file.status,
+        progress: progress
+      }
+    });
+
+  } catch (error) {
+    console.error('Update DICOM status error:', error);
+    return res.status(500).json({
+      error: 'Error updating DICOM status',
+      details: error instanceof Error ? error.message : 'Unknown error',
+      requestId: req.headers['X-Request-ID']
     });
   }
 };

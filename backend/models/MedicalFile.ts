@@ -2,10 +2,8 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 export interface IMedicalFile extends Document {
-  folderPath: {
-    type: String,
-    default: '/'
-  };
+  // _id: mongoose.Types.ObjectId;
+  folderPath: string;
   fileName: string;
   fileType: 'stl' | 'dicom';
   filePath: string;

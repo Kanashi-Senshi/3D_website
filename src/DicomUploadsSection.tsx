@@ -471,7 +471,7 @@ const DicomUploadsSection: React.FC = () => {
   const handleUpload = async () => {
     if (selectedFiles.length === 0 || !patientId) return;
 
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
     if (!token) {
       setUploadError('Authentication token not found');
       return;

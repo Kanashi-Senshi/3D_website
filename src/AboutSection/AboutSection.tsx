@@ -224,25 +224,25 @@ const AboutSection: React.FC = () => {
         icon: <Microscope size={24} color="#60A5FA" />,
         title: 'Enhanced Diagnosis',
         description:
-          'Transform complex medical data into clear, interactive 3D visualizations for better diagnosis accuracy.',
+          'Transform complex health imaging data into clear, interactive 3D visualizations for better diagnosis accuracy.',
       },
       {
         icon: <Share2 size={24} color="#60A5FA" />,
         title: 'Seamless Sharing',
         description:
-          'Easily share and collaborate on medical models with colleagues and other healthcare professionals.',
+          'Easily share and collaborate on 3D models with colleagues and other healthcare professionals.',
       },
       {
         icon: <Users size={24} color="#60A5FA" />,
         title: 'Patient Communication',
         description:
-          'Improve patient understanding with clear 3D visualizations of their medical conditions and treatment plans.',
+          'Improve patient understanding with clear 3D visualizations of their health conditions and treatment plans.',
       },
       {
         icon: <LayoutGrid size={24} color="#60A5FA" />,
         title: 'Complete Platform',
         description:
-          'One unified platform for all your medical imaging conversion and collaboration needs.',
+          'One unified platform for all your health imaging conversion and collaboration needs.',
       },
     ],
     []
@@ -253,19 +253,19 @@ const AboutSection: React.FC = () => {
       {
         icon: <FileInput size={20} color="white" />,
         title: 'Image Upload',
-        description: 'Upload your DICOM or other medical imaging files securely to our platform.',
+        description: 'Upload your DICOM or other health imaging files securely to our platform.',
       },
       {
         icon: <Settings size={20} color="white" />,
         title: 'Processing',
         description:
-          'Advanced algorithms process and segment your medical images with high precision.',
+          'Advanced algorithms process and segment your DICOM images with high precision.',
       },
       {
         icon: <Zap size={20} color="white" />,
         title: '3D Generation',
         description:
-          'Convert processed images into detailed, accurate 3D models ready for viewing.',
+          'Convert processed images into detailed, accurate 3D virtual models ready for viewing, virtual resection, and reconstruction.',
       },
       {
         icon: <FileOutput size={20} color="white" />,
@@ -282,9 +282,9 @@ const AboutSection: React.FC = () => {
       <div style={styles.backgroundGradient} />
       <div style={styles.contentWrapper}>
         <div style={styles.header}>
-          <h2 style={styles.title}>Transform Medical Imaging</h2>
+          <h2 style={styles.title}>Transform Health Imaging</h2>
           <p style={styles.subtitle}>
-            Experience the future of medical imaging with our advanced 3D conversion technology.
+            Experience the future of health imaging with our advanced 3D conversion technology.
             Enhance your diagnostic capabilities and improve patient care through better
             visualization.
           </p>
@@ -311,7 +311,7 @@ const AboutSection: React.FC = () => {
         <div style={styles.cta}>
           <h3 style={styles.ctaTitle}>Ready to Get Started?</h3>
           <p style={styles.ctaText}>
-            Join healthcare professionals worldwide who trust our platform for their medical imaging
+            Join healthcare professionals worldwide who trust our platform for their health imaging
             needs.
           </p>
           <button style={styles.ctaButton}>

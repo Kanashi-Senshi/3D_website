@@ -13,7 +13,7 @@ export const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-export type FileType = 'stl' | 'dicom' | 'post-image';
+export type FileType = 'stl' | 'dcm' | 'post-image';
 
 export const generateFilePath = (userId: string, fileType: FileType, fileName: string) => {
   const timestamp = Date.now();
@@ -32,7 +32,7 @@ export const isValidFileType = (fileType: string, allowedTypes: string[]): boole
 export const getBucketName = (fileType: FileType): string => {
   switch (fileType) {
     case 'stl':
-    case 'dicom':
+    case 'dcm':
       return 'medical-files';
     case 'post-image':
       return 'social-images';

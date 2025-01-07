@@ -259,7 +259,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 WebkitTextFillColor: 'transparent',
               }}
             >
-              Advanced Medical Imaging Solutions
+              Advanced Health Imaging Solutions
             </h2>
             <p
               style={{
@@ -268,7 +268,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin }) => {
                 marginBottom: '2rem',
               }}
             >
-              Connecting doctors and patients with state-of-the-art DICOM processing and
+              Connecting doctors, engineers and patients with state-of-the-art DICOM processing and
               collaboration tools.
             </p>
             <GetStartedButton />
