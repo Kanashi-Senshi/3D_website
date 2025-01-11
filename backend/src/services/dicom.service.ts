@@ -28,30 +28,23 @@ export class DicomService {
     private onProgress?: (progress: UploadProgress) => void
   ) {}
 
-  private async validateDicomHeader(file: File): Promise<boolean> {
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (!e.target?.result) {
-          resolve(false);
-          return;
-        }
-
-        const buffer = Buffer.from(e.target.result as ArrayBuffer);
-        // Check for DICOM magic number at offset 128
-        const header = Array.from(buffer.slice(128, 132));
-        
-        const isValid = DicomService.VALID_DICOM_HEADERS.some(validHeader =>
-          validHeader.every((byte, i) => byte === header[i])
-        );
-
-        resolve(isValid);
-      };
-
-      // Read first 132 bytes for DICOM header
-      const blob = file.slice(0, 132);
-      reader.readAsArrayBuffer(blob);
-    });
+  private async validateDicomHeader(file: DicomFile): Promise<boolean> {
+    try {
+      // Get the first 132 bytes of the file
+      const buffer = await file.arrayBuffer();
+      const headerBytes = new Uint8Array(buffer.slice(0, 132));
+      
+      // Check for DICOM magic number at offset 128
+      const header = Array.from(headerBytes.slice(128, 132));
+      
+      return DicomService.VALID_DICOM_HEADERS.some(validHeader =>
+        validHeader.every((byte, i) => byte === header[i])
+      );
+    } catch (error) {
+      console.error('Error validating DICOM header:', error);
+      // If we can't validate the header, assume it's valid and let the server handle validation
+      return true;
+    }
   }
 
   private async validateDicomFile(file: DicomFile): Promise<{ valid: boolean; error?: string }> {

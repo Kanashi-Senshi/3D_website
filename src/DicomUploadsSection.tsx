@@ -384,26 +384,35 @@ const DicomUploadsSection: React.FC = () => {
   };
 
   const validateFiles = (files: FileWithPath[]): { valid: boolean; error?: string } => {
-    const maxFileSize = 100 * 1024 * 1024; // 100MB limit
-    const invalidFiles = files.filter((file) => {
-      const isValidType =
-        file.name.toLowerCase().endsWith('.dcm') ||
-        file.name.toLowerCase().endsWith('') ||
-        file.name.toLowerCase().endsWith('.dicom');
-      const isValidSize = file.size <= maxFileSize;
-      return !isValidType || !isValidSize;
-    });
+    try {
+      const maxFileSize = 100 * 1024 * 1024; // 100MB limit
+      const invalidFiles = files.filter((file) => {
+        const fileName = file.name.toLowerCase();
+        const isValidType = fileName.endsWith('.dcm') || 
+                          fileName.endsWith('.dicom') || 
+                          !fileName.includes('.'); // For files without extension
+        const isValidSize = file.size <= maxFileSize;
+        return !isValidType || !isValidSize;
+      });
 
-    if (invalidFiles.length > 0) {
+      if (invalidFiles.length > 0) {
+        const invalidFilesList = invalidFiles
+          .map((f) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`)
+          .join(', ');
+        return {
+          valid: false,
+          error: `Invalid files detected: ${invalidFilesList}. Files must be DICOM format and under 100MB.`
+        };
+      }
+
+      return { valid: true };
+    } catch (error) {
+      console.error('File validation error:', error);
       return {
         valid: false,
-        error: `Invalid files detected: ${invalidFiles
-          .map((f) => `${f.name} (${(f.size / 1024 / 1024).toFixed(2)}MB)`)
-          .join(', ')}`,
+        error: 'Error validating files. Please try again.'
       };
     }
-
-    return { valid: true };
   };
 
   const handleDrop = async (e: React.DragEvent) => {
@@ -424,11 +433,16 @@ const DicomUploadsSection: React.FC = () => {
           } else {
             const file = item.getAsFile();
             if (file) {
-              Object.defineProperty(file, 'webkitRelativePath', {
-                value: file.name,
-                writable: false,
-              });
-              filesList.push(file as FileWithPath);
+              const fileWithPath = file as FileWithPath;
+              // Only set webkitRelativePath if it's not already set
+              if (!fileWithPath.webkitRelativePath) {
+                Object.defineProperty(fileWithPath, 'webkitRelativePath', {
+                  value: file.name,
+                  writable: false,
+                  configurable: true
+                });
+              }
+              filesList.push(fileWithPath);
             }
           }
         }

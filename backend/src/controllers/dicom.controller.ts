@@ -101,12 +101,24 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
     }
 
     const multerFiles = req.files as ExtendedFile[];
+    console.log('Raw multerFiles:', {
+      count: multerFiles?.length || 0,
+      firstFile: multerFiles?.[0] ? {
+        originalname: multerFiles[0].originalname,
+        filename: multerFiles[0].fieldname,
+        size: multerFiles[0].size,
+        path: multerFiles[0].webkitRelativePath,
+        // Log all properties of the first file
+        allProps: Object.keys(multerFiles[0]),
+        buffer: multerFiles[0].buffer ? 'Buffer exists' : 'No buffer',
+      } : 'No files'
+    });
 
-    console.log('Received files:', multerFiles.map(file => ({
-      name: file.originalname,
-      size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
-      path: file.webkitRelativePath
-    })));
+    // console.log('Received files:', multerFiles.map(file => ({
+    //   name: file.originalname,
+    //   size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+    //   path: file.webkitRelativePath
+    // })));
 
     // Track memory usage
     const memoryUsage = process.memoryUsage();
@@ -151,7 +163,9 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
     // Create medical file records with folder structure
     const medicalFiles = await Promise.all(
       dicomFiles.map(async (file) => {
-        const folderPath = file.webkitRelativePath.split('/').slice(0, -1).join('/');
+        const relativePath = file.webkitRelativePath || file.name;
+        const pathParts = relativePath.split('/');
+        const folderPath = pathParts.length > 1 ? pathParts.slice(0, -1).join('/') : '';
         const filePath = generateFilePath(userId, 'dicom', file.webkitRelativePath);
 
         const medicalFile = new MedicalFile({
