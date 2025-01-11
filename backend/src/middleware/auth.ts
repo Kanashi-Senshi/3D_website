@@ -19,24 +19,38 @@ declare global {
 
 export const auth = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-
+    console.log('Auth middleware - Headers:', req.headers); // Log all headers
+    
+    const authHeader = req.header('Authorization');
+    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
+    
+    const token = authHeader?.replace('Bearer ', '');
+    console.log('Extracted token:', token ? 'Token found' : 'No token');
+    
     if (!token) {
+      console.log('Token validation failed: No token provided');
       throw new Error('No token provided');
     }
 
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+      console.log('Token verification:', decoded ? 'Success' : 'Failed');
+      console.log('Decoded payload:', { userId: decoded.userId }); // Log user ID from token
+      
       const user = await User.findById(decoded.userId);
+      console.log('User lookup:', user ? 'Found' : 'Not found');
 
       if (!user) {
+        console.log('User validation failed: User not found');
         throw new Error('User not found');
       }
 
       req.user = user;
       req.userId = user._id.toString();
+      console.log('Auth successful for user:', req.userId);
       next();
     } catch (err) {
+      console.log('Token verification error:', err);
       if (err instanceof jwt.JsonWebTokenError) {
         return res.status(401).json({ error: 'Invalid token' });
       }
@@ -46,6 +60,7 @@ export const auth = async (req: Request, res: Response, next: NextFunction): Pro
       throw err;
     }
   } catch (error) {
+    console.log('Auth middleware error:', error);
     res.status(401).json({ 
       error: 'Authentication failed',
       message: error instanceof Error ? error.message : 'Please authenticate'

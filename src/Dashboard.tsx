@@ -404,7 +404,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <button onClick={() => setIsSidebarOpen(!isSidebarOpen)} style={styles.menuButton}>
           {isSidebarOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-        <h1 style={styles.appTitle}>Medical Dashboard</h1>
+        <h1 style={styles.appTitle}>Dashboard</h1>
       </div>
 
       {/* Sidebar */}

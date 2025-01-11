@@ -70,6 +70,15 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
     const userId = req.userId;
     const { patientId } = req.body;
 
+    console.log('Starting DICOM upload:', {
+      userId,
+      contentLength: req.headers['content-length'],
+      contentType: req.headers['content-type'],
+      filesCount: req.files?.length || 0,
+      timestamp: new Date().toISOString()
+    });
+    console.log('Patient ID from request:', patientId);
+
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
@@ -92,8 +101,34 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
     }
 
     const multerFiles = req.files as ExtendedFile[];
+
+    console.log('Received files:', multerFiles.map(file => ({
+      name: file.originalname,
+      size: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+      path: file.webkitRelativePath
+    })));
+
+    // Track memory usage
+    const memoryUsage = process.memoryUsage();
+    console.log('Memory usage during upload:', {
+      heapUsed: (memoryUsage.heapUsed / 1024 / 1024).toFixed(2) + ' MB',
+      heapTotal: (memoryUsage.heapTotal / 1024 / 1024).toFixed(2) + ' MB',
+      rss: (memoryUsage.rss / 1024 / 1024).toFixed(2) + ' MB',
+    });
+
+    // Add error handler for request
+    req.on('error', (error) => {
+      console.error('Upload request error:', error);
+    });
+
+    // Add error handler for response
+    res.on('error', (error) => {
+      console.error('Upload response error:', error);
+    });
+
     const dicomFiles = multerFiles.map(convertToDigomFile);
     const token = req.headers.authorization?.replace('Bearer ', '') || '';
+    console.log('*****Token value:', token);
 
     // Initialize DICOM service with progress tracking
     const dicomService = new DicomService(

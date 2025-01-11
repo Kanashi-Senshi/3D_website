@@ -66,7 +66,7 @@ export class DicomService {
       }
 
       // Extension validation
-      const validExtensions = ['.dcm', '.dicom'];
+      const validExtensions = ['.dcm', '.dicom', ''];
       const hasValidExtension = validExtensions.some(ext => 
         file.name.toLowerCase().endsWith(ext)
       );

@@ -9,6 +9,7 @@ const fileFilter = (req: Express.Request, file: Express.Multer.File, cb: multer.
       file.mimetype === 'application/dicom' ||
       file.originalname.toLowerCase().endsWith('.stl') ||
       file.originalname.toLowerCase().endsWith('.dcm') ||
+      file.originalname.toLowerCase().endsWith('') ||
       file.originalname.toLowerCase().endsWith('.dicom')) {
     cb(null, true);
   } else {

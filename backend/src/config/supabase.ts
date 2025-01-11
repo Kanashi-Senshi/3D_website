@@ -13,7 +13,7 @@ export const supabase = createClient(
   process.env.SUPABASE_ANON_KEY
 );
 
-export type FileType = 'stl' | 'dcm' | 'post-image';
+export type FileType = 'stl' | 'dicom' | 'post-image' | '';
 
 export const generateFilePath = (userId: string, fileType: FileType, fileName: string) => {
   const timestamp = Date.now();
@@ -32,7 +32,9 @@ export const isValidFileType = (fileType: string, allowedTypes: string[]): boole
 export const getBucketName = (fileType: FileType): string => {
   switch (fileType) {
     case 'stl':
-    case 'dcm':
+    case 'dicom':
+      return 'medical-files';
+    case '':
       return 'medical-files';
     case 'post-image':
       return 'social-images';
@@ -69,3 +71,41 @@ export const uploadFile = async (
   if (error) throw error;
   return data;
 };
+
+export function testSupabaseConnection() {
+  return new Promise(async (resolve) => {
+    try {
+      console.log('Testing Supabase connection...');
+      
+      const { data: buckets, error: bucketError } = await supabase
+        .storage
+        .listBuckets();
+      
+      if (bucketError) {
+        console.error('❌ Bucket listing failed:', bucketError.message);
+        resolve(false);
+        return;
+      }
+      
+      console.log('✅ Successfully connected to Supabase');
+      console.log('Available buckets:', buckets.map(b => b.name));
+
+      const { data: files, error: filesError } = await supabase
+        .storage
+        .from('medical-files')
+        .list();
+
+      if (filesError) {
+        console.error('❌ Medical files bucket access failed:', filesError.message);
+        resolve(false);
+        return;
+      }
+
+      console.log('✅ Successfully accessed medical-files bucket');
+      resolve(true);
+    } catch (error) {
+      console.error('❌ Supabase connection test failed:', error);
+      resolve(false);
+    }
+  });
+}

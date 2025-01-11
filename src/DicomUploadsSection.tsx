@@ -5,6 +5,8 @@ import { DicomUploadsSectionStyles } from './types/styles';
 import axios from 'axios';
 import { API_URL } from './config';
 import { Upload, X, FolderOpen, Share2, Trash2, Eye } from 'lucide-react';
+import path from 'path';
+import { timeStamp } from 'console';
 
 interface DicomOrder {
   orderId: string;
@@ -356,14 +358,16 @@ const DicomUploadsSection: React.FC = () => {
   const fetchOrders = useCallback(async () => {
     try {
       const status = activeTab === 'current' ? 'PENDING,IN_PROGRESS' : 'COMPLETED';
+      const token = localStorage.getItem('token') || sessionStorage.getItem('token');
       const response = await axios.get(`${API_URL}/api/dicom/orders?status=${status}`, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${token}`,
         },
       });
-      setOrders(response.data);
+      setOrders(Array.isArray(response.data) ? response.data : [])
     } catch (error) {
       console.error('Error fetching orders:', error);
+      setOrders([]);
     }
   }, [activeTab]);
 
@@ -383,7 +387,9 @@ const DicomUploadsSection: React.FC = () => {
     const maxFileSize = 100 * 1024 * 1024; // 100MB limit
     const invalidFiles = files.filter((file) => {
       const isValidType =
-        file.name.toLowerCase().endsWith('.dcm') || file.name.toLowerCase().endsWith('.dicom');
+        file.name.toLowerCase().endsWith('.dcm') ||
+        file.name.toLowerCase().endsWith('') ||
+        file.name.toLowerCase().endsWith('.dicom');
       const isValidSize = file.size <= maxFileSize;
       return !isValidType || !isValidSize;
     });
@@ -469,69 +475,123 @@ const DicomUploadsSection: React.FC = () => {
   };
 
   const handleUpload = async () => {
+    const maxRetries = 3;
+    let currentTry = 0;
     if (selectedFiles.length === 0 || !patientId) return;
 
-    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
-    if (!token) {
-      setUploadError('Authentication token not found');
-      return;
-    }
-
-    // Validate files
-    const validation = validateFiles(selectedFiles);
-    if (!validation.valid) {
-      setUploadError(validation.error || 'Invalid files');
-      return;
-    }
-
-    const formData = new FormData();
-
-    // Append files with their relative paths
-    selectedFiles.forEach((file) => {
-      formData.append('files', file);
-      formData.append('paths', file.webkitRelativePath);
-    });
-
-    formData.append('patientId', patientId);
-
-    try {
-      const response = await axios.post<{ success: boolean; message: string }>(
-        `${API_URL}/api/dicom/upload`,
-        formData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-            Authorization: `Bearer ${token}`,
-          },
-          onUploadProgress: (progressEvent) => {
-            const progress = progressEvent.total
-              ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
-              : 0;
-            setUploadProgress(progress);
-          },
+    while (currentTry < maxRetries){
+      try{
+        const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+    
+        // console.log('Retrieved token:', token ? 'Token exists' : 'No token found');
+        // console.log('Token value:', token); // Be careful logging full tokens in production
+        
+        if (!token) {
+          setUploadError('Authentication token not found');
+          return;
         }
-      );
 
-      if (response.data.success) {
-        setShowUploadModal(false);
-        setSelectedFiles([]);
-        setPatientId('');
-        setUploadProgress(0);
-        setUploadError(null);
-        await fetchOrders();
-      } else {
-        throw new Error(response.data.message || 'Upload failed');
+        // Log the headers being sent
+        console.log('Request headers:', {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${token.substring(0, 10)}...` // Log partial token safely
+        });
+
+        // Validate files
+        const validation = validateFiles(selectedFiles);
+        if (!validation.valid) {
+          setUploadError(validation.error || 'Invalid files');
+          return;
+        }
+
+        const formData = new FormData();
+
+        // Append files with their relative paths
+        selectedFiles.forEach((file) => {
+          formData.append('files', file);
+          formData.append('paths', file.webkitRelativePath);
+        });
+
+        formData.append('patientId', patientId);
+
+        let lastLoaded = 0;
+        let lastTime = Date.now();
+
+        // Log the file details before upload
+        console.log('Starting upload with details:', {
+          totalFiles: selectedFiles.length,
+          totalSize: selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024) + ' MB',
+          firstFilePath: selectedFiles[0]?.webkitRelativePath || 'No path'
+        });
+          const response = await axios.post<{ success: boolean; message: string }>(
+            `${API_URL}/api/dicom/upload`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+                Authorization: `Bearer ${token}`,
+              },
+
+              // Add timeout configuration
+              timeout: 3600000, // 1 hour timeout
+              maxContentLength: Infinity,
+              maxBodyLength: Infinity,
+              
+              onUploadProgress: (progressEvent) => {
+                const currentTime = Date.now();
+                const timeDiff = currentTime - lastTime;
+                const loadedDiff = progressEvent.loaded - lastLoaded;
+
+                const uploadSpeed = (loadedDiff/1024/1024) / (timeDiff/1000);
+
+                const progress = progressEvent.total
+                  ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
+                  : 0;
+                console.log(`Upload progress ${progress}%:`, {
+                  bytesUploaded: `${(progressEvent.loaded / 1024 / 1024).toFixed(2)}MB`,
+                  uploadSpeed: `${(uploadSpeed).toFixed(2)}MB/s`,
+                  timeStamp: new Date().toLocaleTimeString()
+                });
+
+                lastLoaded = progressEvent.loaded;
+                lastTime = currentTime;
+                setUploadProgress(progress);
+              },
+            }
+          );
+
+          if (response.data.success) {
+            setShowUploadModal(false);
+            setSelectedFiles([]);
+            setPatientId('');
+            setUploadProgress(0);
+            setUploadError(null);
+            await fetchOrders();
+            break;
+          } else {
+            throw new Error(response.data.message || 'Upload failed');
+          }
+
+      }catch (error){
+        currentTry++;
+        console.log(`Upload attempt ${currentTry} failed:`, error);
+
+        if (currentTry >= maxRetries) {
+          //Handle Final Error
+          if (axios.isAxiosError(error)) {
+            const message = error.response?.data?.message || error.message;
+            setUploadError(`Upload failed: ${message}`);
+          } else if (error instanceof Error) {
+            setUploadError(`Upload error: ${error.message}`);
+          } else {
+            setUploadError('An unknown error occurred during upload');
+          }
+        } else {
+          //Retry
+          await new Promise(resolve => setTimeout(resolve, 2000));
+        }
       }
-    } catch (error) {
-      if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.message || error.message;
-        setUploadError(`Upload failed: ${message}`);
-      } else if (error instanceof Error) {
-        setUploadError(`Upload error: ${error.message}`);
-      } else {
-        setUploadError('An unknown error occurred during upload');
-      }
-    }
+    };
   };
 
   const renderFolderStructure = () => {
@@ -669,7 +729,7 @@ const DicomUploadsSection: React.FC = () => {
 
             <input
               type="text"
-              placeholder="Patient ID"
+              placeholder="Patient ID (Only visible to you)"
               value={patientId}
               onChange={(e) => setPatientId(e.target.value)}
               style={styles.input}

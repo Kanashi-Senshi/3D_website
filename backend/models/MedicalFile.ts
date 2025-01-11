@@ -5,7 +5,7 @@ export interface IMedicalFile extends Document {
   // _id: mongoose.Types.ObjectId;
   folderPath: string;
   fileName: string;
-  fileType: 'stl' | 'dicom';
+  fileType: 'stl' | 'dicom' | '';
   filePath: string;
   uploadedBy: mongoose.Types.ObjectId;
   // TODO: Add patient validation when patient account system is implemented
@@ -42,7 +42,7 @@ const medicalFileSchema = new Schema<IMedicalFile>({
   },
   fileType: {
     type: String,
-    enum: ['stl', 'dicom'],
+    enum: ['stl', 'dicom', ''],
     required: true
   },
   filePath: {

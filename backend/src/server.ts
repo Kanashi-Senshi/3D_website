@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import connectDB from './config/database';
+import { testSupabaseConnection } from './config/supabase';
 
 import authRoutes from './routes/auth';
 import appointmentRoutes from './routes/appointments';
@@ -19,6 +20,18 @@ dotenv.config();
 const app = express();
 const port = process.env.PORT || 5000;
 
+try {
+  testSupabaseConnection().then(connected => {
+    if (!connected) {
+      console.error('Failed to connect to Supabase. Check your configuration.');
+      process.exit(1);
+    }
+  });
+} catch (error) {
+  console.error('Error testing Supabase connection:', error);
+  process.exit(1);
+}
+
 connectDB().catch((err: any) => {
   console.error('Failed to connect to MongoDB:', err);
   process.exit(1);
@@ -31,8 +44,16 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ extended: true, limit: '500mb' }));
+
+// Log middleware limits
+console.log('Server configuration:', {
+  jsonLimit: app.get('json limit'),
+  urlEncodedLimit: app.get('urlencoded limit'),
+  timeout: app.get('timeout'),
+  maxUploadSize: process.env.MAX_UPLOAD_SIZE || 'not set'
+});
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -77,3 +98,8 @@ app.listen(port, () => {
   console.log(`Environment: ${process.env.NODE_ENV}`);
   console.log(`API URL: http://localhost:${port}`);
 });
+
+app.use('/api/dicom/upload', express.raw({
+  limit: '500mb',
+  type: 'multipart/form-data'
+}))

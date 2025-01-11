@@ -6,8 +6,8 @@ import { FileDocument } from '../types/express';
 import { supabase, generateFilePath, getFileExtension, isValidFileType, getSignedUrl } from '@/config/supabase';
 
 const ALLOWED_STL_TYPES = ['stl'];
-const ALLOWED_DICOM_TYPES = ['dcm', 'dicom'];
-const MAX_FILE_SIZE = 100 * 1024 * 1024; // 100MB
+const ALLOWED_DICOM_TYPES = ['dcm', 'dicom', ''];
+const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
 
 export const uploadFile = async (req: Request, res: Response) => {
   try {

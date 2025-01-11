@@ -11,23 +11,25 @@ export const dicomUploadLimiter = rateLimit({
   message: 'Too many uploads from this IP, please try again later'
 });
 
+
 // Multer configuration for handling large files
 const storage = multer.memoryStorage();
 export const upload = multer({
   storage: storage,
   limits: {
     fileSize: 2 * 1024 * 1024 * 1024, // 2GB max file size
-    files: 1000 // Max number of files
+    files: 2000 // Max number of files
   },
   fileFilter: (_req, file, cb) => {
     // Check file extension
-    if (file.originalname.match(/\.(dcm|dicom)$/i)) {
+    if (file.originalname.match(/\.(dcm|dicom)$/i) || file.originalname.endsWith('')) {
       cb(null, true);
     } else {
+      console.log('Rejected file:', file.originalname);
       cb(new Error('Only DICOM files are allowed'));
     }
   }
-});
+}).array('files', 1000);
 
 // Security headers middleware
 export const securityHeaders = (_req: Request, res: Response, next: NextFunction) => {
@@ -119,15 +121,35 @@ export const trackUploadProgress = (
   next: NextFunction
 ): void => {
   if (!req.headers['content-length']) {
+    console.log('No content length header found');
     return next();
   }
 
   const contentLength = parseInt(req.headers['content-length']);
   let bytesReceived = 0;
+  let lastLogged = Date.now();
+  const logInterval = 5000; // Log every 5 seconds
+
+  console.log('Starting file upload tracking:', {
+    contentLength: (contentLength / (1024 * 1024)).toFixed(2) + ' MB',
+    timestamp: new Date().toISOString()
+  });
 
   req.on('data', (chunk: Buffer) => {
     bytesReceived += chunk.length;
+    const now = Date.now();
     const progress = (bytesReceived / contentLength) * 100;
+
+    // Log progress every 5 seconds
+    if (now - lastLogged >= logInterval) {
+      console.log('Upload progress on server:', {
+        received: (bytesReceived / (1024 * 1024)).toFixed(2) + ' MB',
+        total: (contentLength / (1024 * 1024)).toFixed(2) + ' MB',
+        progress: ((bytesReceived / contentLength) * 100).toFixed(1) + '%',
+        timestamp: new Date().toISOString()
+      });
+      lastLogged = now;
+    }
 
     // Emit progress through Server-Sent Events if configured
     if (res.locals.sseConnection) {
@@ -142,5 +164,57 @@ export const trackUploadProgress = (
     }
   });
 
+  req.on('end', () => {
+    console.log('Upload completed on server:', {
+      finalSize: (bytesReceived / (1024 * 1024)).toFixed(2) + ' MB',
+      timestamp: new Date().toISOString()
+    });
+  });
+
+  req.on('error', (error) => {
+    console.error('Upload error on server:', {
+      error: error.message,
+      bytesReceived: (bytesReceived / (1024 * 1024)).toFixed(2) + ' MB',
+      timestamp: new Date().toISOString()
+    });
+  });
+
   next();
+};
+
+export const handleLargeFileErrors = (
+  err: any, 
+  req: Request, 
+  res: Response, 
+  next: NextFunction
+): Response | void => {
+  console.error('File upload error:', {
+    error: err.message,
+    code: err.code,
+    field: err.field,
+    type: err instanceof multer.MulterError ? 'MulterError' : 'GeneralError'
+  });
+
+  if (err instanceof multer.MulterError) {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(413).json({
+        error: 'File too large',
+        details: 'Maximum file size is 500MB'
+      });
+    }
+    if (err.code === 'LIMIT_FILE_COUNT') {
+      return res.status(413).json({
+        error: 'Too many files',
+        details: 'Maximum 1000 files per upload'
+      });
+    }
+    // Handle any other Multer errors
+    return res.status(400).json({
+      error: 'File upload error',
+      details: err.message
+    });
+  }
+
+  // For non-Multer errors, pass to the next error handler
+  return next(err);
 };
