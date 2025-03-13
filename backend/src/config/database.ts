@@ -21,7 +21,7 @@ const connectDB = async (): Promise<void> => {
     await (mongoose as any).connect(process.env.MONGODB_URI, options);
 
     (mongoose as any).connection.on('connected', () => {
-      console.log('MongoDB Connected Successfully');
+      /* console.log('MongoDB Connected Successfully'); */
     });
 
     (mongoose as any).connection.on('error', (err: any) => {
@@ -29,12 +29,12 @@ const connectDB = async (): Promise<void> => {
     });
 
     (mongoose as any).connection.on('disconnected', () => {
-      console.log('MongoDB disconnected');
+      /* console.log('MongoDB disconnected'); */
     });
 
     process.on('SIGINT', async (): Promise<void> => {
       await (mongoose as any).connection.close();
-      console.log('MongoDB connection closed through app termination');
+      /* console.log('MongoDB connection closed through app termination'); */
       process.exit(0);
     });
 

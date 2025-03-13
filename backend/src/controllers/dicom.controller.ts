@@ -3,8 +3,15 @@ import { DicomService, DicomFile } from '@/services/dicom.service';
 import { Request, Response } from 'express';
 import { MedicalFile } from '@models/MedicalFile';
 import { User } from '@models/User';
-import { generateFilePath } from '../config/supabase';
-import mongoose from 'mongoose';
+import { generateFilePath, createSupabaseClient } from '../config/supabase';
+import mongoose, { mongo } from 'mongoose';
+import fs, { write } from 'fs';
+import path from 'path';
+import jwt from 'jsonwebtoken';
+import multer from 'multer';
+import { auth } from '@/middleware/auth';
+import { times } from 'lodash';
+import { createClient } from '@supabase/supabase-js';
 
 interface ExtendedFile extends Express.Multer.File {
   webkitRelativePath: string;
@@ -37,20 +44,21 @@ const isDicomFile = (file: any): file is DicomFile => {
 
 // Convert Multer file to DicomFile
 const convertToDigomFile = (multerFile: ExtendedFile): DicomFile => {
+  const filePath = multerFile.webkitRelativePath || multerFile.originalname; 
   return {
     lastModified: Date.now(),
     name: multerFile.originalname,
     size: multerFile.size,
     type: multerFile.mimetype,
-    webkitRelativePath: multerFile.webkitRelativePath,
+    webkitRelativePath: filePath,
     arrayBuffer: async (): Promise<ArrayBuffer> => {
       const buffer = new ArrayBuffer(multerFile.buffer.length);
       new Uint8Array(buffer).set(new Uint8Array(multerFile.buffer));
       return buffer;
     },
     slice: (start?: number, end?: number, contentType?: string) => {
-      const buffer = multerFile.buffer.slice(start, end);
-      return new Blob([buffer], { type: contentType || multerFile.mimetype });
+      const slicedBuffer = Buffer.from(multerFile.buffer).subarray(start || 0, end);
+      return new Blob([slicedBuffer], { type: contentType || multerFile.mimetype });
     },
     stream: () => new ReadableStream({
       start(controller) {
@@ -66,18 +74,21 @@ const convertToDigomFile = (multerFile: ExtendedFile): DicomFile => {
 export const uploadDicomFiles = async (req: Request, res: Response): Promise<Response | void> => {
   let sseConnection: Response | null = null;
 
+  
+
   try {
+         // Decode token to inspect claims
+    const token = req.headers.authorization?.replace('Bearer ', '') || '';
+    if (token) {
+      try {
+        const decoded = jwt.decode(token);
+      } catch (err) {
+        console.error('Token decode error:', err);
+      }
+    }
     const userId = req.userId;
     const { patientId } = req.body;
 
-    console.log('Starting DICOM upload:', {
-      userId,
-      contentLength: req.headers['content-length'],
-      contentType: req.headers['content-type'],
-      filesCount: req.files?.length || 0,
-      timestamp: new Date().toISOString()
-    });
-    console.log('Patient ID from request:', patientId);
 
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -101,18 +112,27 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
     }
 
     const multerFiles = req.files as ExtendedFile[];
-    console.log('Raw multerFiles:', {
-      count: multerFiles?.length || 0,
-      firstFile: multerFiles?.[0] ? {
-        originalname: multerFiles[0].originalname,
-        filename: multerFiles[0].fieldname,
-        size: multerFiles[0].size,
-        path: multerFiles[0].webkitRelativePath,
-        // Log all properties of the first file
-        allProps: Object.keys(multerFiles[0]),
-        buffer: multerFiles[0].buffer ? 'Buffer exists' : 'No buffer',
-      } : 'No files'
+    const paths = req.body.paths;
+
+    multerFiles.forEach((file, index) => {
+      Object.defineProperty(file, 'webkitRelativePath', {
+        value: Array.isArray(paths) ? paths[index] : paths,
+        writable: false
+      });
     });
+    
+    // console.log('Raw multerFiles:', {
+    //   count: multerFiles?.length || 0,
+    //   firstFile: multerFiles?.[0] ? {
+    //     originalname: multerFiles[0].originalname,
+    //     filename: multerFiles[0].fieldname,
+    //     size: multerFiles[0].size,
+    //     path: multerFiles[0].webkitRelativePath,
+    //     // Log all properties of the first file
+    //     allProps: Object.keys(multerFiles[0]),
+    //     buffer: multerFiles[0].buffer ? 'Buffer exists' : 'No buffer',
+    //   } : 'No files'
+    // });
 
     // console.log('Received files:', multerFiles.map(file => ({
     //   name: file.originalname,
@@ -122,11 +142,11 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
 
     // Track memory usage
     const memoryUsage = process.memoryUsage();
-    console.log('Memory usage during upload:', {
+    /* console.log('Memory usage during upload:', {
       heapUsed: (memoryUsage.heapUsed / 1024 / 1024).toFixed(2) + ' MB',
       heapTotal: (memoryUsage.heapTotal / 1024 / 1024).toFixed(2) + ' MB',
       rss: (memoryUsage.rss / 1024 / 1024).toFixed(2) + ' MB',
-    });
+    }); */
 
     // Add error handler for request
     req.on('error', (error) => {
@@ -139,8 +159,8 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
     });
 
     const dicomFiles = multerFiles.map(convertToDigomFile);
-    const token = req.headers.authorization?.replace('Bearer ', '') || '';
-    console.log('*****Token value:', token);
+
+    /* console.log('*****Token value:', token); */
 
     // Initialize DICOM service with progress tracking
     const dicomService = new DicomService(
@@ -167,6 +187,10 @@ export const uploadDicomFiles = async (req: Request, res: Response): Promise<Res
         const pathParts = relativePath.split('/');
         const folderPath = pathParts.length > 1 ? pathParts.slice(0, -1).join('/') : '';
         const filePath = generateFilePath(userId, 'dicom', file.webkitRelativePath);
+
+        console.log('relativePath:', relativePath);
+        console.log('folderPath:', folderPath);
+        console.log('filePath:', filePath);
 
         const medicalFile = new MedicalFile({
           fileName: file.name,
@@ -451,6 +475,66 @@ export const getOrderDetails = async (req: Request, res: Response) => {
   }
 };
 
+export const createFolderStructure = async (req: Request, res: Response) => {
+  try {
+    const { patientId, structure } = req.body;
+    const userId = req.userId;
+
+    /* console.log('Creating folder structure:', {
+      patientId,
+      structure,
+      userId
+    }); */
+
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    if (!patientId || !structure || !Array.isArray(structure)) {
+      return res.status(400).json({ 
+        error: 'Invalid request body - patientId and structure array required' 
+      });
+    }
+
+    // Create base folder records in MongoDB
+    const folderPromises = structure.map(async (folderPath) => {
+      const fileName = folderPath === '/' ? 'root' : folderPath.split('/').pop();
+      const filePath = folderPath === '/' ? `/root/${userId}/${new Date().toISOString().replace(/[:.]/g, '-')}` : `${userId}/${patientId}/dicom/${new Date().toISOString().replace(/[:.]/g, '-')}_${fileName}`;
+      
+      /* console.log('Creating folder record:', { folderPath, fileName, filePath }); */
+      
+      const newFolder = new MedicalFile({
+        fileName,
+        fileType: 'dicom',
+        folderPath,
+        uploadedBy: userId,
+        patient: patientId,
+        size: 0,
+        status: 'processing',
+        isFolder: true,
+        filePath
+      });
+    
+      return newFolder.save();
+    });
+
+    await Promise.all(folderPromises);
+
+    return res.status(201).json({
+      success: true,
+      message: 'Folder structure created successfully',
+      structure
+    });
+
+  } catch (error) {
+    console.error('Create folder structure error:', error);
+    return res.status(500).json({ 
+      error: 'Error creating folder structure',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+};
+
 export const updateDicomStatus = async (req: Request, res: Response) => {
   try {
     const { fileId } = req.params;
@@ -496,6 +580,130 @@ export const updateDicomStatus = async (req: Request, res: Response) => {
       error: 'Error updating DICOM status',
       details: error instanceof Error ? error.message : 'Unknown error',
       requestId: req.headers['X-Request-ID']
+    });
+  }
+};
+
+export const handleChunkUpload = async (req: Request, res: Response) => {
+  try {
+    const { fileId, chunkIndex, totalChunks, patientId, relativePath } = req.body;
+    const chunk = req.file;
+    const userId = req.userId;
+  
+    const token = req.headers.authorization?.replace('Bearer ', '');
+    const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_ANON_KEY!);
+    console.log('SupabaseAuth token details: ', {
+      tokenPresent: !!token,
+      prefix: token?.substring(0, 10)
+    })
+    const { data: {user}, error: userError } = await supabase.auth.getUser();
+    console.log('Supabase user context:', user);
+    // const accessToken = session?.access_token;
+
+    // if (sessionError || !accessToken) {
+    //   console.error('Failed to get session token:', sessionError);
+    //   return res.status(401).json({ error: 'Invalid session token' });
+    // }
+
+    // supabase.auth.setSession({
+    //   access_token: accessToken,
+    //   refresh_token: ''
+    // });
+
+    /* console.log('Processing chunk upload:', {
+      fileId,
+      chunkIndex,
+      totalChunks,
+      chunkSize: chunk?.size
+    }); */
+
+    if (!chunk || !fileId || !userId) {
+      return res.status(400).json({ error: 'Missing required data' });
+    }
+
+    // Define base upload directories
+    const baseDir = process.env.UPLOAD_BASE_DIR || path.join(process.cwd(), 'uploads');
+    const tempDir = path.join(baseDir, 'temp', 'chunks');
+    
+    // Create temp directory if it doesn't exist
+    await fs.promises.mkdir(tempDir, { recursive: true });
+
+    // Save chunk to temporary storage
+    const chunkPath = path.join(tempDir, `${fileId}_${chunkIndex}`);
+    await fs.promises.writeFile(chunkPath, chunk.buffer);
+
+    // If this is the last chunk, combine all chunks and upload
+    if (parseInt(chunkIndex) === parseInt(totalChunks) - 1) {
+      /* console.log('Processing final chunk, combining file:', fileId); */
+      
+      // Combine chunks into single buffer
+      const chunks: Buffer[] = [];
+      for (let i = 0; i < parseInt(totalChunks); i++) {
+        const currentChunkPath = path.join(tempDir, `${fileId}_${i}`);
+        const chunkData = await fs.promises.readFile(currentChunkPath);
+        chunks.push(chunkData);
+        
+        // Clean up chunk
+        await fs.promises.unlink(currentChunkPath);
+      }
+      
+      const completeFileBuffer = Buffer.concat(chunks);
+      
+      try {
+        // Generate Supabase storage path
+        const filePath = generateFilePath(userId, 'dicom', fileId);
+
+
+        // Upload to Supabase
+        const { data: uploadData, error: uploadError } = await supabase
+          .storage
+          .from('medical-files')
+          .upload(filePath, completeFileBuffer, {
+            contentType: 'application/dicom',
+            cacheControl: '3600'
+          });
+
+        if (uploadError) throw uploadError;
+
+        // Create MongoDB record
+        const folderPath = path.dirname(relativePath);
+        const medicalFile = new MedicalFile({
+          fileName: path.basename(fileId),
+          fileType: 'dicom',
+          filePath,
+          folderPath,
+          uploadedBy: new mongoose.Types.ObjectId(userId),
+          patient: patientId,
+          size: completeFileBuffer.length,
+          status: 'processing',
+          isFolder: false
+        });
+
+        await medicalFile.save();
+
+        /* console.log('File upload complete:', {
+          fileName: fileId,
+          supabasePath: filePath,
+          size: completeFileBuffer.length
+        }); */
+      } catch (error) {
+        console.error('Error uploading complete file:', error);
+        throw error;
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: 'Chunk uploaded successfully',
+      chunkIndex,
+      totalChunks
+    });
+
+  } catch (error) {
+    console.error('Chunk upload error:', error);
+    return res.status(500).json({
+      error: 'Error processing chunk upload',
+      details: error instanceof Error ? error.message : 'Unknown error'
     });
   }
 };

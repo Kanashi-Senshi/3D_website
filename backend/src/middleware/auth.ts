@@ -2,6 +2,8 @@
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { User } from '../../models/User';
+import { createSupabaseClient } from '../config/supabase';
+import {v5 as uuidv5} from 'uuid';
 
 interface JwtPayload {
   userId: string;
@@ -12,56 +14,107 @@ declare global {
   namespace Express {
     interface Request {
       user?: any;
-      userId?: string;
+      userId: string;
     }
   }
 }
 
+//Consistent namespace UUID for converrting MongoDB IDs to UUIDs
+const NAMESPACE = '6ba7b810-9dad-11d1-80b4-00c04fd430c8';
+
+//convert MongoDB ID to UUID
+const mongoIdToUuid = (id: string): string => {
+  return uuidv5(id, NAMESPACE);
+};
+
 export const auth = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
   try {
-    console.log('Auth middleware - Headers:', req.headers); // Log all headers
-    
     const authHeader = req.header('Authorization');
-    console.log('Auth header:', authHeader ? 'Present' : 'Missing');
-    
     const token = authHeader?.replace('Bearer ', '');
-    console.log('Extracted token:', token ? 'Token found' : 'No token');
     
     if (!token) {
-      console.log('Token validation failed: No token provided');
       throw new Error('No token provided');
     }
 
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
-      console.log('Token verification:', decoded ? 'Success' : 'Failed');
-      console.log('Decoded payload:', { userId: decoded.userId }); // Log user ID from token
-      
-      const user = await User.findById(decoded.userId);
-      console.log('User lookup:', user ? 'Found' : 'Not found');
-
-      if (!user) {
-        console.log('User validation failed: User not found');
-        throw new Error('User not found');
-      }
-
-      req.user = user;
-      req.userId = user._id.toString();
-      console.log('Auth successful for user:', req.userId);
-      next();
-    } catch (err) {
-      console.log('Token verification error:', err);
-      if (err instanceof jwt.JsonWebTokenError) {
-        return res.status(401).json({ error: 'Invalid token' });
-      }
-      if (err instanceof jwt.TokenExpiredError) {
-        return res.status(401).json({ error: 'Token expired' });
-      }
-      throw err;
+    // First verify Express JWT
+    const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as any;
+    
+    // Check MongoDB user
+    const mongoUser = await User.findById(decoded.userId);
+    if (!mongoUser) {
+      throw new Error('User not found in MongoDB');
     }
+
+    // Generate consistent Supabase UUID
+    const supabaseUUID = mongoIdToUuid(mongoUser._id.toString());
+
+    // Create Supabase JWT with required claims
+    const supabaseToken = jwt.sign({
+      sub: supabaseUUID,
+      email: mongoUser.email,
+      role: 'authenticated',
+      aud: process.env.SUPABASE_URL,
+      exp: Math.floor(Date.now() / 1000) + (60 * 60), // 1 hour
+      iat: Math.floor(Date.now() / 1000),
+      user_metadata: {
+        mongoId: mongoUser._id.toString(),
+        role: mongoUser.role,
+        name: mongoUser.name
+      },
+      app_metadata: {
+        provider: 'email'
+      }
+    }, process.env.SUPABASE_JWT_SECRET!, {
+      algorithm: 'HS256'
+    });
+
+    // Initialize Supabase with proper token
+    const supabase = createSupabaseClient();
+    await supabase.auth.setSession({
+      access_token: supabaseToken,
+      refresh_token: ''
+    });
+
+    // Verify Supabase user exists or create one
+    const { data: { user: supabaseUser }, error: getUserError } = await supabase.auth.getUser();
+    
+
+    if (getUserError || !supabaseUser) {
+      // Check if the error is specifically NOT a "user already exists" error
+      if (!getUserError || getUserError.message !== 'User already registered') {
+        try {
+          const { error: signUpError } = await supabase.auth.signUp({
+            email: mongoUser.email,
+            password: process.env.SUPABASE_DEFAULT_PASSWORD || `temp-${Date.now()}`,
+            options: {
+              data: {
+                mongoId: mongoUser._id.toString(),
+                role: mongoUser.role,
+                name: mongoUser.name
+              }
+            }
+          });
+
+          if (signUpError && signUpError.message !== 'User already registered') {
+            console.error('Error creating Supabase user:', signUpError);
+          }
+        } catch (err) {
+          console.error('Error in Supabase account recovery:', err);
+          // Continue with token-based session
+        }
+      }
+    }
+
+    // Set request properties
+    req.user = mongoUser;
+    req.userId = mongoUser._id.toString();
+    (req as any).supabaseClient = supabase;
+
+    next();
+
   } catch (error) {
-    console.log('Auth middleware error:', error);
-    res.status(401).json({ 
+    console.error('Auth middleware error:', error);
+    return res.status(401).json({ 
       error: 'Authentication failed',
       message: error instanceof Error ? error.message : 'Please authenticate'
     });
@@ -79,10 +132,22 @@ export const doctorOnly = async (req: Request, res: Response, next: NextFunction
   }
 };
 
-export const generateToken = (userId: string, role: string): string => {
+export const generateToken = (userId: string, email: string, role: string): string => {
+  const supabaseUUID = mongoIdToUuid(userId);
+
   return jwt.sign(
-    { userId, role },
+    { 
+      userId,
+      email,
+      role,
+      sub: supabaseUUID,
+      supabaseUUID,
+      aud: process.env.SUPABASE_URL
+    },
     process.env.JWT_SECRET as string,
-    { expiresIn: '7d' }
+    { 
+      expiresIn: '7d',
+      algorithm: 'HS256'
+    }
   );
 };

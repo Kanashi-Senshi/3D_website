@@ -25,11 +25,11 @@ export const upload = multer({
     if (file.originalname.match(/\.(dcm|dicom)$/i) || file.originalname.endsWith('')) {
       cb(null, true);
     } else {
-      console.log('Rejected file:', file.originalname);
+      /* console.log('Rejected file:', file.originalname); */
       cb(new Error('Only DICOM files are allowed'));
     }
   }
-}).array('files', 1000);
+}).array('files', 2000);
 
 // Security headers middleware
 export const securityHeaders = (_req: Request, res: Response, next: NextFunction) => {
@@ -78,7 +78,13 @@ export const handleDicomError = (
   res: Response,
   _next: NextFunction
 ): Response => {
-  console.error('DICOM Error:', error);
+  console.error('DICOM Error:', {
+    message: error.message,
+    name: error.name,
+    stack: error.stack,
+    isAuthError: error.hasOwnProperty('__isAuthError')
+  });
+
 
   if (error instanceof multer.MulterError) {
     switch (error.code) {
@@ -106,6 +112,14 @@ export const handleDicomError = (
       details: error.message
     });
   }
+  
+  if (error.hasOwnProperty('__isAuthError')) {
+    return res.status(401).json({
+      error: 'Authentication failed',
+      details: 'Invalid or expired token'
+    });
+  }
+
 
   // Handle any other errors
   return res.status(500).json({
@@ -121,7 +135,7 @@ export const trackUploadProgress = (
   next: NextFunction
 ): void => {
   if (!req.headers['content-length']) {
-    console.log('No content length header found');
+    /* console.log('No content length header found'); */
     return next();
   }
 
@@ -130,10 +144,10 @@ export const trackUploadProgress = (
   let lastLogged = Date.now();
   const logInterval = 5000; // Log every 5 seconds
 
-  console.log('Starting file upload tracking:', {
+  /* console.log('Starting file upload tracking:', {
     contentLength: (contentLength / (1024 * 1024)).toFixed(2) + ' MB',
     timestamp: new Date().toISOString()
-  });
+  }); */
 
   req.on('data', (chunk: Buffer) => {
     bytesReceived += chunk.length;
@@ -142,12 +156,12 @@ export const trackUploadProgress = (
 
     // Log progress every 5 seconds
     if (now - lastLogged >= logInterval) {
-      console.log('Upload progress on server:', {
+      /* console.log('Upload progress on server:', {
         received: (bytesReceived / (1024 * 1024)).toFixed(2) + ' MB',
         total: (contentLength / (1024 * 1024)).toFixed(2) + ' MB',
         progress: ((bytesReceived / contentLength) * 100).toFixed(1) + '%',
         timestamp: new Date().toISOString()
-      });
+      }); */
       lastLogged = now;
     }
 
@@ -165,10 +179,10 @@ export const trackUploadProgress = (
   });
 
   req.on('end', () => {
-    console.log('Upload completed on server:', {
+    /* console.log('Upload completed on server:', {
       finalSize: (bytesReceived / (1024 * 1024)).toFixed(2) + ' MB',
       timestamp: new Date().toISOString()
-    });
+    }); */
   });
 
   req.on('error', (error) => {

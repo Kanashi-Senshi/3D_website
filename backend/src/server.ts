@@ -37,6 +37,12 @@ connectDB().catch((err: any) => {
   process.exit(1);
 });
 
+// Add request logging middleware
+app.use((req: express.Request, res: express.Response, next: express.NextFunction) => {
+  /* console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`); */
+  next();
+});
+
 app.use(cors({
   origin: 'http://localhost:3000',
   credentials: true,
@@ -48,12 +54,12 @@ app.use(express.json({ limit: '500mb' }));
 app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 
 // Log middleware limits
-console.log('Server configuration:', {
+/* console.log('Server configuration:', {
   jsonLimit: app.get('json limit'),
   urlEncodedLimit: app.get('urlencoded limit'),
   timeout: app.get('timeout'),
   maxUploadSize: process.env.MAX_UPLOAD_SIZE || 'not set'
-});
+}); */
 
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
@@ -62,6 +68,19 @@ app.use('/api/files', fileRoutes);
 app.use('/api/social', socialRoutes);
 app.use('/api/teams', teamRoutes);
 app.use('/api/dicom', dicomRoutes);
+
+// Debug output for registered routes
+app._router.stack.forEach((r: any) => {
+  if (r.route && r.route.path) {
+    /* console.log(`Route registered: ${r.route.path}`); */
+  } else if (r.name === 'router') {
+    r.handle.stack.forEach((r2: any) => {
+      if (r2.route) {
+        /* console.log(`Subroute registered: ${r2.route.path}`); */
+      }
+    });
+  }
+});
 
 app.get('/health', (_req: express.Request, res: express.Response) => {
   res.json({ 
@@ -94,12 +113,13 @@ process.on('unhandledRejection', (reason, promise) => {
 });
 
 app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
-  console.log(`Environment: ${process.env.NODE_ENV}`);
-  console.log(`API URL: http://localhost:${port}`);
+  /* console.log(`Server is running on port ${port}`); */
+  /* console.log(`Environment: ${process.env.NODE_ENV}`); */
+  /* console.log(`API URL: http://localhost:${port}`); */
 });
 
 app.use('/api/dicom/upload', express.raw({
   limit: '500mb',
   type: 'multipart/form-data'
 }))
+

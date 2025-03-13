@@ -489,7 +489,7 @@ const DicomUploadsSection: React.FC = () => {
   };
 
   const handleUpload = async () => {
-    const maxRetries = 3;
+    const maxRetries = 1;
     let currentTry = 0;
     if (selectedFiles.length === 0 || !patientId) return;
 
@@ -506,10 +506,10 @@ const DicomUploadsSection: React.FC = () => {
         }
 
         // Log the headers being sent
-        console.log('Request headers:', {
+        /* console.log('Request headers:', {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${token.substring(0, 10)}...` // Log partial token safely
-        });
+          'Authorization': `Bearer ${token.substring(0, 10)}...` 
+        }); */
 
         // Validate files
         const validation = validateFiles(selectedFiles);
@@ -532,11 +532,11 @@ const DicomUploadsSection: React.FC = () => {
         let lastTime = Date.now();
 
         // Log the file details before upload
-        console.log('Starting upload with details:', {
+        /* console.log('Starting upload with details:', {
           totalFiles: selectedFiles.length,
           totalSize: selectedFiles.reduce((acc, file) => acc + file.size, 0) / (1024 * 1024) + ' MB',
           firstFilePath: selectedFiles[0]?.webkitRelativePath || 'No path'
-        });
+        }); */
           const response = await axios.post<{ success: boolean; message: string }>(
             `${API_URL}/api/dicom/upload`,
             formData,
@@ -561,11 +561,11 @@ const DicomUploadsSection: React.FC = () => {
                 const progress = progressEvent.total
                   ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
                   : 0;
-                console.log(`Upload progress ${progress}%:`, {
+                /* console.log(`Upload progress ${progress}%:`, {
                   bytesUploaded: `${(progressEvent.loaded / 1024 / 1024).toFixed(2)}MB`,
                   uploadSpeed: `${(uploadSpeed).toFixed(2)}MB/s`,
                   timeStamp: new Date().toLocaleTimeString()
-                });
+                }); */
 
                 lastLoaded = progressEvent.loaded;
                 lastTime = currentTime;
@@ -588,7 +588,7 @@ const DicomUploadsSection: React.FC = () => {
 
       }catch (error){
         currentTry++;
-        console.log(`Upload attempt ${currentTry} failed:`, error);
+        /* console.log(`Upload attempt ${currentTry} failed:`, error); */
 
         if (currentTry >= maxRetries) {
           //Handle Final Error
@@ -604,12 +604,15 @@ const DicomUploadsSection: React.FC = () => {
           //Retry
           await new Promise(resolve => setTimeout(resolve, 2000));
         }
+        setUploadProgress(0);
       }
     };
   };
 
   const renderFolderStructure = () => {
     const structure = new Map<string, FileWithPath[]>();
+
+    // console.log('*** Upload file path ***', selectedFiles[0].webkitRelativePath);  LOGS: Works correctly 20/01/2025 
 
     selectedFiles.forEach((file) => {
       const path = file.webkitRelativePath.split('/');

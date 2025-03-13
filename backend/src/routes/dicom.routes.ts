@@ -7,11 +7,18 @@ import {
   getDicomOrders,
   updateOrderStatus,
   addCollaboratingDoctor,
-  getOrderDetails
+  getOrderDetails,
+  createFolderStructure,
+  handleChunkUpload
 } from '../controllers/dicom.controller';
 import {handleLargeFileErrors} from '../middleware/dicom.middleware' 
+import { requireSupabase } from '../middleware/supabase';
+
 
 const router = express.Router();
+
+router.use(express.json())
+router.use(auth);
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -32,15 +39,41 @@ const upload = multer({
   }
 });
 
-router.use(auth);
+// Debug middleware to log all requests to this router
+router.use((req, res, next) => {
+  /* console.log(`DICOM Router - ${req.method} ${req.path}`); */
+  next();
+});
 
-router.post('/upload', 
+router.post('/chunks',
   auth, 
   doctorOnly,
+  requireSupabase,
+  upload.single('chunk'),
+  handleChunkUpload
+);
+
+router.post('/folder-structure', 
+  doctorOnly,
+  (req, res, next) => {
+    /* console.log('Received folder structure request:', {
+      body: req.body,
+      headers: req.headers
+    }); */
+    next();
+  },
+  createFolderStructure
+);
+
+router.post('/upload', 
+  auth,
+  doctorOnly,
+  requireSupabase, // Add Supabase check before upload
   upload.array('files'),
   handleLargeFileErrors,
   uploadDicomFiles
 );
+
 router.post('/orders/:orderId/collaborators', doctorOnly, addCollaboratingDoctor);
 router.patch('/orders/:orderId/status', doctorOnly, updateOrderStatus);
 

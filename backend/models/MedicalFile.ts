@@ -15,6 +15,7 @@ export interface IMedicalFile extends Document {
     type: String,  // Changed from ObjectId to String
     required: true
   },
+  isFolder?: boolean;  // Using optional since we have a default value in schema
   size: number;
   status: 'processing' | 'completed' | 'failed';
   notes: string[];
@@ -50,13 +51,21 @@ const medicalFileSchema = new Schema<IMedicalFile>({
     required: true,
     unique: true
   },
+
+  isFolder: {
+      type: Boolean,
+      default: false
+    },
+
+
+
   uploadedBy: {
     type: Schema.Types.ObjectId,
     ref: 'User',
     required: true
   },
   patient: {
-    type: Schema.Types.ObjectId,
+    type: String,
     ref: 'User',
     required: true
   },

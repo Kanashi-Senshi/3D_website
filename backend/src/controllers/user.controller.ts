@@ -11,7 +11,7 @@ const Appointment = mongoose.model<IAppointment>('Appointment');
 
 export const getDashboardStats = async (req: Request, res: Response) => {
   try {
-    console.log('Fetching dashboard stats for user:', req.userId);
+    /* console.log('Fetching dashboard stats for user:', req.userId); */
     
     if (!req.userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -22,7 +22,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    console.log('User role:', user.role);
+    /* console.log('User role:', user.role); */
 
     const now = new Date();
     const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -90,7 +90,7 @@ export const getDashboardStats = async (req: Request, res: Response) => {
       recentActivity
     };
 
-    console.log('Dashboard data:', dashboardData);
+    /* console.log('Dashboard data:', dashboardData); */
     
     return res.json(dashboardData);
   } catch (error) {

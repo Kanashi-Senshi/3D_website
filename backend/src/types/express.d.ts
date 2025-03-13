@@ -2,12 +2,15 @@
 import { IMedicalFile } from '@models/MedicalFile';
 import { Request } from 'express';
 import { Multer } from 'multer';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 declare global {
   namespace Express {
     interface Request {
+      supabase?: SupabaseClient;
+      supabaseUser?: any;
       user?: any;
-      userId?: string;
+      userId: string;
       file?: {
         fieldname: string;
         originalname: string;

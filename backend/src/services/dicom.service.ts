@@ -138,11 +138,16 @@ export class DicomService {
 
   private generateFolderStructure(files: DicomFile[]): Map<string, DicomFile[]> {
     const structure = new Map<string, DicomFile[]>();
+    Object.entries(files[0]).forEach(([key, value]) => {
+      /* console.log(`${key}: ${value}`); */
+    });
 
     files.forEach(file => {
-      const path = file.webkitRelativePath.split('/');
+      
+      const filePath = file.webkitRelativePath || file.name;
+      const path = filePath.split('/');
       path.pop(); // Remove filename
-      const dirPath = path.join('/');
+      const dirPath = path.join('/') || '/';
 
       if (!structure.has(dirPath)) {
         structure.set(dirPath, []);
@@ -158,16 +163,28 @@ export class DicomService {
     patientId: string
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      /* console.log('Starting DICOM folder upload:', {
+        totalFiles: files.length,
+        patientId,
+        timestamp: new Date().toISOString()
+      }); */
+  
       // Validate all files first
+      /* console.log('Starting file validation...'); */
       const validations = await Promise.all(
         files.map(file => this.validateDicomFile(file))
       );
-
+  
       const invalidFiles = validations
         .map((validation, index) => ({ validation, file: files[index] }))
         .filter(({ validation }) => !validation.valid);
-
+  
       if (invalidFiles.length > 0) {
+        console.error('File validation failed:', {
+          totalFiles: files.length,
+          invalidCount: invalidFiles.length,
+          errors: invalidFiles.map(({ file }) => file.name)
+        });
         return {
           success: false,
           error: invalidFiles
@@ -175,35 +192,88 @@ export class DicomService {
             .join('\n')
         };
       }
-
+      /* console.log('File validation completed successfully'); */
+  
       // Generate folder structure
+      /* console.log('Generating folder structure...'); */
       const folderStructure = this.generateFolderStructure(files);
-
+      /* console.log('Folder structure generated:', {
+        folders: Array.from(folderStructure.keys()),
+        totalFolders: folderStructure.size
+      }); */
+  
       // Upload folder structure first
-      await axios.post(
-        `${this.baseUrl}/api/dicom/folder-structure`,
-        {
-          patientId,
-          structure: Array.from(folderStructure.keys()),
-        },
-        {
-          headers: { Authorization: `Bearer ${this.authToken}` }
-        }
-      );
-
+      /* console.log('Uploading folder structure to server...'); */
+      try {
+        await axios.post(
+          `${this.baseUrl}/api/dicom/folder-structure`,
+          {
+            patientId,
+            structure: Array.from(folderStructure.keys()),
+          },
+          {
+            headers: { 
+              Authorization: `Bearer ${this.authToken}`,
+              'Content-Type': 'application/json'
+            }
+          }
+        );
+        /* console.log('Folder structure uploaded successfully'); */
+      } catch (error) {
+        console.error('Folder structure upload failed:', {
+          error: error instanceof Error ? error.message : 'Unknown error',
+          status: axios.isAxiosError(error) ? error.response?.status : 'unknown',
+          data: axios.isAxiosError(error) ? error.response?.data : null
+        });
+        throw error;
+      }
+      /* console.log('Folder structure uploaded successfully'); */
+  
       // Upload files in batches with limited concurrency
       const totalFiles = files.length;
+      const totalBatches = Math.ceil(totalFiles / DicomService.MAX_CONCURRENT_UPLOADS);
+      /* console.log('Starting file upload in batches:', {
+        totalFiles,
+        batchSize: DicomService.MAX_CONCURRENT_UPLOADS,
+        totalBatches
+      }); */
+  
       for (let i = 0; i < totalFiles; i += DicomService.MAX_CONCURRENT_UPLOADS) {
+        const batchNumber = Math.floor(i / DicomService.MAX_CONCURRENT_UPLOADS) + 1;
         const batch = files.slice(i, i + DicomService.MAX_CONCURRENT_UPLOADS);
+        
+        /* console.log(`Processing batch ${batchNumber}/${totalBatches}:`, {
+          batchSize: batch.length,
+          startIndex: i,
+          endIndex: Math.min(i + DicomService.MAX_CONCURRENT_UPLOADS, totalFiles)
+        }); */
+  
         await Promise.all(
-          batch.map((file, batchIndex) => 
-            this.uploadFileInChunks(file, i + batchIndex, totalFiles)
-          )
+          batch.map((file, batchIndex) => {
+            /* console.log(`Starting upload for file in batch ${batchNumber}:`, {
+              fileName: file.name,
+              fileSize: (file.size / (1024 * 1024)).toFixed(2) + ' MB',
+              fileIndex: i + batchIndex,
+              totalFiles
+            }); */
+            return this.uploadFileInChunks(file, i + batchIndex, totalFiles);
+          })
         );
+        /* console.log(`Completed batch ${batchNumber}/${totalBatches}`); */
       }
-
+  
+      /* console.log('DICOM folder upload completed successfully:', {
+        totalFiles,
+        totalFolders: folderStructure.size,
+        timestamp: new Date().toISOString()
+      }); */
+  
       return { success: true };
     } catch (error) {
+      console.error('DICOM folder upload failed:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        timestamp: new Date().toISOString()
+      });
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error during upload'
